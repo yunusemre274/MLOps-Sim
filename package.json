@@ -1,14 +1,25 @@
 {
   "name": "mlops-sim",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "MLOps Engineer Simulator — Tarayıcı tabanlı yaşam + kariyer simülasyonu oyunu. Docker/Compose/K8s sözdizimi simülasyonu üzerinden MLOps mühendisliği öğretir.",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "preview": "vite preview",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
+  "keywords": [
+    "mlops",
+    "docker",
+    "simulator",
+    "education",
+    "devops",
+    "life-sim"
+  ],
   "dependencies": {
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
