@@ -12,7 +12,7 @@
 - [x] Zustand ile merkezi GameState store kurulumu
 - [x] Sahne yönetim sistemi (SceneManager bileşeni) — hangi sahne aktif kontrol
 - [x] Boş HomeScene bileşeni (ev içi placeholder)
-- [ ] Temel uygulama kabuğu (App.jsx) — SceneManager entegrasyonu
+- [x] Temel uygulama kabuğu (App.jsx) — SceneManager entegrasyonu
 - [ ] Temel CSS tasarım sistemi (renk paleti, tipografi, değişkenler)
 - [ ] .gitignore, .env.example, package.json düzenlemesi
 - [ ] Git repo başlatma ve ilk commit
