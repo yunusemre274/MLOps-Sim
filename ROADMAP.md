@@ -9,7 +9,7 @@
 
 - [x] React projesi oluşturma (Vite ile)
 - [x] Klasör yapısı oluşturma (src/components, src/scenes, src/store, src/data, src/engine, src/config, src/utils, public/assets)
-- [ ] Zustand ile merkezi GameState store kurulumu
+- [x] Zustand ile merkezi GameState store kurulumu
 - [ ] Sahne yönetim sistemi (SceneManager bileşeni) — hangi sahne aktif kontrol
 - [ ] Boş HomeScene bileşeni (ev içi placeholder)
 - [ ] Temel uygulama kabuğu (App.jsx) — SceneManager entegrasyonu
