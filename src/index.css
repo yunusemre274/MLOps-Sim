@@ -1,111 +1,187 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+/**
+ * index.css — Global tasarım sistemi
+ *
+ * Tüm CSS custom property'ler burada tanımlanır. Bileşenler bu değişkenleri
+ * kullanarak tutarlı görünüm sağlar. Koyu tema ana temadır.
+ *
+ * Neden custom property: Tema değişikliği veya denge ayarlaması (renk, font boyutu)
+ * tek noktadan yapılabilir — birden fazla dosyayı düzenlemek gerekmez.
+ */
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+/* ============================================
+   RESET & BOX MODEL
+   ============================================ */
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
+/* ============================================
+   CSS CUSTOM PROPERTIES — TASARIM SİSTEMİ
+   ============================================ */
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+:root {
+  /* --- Renk Paleti (Koyu Tema) --- */
+  --color-bg:              #0a0a1a;
+  --color-bg-secondary:    #12122a;
+  --color-surface:         rgba(255, 255, 255, 0.05);
+  --color-surface-hover:   rgba(255, 255, 255, 0.10);
+  --color-surface-active:  rgba(255, 255, 255, 0.15);
+
+  /* Metin */
+  --color-text-primary:    #e8e8f0;
+  --color-text-secondary:  #a0a0b8;
+  --color-text-muted:      #6a6a80;
+
+  /* Vurgu renkleri */
+  --color-accent:          #646cff;
+  --color-accent-hover:    #535bf2;
+  --color-accent-glow:     rgba(100, 108, 255, 0.25);
+
+  /* Kenarlıklar */
+  --color-border:          rgba(255, 255, 255, 0.08);
+  --color-border-hover:    rgba(255, 255, 255, 0.15);
+
+  /* Bar renkleri */
+  --color-bar-sleep:       #5b8def;
+  --color-bar-hunger:      #f0a030;
+  --color-bar-health:      #4caf50;
+  --color-bar-stress:      #ef5350;
+  --color-bar-money:       #66bb6a;
+  --color-bar-relationship:#e040fb;
+
+  /* Durum renkleri */
+  --color-success:         #4caf50;
+  --color-warning:         #ff9800;
+  --color-error:           #ef5350;
+  --color-info:            #29b6f6;
+
+  /* --- Tipografi --- */
+  --font-family-base:      'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-mono:      'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  --font-size-xs:          0.75rem;   /* 12px */
+  --font-size-sm:          0.875rem;  /* 14px */
+  --font-size-base:        1rem;      /* 16px */
+  --font-size-lg:          1.125rem;  /* 18px */
+  --font-size-xl:          1.5rem;    /* 24px */
+  --font-size-2xl:         2rem;      /* 32px */
+
+  --font-weight-normal:    400;
+  --font-weight-medium:    500;
+  --font-weight-semibold:  600;
+  --font-weight-bold:      700;
+
+  --line-height-tight:     1.2;
+  --line-height-normal:    1.5;
+  --line-height-relaxed:   1.75;
+
+  /* --- Boşluklar --- */
+  --space-xs:              0.25rem;
+  --space-sm:              0.5rem;
+  --space-md:              1rem;
+  --space-lg:              1.5rem;
+  --space-xl:              2rem;
+  --space-2xl:             3rem;
+
+  /* --- Köşe yuvarlaklıkları --- */
+  --radius-sm:             4px;
+  --radius-md:             8px;
+  --radius-lg:             12px;
+  --radius-xl:             16px;
+  --radius-full:           9999px;
+
+  /* --- Gölgeler --- */
+  --shadow-sm:             0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md:             0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg:             0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-glow:           0 0 20px var(--color-accent-glow);
+
+  /* --- Geçiş animasyonları --- */
+  --transition-fast:       0.15s ease;
+  --transition-normal:     0.25s ease;
+  --transition-slow:       0.4s ease;
+
+  /* --- Z-index katmanları --- */
+  --z-base:                1;
+  --z-dropdown:            100;
+  --z-modal:               200;
+  --z-toast:               300;
+  --z-tooltip:             400;
+}
+
+/* ============================================
+   GLOBAL STİLLER
+   ============================================ */
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  margin: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+  min-height: 100vh;
 }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+  min-height: 100vh;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+/* --- Scrollbar özelleştirme (WebKit) --- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+::-webkit-scrollbar-thumb {
+  background: var(--color-text-muted);
+  border-radius: var(--radius-full);
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* --- Seçim rengi --- */
+::selection {
+  background: var(--color-accent);
+  color: white;
+}
+
+/* --- Focus stilleri (erişilebilirlik) --- */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* --- Link reset --- */
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-accent-hover);
+}
+
+/* --- Buton reset --- */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
 }

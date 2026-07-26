@@ -13,7 +13,7 @@
 - [x] Sahne yönetim sistemi (SceneManager bileşeni) — hangi sahne aktif kontrol
 - [x] Boş HomeScene bileşeni (ev içi placeholder)
 - [x] Temel uygulama kabuğu (App.jsx) — SceneManager entegrasyonu
-- [ ] Temel CSS tasarım sistemi (renk paleti, tipografi, değişkenler)
+- [x] Temel CSS tasarım sistemi (renk paleti, tipografi, değişkenler)
 - [ ] .gitignore, .env.example, package.json düzenlemesi
 - [ ] Git repo başlatma ve ilk commit
 
