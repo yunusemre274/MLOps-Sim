@@ -1,25 +1,27 @@
-# HANDOFF — Son Güncelleme: 2026-07-25
+# HANDOFF — Son Güncelleme: 2026-07-26
 
 ## Şu An Neredeyiz
 - Aktif Faz: Faz 0 - Temel İskelet
-- Son tamamlanan görev: Proje dokümantasyon altyapısı oluşturuldu (README.md, ROADMAP.md, CLAUDE.md, .claude/ klasörü, HANDOFF.md)
-- Son commit hash/mesajı: `[Kurulum] İlk HANDOFF.md oluşturuldu`
+- Son tamamlanan görev: Zustand ile merkezi GameState store kurulumu
+- Son commit: `[Faz 0] Zustand ile merkezi GameState store kurulumu`
+
+## Tamamlanan Görevler (Bu Session)
+1. ✅ React projesi oluşturma (Vite ile)
+2. ✅ Klasör yapısı oluşturma
+3. ✅ Zustand ile merkezi GameState store kurulumu
 
 ## Yarım Kalan İş (varsa)
-- Yok — dokümantasyon altyapısı tamamlandı, Faz 0 görevlerine henüz başlanmadı.
+- Yok — Görev 3 tamamlandı, Görev 4'e (SceneManager) henüz başlanmadı.
 
 ## Bir Sonraki Session'da Yapılacak İlk Şey
-- ROADMAP.md'nin Faz 0 bölümüne bak ve ilk görevden başla: "React projesi oluşturma (Vite ile)"
-- `npx create-vite` ile React projesi kurulmalı, ardından klasör yapısı oluşturulmalı.
+- Faz 0, Görev 4: Sahne yönetim sistemi (SceneManager bileşeni) oluşturma
 
 ## Bilinen Sorunlar / Dikkat Edilmesi Gerekenler
-- Henüz hiçbir kod yazılmadı — proje tamamen dokümantasyon aşamasında.
-- Git repo'su başlatılmış ve ilk commit'ler atılmış olmalı.
+- Vite scaffold `--overwrite` ile çalıştırıldığında mevcut dosyaları (README.md, ROADMAP.md vb.) sildi. Git checkout ile geri yüklendi. Gelecekte scaffold çalıştırırken dikkatli olunmalı.
+- `.oxlintrc.json` Vite'ın varsayılanı olarak geldi, şu an kullanılmıyor ama zararsız.
 
 ## Bu Session'da Alınan Önemli Kararlar
-- **State yönetimi:** Zustand tercih edildi (README.md'de belirtilen React + merkezi store yapısıyla uyumlu).
-- **Proje yapısı:** Vite + React tercih edildi (ağır oyun motoruna gerek yok).
-- **Dil politikası:** Kod ve değişken isimleri İngilizce, yorumlar ve dokümantasyon Türkçe.
-- **Commit disiplini:** Her ROADMAP görevi = 1 commit, faz sonlarında kapanış commit'i.
-- **Dosya yapısı:** src/components, src/scenes, src/store, src/engine, src/config, src/data, src/utils, public/assets, tests/ şeklinde organize edilecek.
-- **.claude/ klasörü:** RULES.md, CODE_QUALITY.md, 3 command prosedürü, 4 skill dosyası oluşturuldu.
+- Vite `--no-eslint` ile kuruldu (oxlint tercih edildi — Vite varsayılanı).
+- Zustand store, README.md Bölüm 10.1'deki GameState veri modeline birebir uygun kuruldu.
+- Store aksiyonları: setScene, updateBar, setBar, setTime, advanceDay, addMoney, spendMoney, updateRelationship, addCareerPoints, setRank, addToFridge, removeFromFridge, addEvent, togglePause, resetGame.
+- Bar sabitleri (decay rate vb.) store'da değil, gameBalance.config.js'te tanımlanacak (Faz 1'de).
