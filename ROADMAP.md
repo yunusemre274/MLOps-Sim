@@ -22,7 +22,7 @@
 ## Faz 1 — Bar Sistemi
 **Bu fazın çıkış kriteri:** Bar göstergelerinin ekranda görünmesi, zaman aktıkça veya etkileşim yapıldıkça barların doğru matematiksel formüllerle azalıp artması.
 
-- [ ] GameState store'a bar veri modeli ekleme (sleep, hunger, health, stress değerleri)
+- [x] GameState store'a bar veri modeli ekleme (sleep, hunger, health, stress değerleri)
 - [ ] gameBalance.config.js dosyası — tüm bar sabitleri (decay rate, etkileşim katsayıları, eşik değerleri)
 - [ ] Zaman ilerleme motoru (TimeEngine) — oyun saati, 16x hız hesaplama, tick mekanizması
 - [ ] Bar azalma/artma formülleri (barları birbirini etkileyen fonksiyonlar)
