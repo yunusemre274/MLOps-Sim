@@ -11,7 +11,7 @@
 - [x] Klasör yapısı oluşturma (src/components, src/scenes, src/store, src/data, src/engine, src/config, src/utils, public/assets)
 - [x] Zustand ile merkezi GameState store kurulumu
 - [x] Sahne yönetim sistemi (SceneManager bileşeni) — hangi sahne aktif kontrol
-- [ ] Boş HomeScene bileşeni (ev içi placeholder)
+- [x] Boş HomeScene bileşeni (ev içi placeholder)
 - [ ] Temel uygulama kabuğu (App.jsx) — SceneManager entegrasyonu
 - [ ] Temel CSS tasarım sistemi (renk paleti, tipografi, değişkenler)
 - [ ] .gitignore, .env.example, package.json düzenlemesi

@@ -2,26 +2,26 @@
 
 ## Şu An Neredeyiz
 - Aktif Faz: Faz 0 - Temel İskelet
-- Son tamamlanan görev: Zustand ile merkezi GameState store kurulumu
-- Son commit: `[Faz 0] Zustand ile merkezi GameState store kurulumu`
+- Son tamamlanan görev: Sahne yönetim sistemi (SceneManager bileşeni)
+- Son commit: `[Faz 0] Sahne yönetim sistemi (SceneManager bileşeni)`
 
 ## Tamamlanan Görevler (Bu Session)
 1. ✅ React projesi oluşturma (Vite ile)
 2. ✅ Klasör yapısı oluşturma
 3. ✅ Zustand ile merkezi GameState store kurulumu
+4. ✅ Sahne yönetim sistemi (SceneManager bileşeni)
 
 ## Yarım Kalan İş (varsa)
-- Yok — Görev 3 tamamlandı, Görev 4'e (SceneManager) henüz başlanmadı.
+- Yok — Görev 4 tamamlandı. HomeScene minimal placeholder olarak oluşturuldu (SceneManager bağımlılığı için). Görev 5'te detaylandırılacak.
 
 ## Bir Sonraki Session'da Yapılacak İlk Şey
-- Faz 0, Görev 4: Sahne yönetim sistemi (SceneManager bileşeni) oluşturma
+- Faz 0, Görev 5: Boş HomeScene bileşenini detaylandırma (ev içi placeholder UI)
 
 ## Bilinen Sorunlar / Dikkat Edilmesi Gerekenler
-- Vite scaffold `--overwrite` ile çalıştırıldığında mevcut dosyaları (README.md, ROADMAP.md vb.) sildi. Git checkout ile geri yüklendi. Gelecekte scaffold çalıştırırken dikkatli olunmalı.
-- `.oxlintrc.json` Vite'ın varsayılanı olarak geldi, şu an kullanılmıyor ama zararsız.
+- Vite scaffold `--overwrite` ile mevcut dosyaları silmişti, git checkout ile geri yüklendi.
+- HomeScene şu an minimal placeholder — Görev 5'te tıklanabilir alan layout'u eklenecek.
 
 ## Bu Session'da Alınan Önemli Kararlar
-- Vite `--no-eslint` ile kuruldu (oxlint tercih edildi — Vite varsayılanı).
-- Zustand store, README.md Bölüm 10.1'deki GameState veri modeline birebir uygun kuruldu.
-- Store aksiyonları: setScene, updateBar, setBar, setTime, advanceDay, addMoney, spendMoney, updateRelationship, addCareerPoints, setRank, addToFridge, removeFromFridge, addEvent, togglePause, resetGame.
-- Bar sabitleri (decay rate vb.) store'da değil, gameBalance.config.js'te tanımlanacak (Faz 1'de).
+- SceneManager SCENE_MAP pattern'i kullanıyor — yeni sahne eklemek için sadece import + map kaydı yeterli.
+- SceneManager bilinmeyen sahne için hata yerine kullanıcıya görsel uyarı gösteriyor.
+- HomeScene placeholder olarak oluşturuldu ki SceneManager commit'i tek başına çalışır olsun.
