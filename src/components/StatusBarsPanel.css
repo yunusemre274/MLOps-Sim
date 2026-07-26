@@ -1,0 +1,77 @@
+/**
+ * StatusBarsPanel.css — Üst panel stilleri
+ */
+
+.status-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-base);
+}
+
+.status-panel__bars {
+  display: flex;
+  gap: var(--space-lg);
+  flex: 1;
+}
+
+.status-panel__info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  flex-shrink: 0;
+}
+
+/* Para göstergesi */
+.status-panel__money {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+}
+
+.status-panel__money-icon {
+  font-size: 1rem;
+}
+
+.status-panel__money-value {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-bar-money);
+}
+
+/* Saat/gün göstergesi */
+.status-panel__time {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+}
+
+.status-panel__time-icon {
+  font-size: 1rem;
+}
+
+.status-panel__time-value {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.status-panel__day {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-left: var(--space-xs);
+}
