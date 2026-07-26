@@ -25,7 +25,7 @@
 - [x] GameState store'a bar veri modeli ekleme (sleep, hunger, health, stress değerleri)
 - [x] gameBalance.config.js dosyası — tüm bar sabitleri (decay rate, etkileşim katsayıları, eşik değerleri)
 - [x] Zaman ilerleme motoru (TimeEngine) — oyun saati, 16x hız hesaplama, tick mekanizması
-- [ ] Bar azalma/artma formülleri (barları birbirini etkileyen fonksiyonlar)
+- [x] Bar azalma/artma formülleri (barları birbirini etkileyen fonksiyonlar)
 - [ ] StatusBar UI bileşeni — tek bir barın görsel gösterimi (animasyonlu doluluk çubuğu)
 - [ ] StatusBarsPanel bileşeni — tüm barları gösteren üst panel
 - [ ] Para göstergesi UI bileşeni
