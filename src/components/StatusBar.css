@@ -1,0 +1,76 @@
+/**
+ * StatusBar.css — Bar gösterge stilleri
+ */
+
+.status-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.status-bar__header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-xs);
+}
+
+.status-bar__icon {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.status-bar__label {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.status-bar__value {
+  margin-left: auto;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.status-bar__track {
+  height: 6px;
+  background: var(--color-surface);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.status-bar__fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--transition-normal);
+}
+
+/* Bar renkleri */
+.status-bar__fill--sleep  { background: var(--color-bar-sleep); }
+.status-bar__fill--hunger { background: var(--color-bar-hunger); }
+.status-bar__fill--health { background: var(--color-bar-health); }
+.status-bar__fill--stress { background: var(--color-bar-stress); }
+
+/* Durum bazlı efektler */
+.status-bar--critical .status-bar__value {
+  color: var(--color-error);
+  font-weight: var(--font-weight-bold);
+}
+
+.status-bar--critical .status-bar__fill {
+  animation: pulse-bar 1s ease-in-out infinite;
+}
+
+.status-bar--low .status-bar__value {
+  color: var(--color-warning);
+}
+
+.status-bar--good .status-bar__value {
+  color: var(--color-success);
+}
+
+@keyframes pulse-bar {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

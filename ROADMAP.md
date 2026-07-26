@@ -26,7 +26,7 @@
 - [x] gameBalance.config.js dosyası — tüm bar sabitleri (decay rate, etkileşim katsayıları, eşik değerleri)
 - [x] Zaman ilerleme motoru (TimeEngine) — oyun saati, 16x hız hesaplama, tick mekanizması
 - [x] Bar azalma/artma formülleri (barları birbirini etkileyen fonksiyonlar)
-- [ ] StatusBar UI bileşeni — tek bir barın görsel gösterimi (animasyonlu doluluk çubuğu)
+- [x] StatusBar UI bileşeni — tek bir barın görsel gösterimi (animasyonlu doluluk çubuğu)
 - [ ] StatusBarsPanel bileşeni — tüm barları gösteren üst panel
 - [ ] Para göstergesi UI bileşeni
 - [ ] Zaman/saat göstergesi UI bileşeni
