@@ -23,7 +23,7 @@
 **Bu fazın çıkış kriteri:** Bar göstergelerinin ekranda görünmesi, zaman aktıkça veya etkileşim yapıldıkça barların doğru matematiksel formüllerle azalıp artması.
 
 - [x] GameState store'a bar veri modeli ekleme (sleep, hunger, health, stress değerleri)
-- [ ] gameBalance.config.js dosyası — tüm bar sabitleri (decay rate, etkileşim katsayıları, eşik değerleri)
+- [x] gameBalance.config.js dosyası — tüm bar sabitleri (decay rate, etkileşim katsayıları, eşik değerleri)
 - [ ] Zaman ilerleme motoru (TimeEngine) — oyun saati, 16x hız hesaplama, tick mekanizması
 - [ ] Bar azalma/artma formülleri (barları birbirini etkileyen fonksiyonlar)
 - [ ] StatusBar UI bileşeni — tek bir barın görsel gösterimi (animasyonlu doluluk çubuğu)
