@@ -7,7 +7,7 @@
 ## Faz 0 — Temel İskelet
 **Bu fazın çıkış kriteri:** Uygulamanın başarıyla derlenmesi, boş bir ekran açılması ve GitHub'a ilk commit'in atılmış olması.
 
-- [ ] React projesi oluşturma (Vite ile)
+- [x] React projesi oluşturma (Vite ile)
 - [ ] Klasör yapısı oluşturma (src/components, src/scenes, src/store, src/data, src/engine, src/config, src/utils, public/assets)
 - [ ] Zustand ile merkezi GameState store kurulumu
 - [ ] Sahne yönetim sistemi (SceneManager bileşeni) — hangi sahne aktif kontrol
