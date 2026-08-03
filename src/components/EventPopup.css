@@ -1,0 +1,113 @@
+/**
+ * EventPopup.css — NPC karşılaşma pop-up stilleri
+ */
+
+.event-popup {
+  max-width: 440px;
+}
+
+.event-popup__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.event-popup__avatar {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.event-popup__info {
+  flex: 1;
+}
+
+.event-popup__info h3 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.event-popup__profession {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.event-popup__body {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.event-popup__dialogue {
+  font-style: italic;
+  color: var(--color-text-secondary);
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-accent);
+  line-height: var(--line-height-relaxed);
+}
+
+.event-popup__transition {
+  text-align: center;
+  padding: var(--space-sm);
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: var(--radius-md);
+  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
+  animation: slideUp var(--transition-normal);
+}
+
+.event-popup__options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.event-popup__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.event-popup__option:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  background: var(--color-surface-hover);
+}
+
+.event-popup__option--chosen {
+  border-color: var(--color-accent);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.event-popup__option:disabled {
+  opacity: 0.5;
+}
+
+.event-popup__time {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.event-popup__done {
+  align-self: center;
+  padding: var(--space-sm) var(--space-xl);
+  background: var(--color-accent);
+  color: white;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
+  transition: background var(--transition-fast);
+}
+
+.event-popup__done:hover {
+  background: var(--color-accent-hover);
+}

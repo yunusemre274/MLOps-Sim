@@ -3,11 +3,14 @@
  *
  * Tüm mekanlar (park, pub, sinema, galeri) bu bileşeni kullanır.
  * Mekan bilgisi prop olarak gelir, "Ziyaret Et" butonu ile efektler uygulanır.
+ * Ziyaret sonrasında NPC karşılaşma olasılığı hesaplanır.
  */
 
 import { useState } from 'react';
 import useGameStore from '../store/useGameStore';
 import { visitLocation } from '../engine/LocationEngine';
+import { rollEncounter } from '../engine/EventEngine';
+import EventPopup from '../components/EventPopup';
 import './LocationScene.css';
 
 export default function LocationScene({
@@ -23,6 +26,7 @@ export default function LocationScene({
   const balance = useGameStore((s) => s.finance.balance);
   const [message, setMessage] = useState(null);
   const [visited, setVisited] = useState(false);
+  const [encounterNPC, setEncounterNPC] = useState(null);
 
   const canAfford = !cost || balance >= cost;
 
@@ -31,8 +35,15 @@ export default function LocationScene({
     setMessage(result.message);
     if (result.success) {
       setVisited(true);
+
+      // NPC karşılaşma kontrolü
+      const state = useGameStore.getState();
+      const npc = rollEncounter(locationId, state.relationships, state.dayCount);
+      if (npc) {
+        setEncounterNPC(npc);
+      }
+
       if (result.dayEnded) {
-        // Gün bitti — eve dön tetiklenecek
         setTimeout(() => setScene('home'), 1500);
       }
     }
@@ -89,6 +100,14 @@ export default function LocationScene({
           </button>
         )}
       </div>
+
+      {/* NPC Karşılaşma Pop-up */}
+      {encounterNPC && (
+        <EventPopup
+          npc={encounterNPC}
+          onClose={() => setEncounterNPC(null)}
+        />
+      )}
     </div>
   );
 }

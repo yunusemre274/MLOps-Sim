@@ -1,27 +1,125 @@
 /**
- * PhoneScene.jsx — Telefon sahnesi (placeholder)
- * Faz 4'te NPC mesajlaşma, Faz 10'da genişletilecek.
+ * PhoneScene.jsx — Telefon sahnesi
+ *
+ * NPC kontakt listesi ve profil görüntüleme.
+ * Sadece daha önce tanışılmış NPC'ler görünür.
  */
 
+import { useState } from 'react';
 import useGameStore from '../store/useGameStore';
+import npcs from '../data/npcs.json';
+import { getRelationshipStatus } from '../engine/EventEngine';
+import MarketScene from './MarketScene';
+import './PhoneScene.css';
+
+const STATUS_LABELS = {
+  stranger: 'Yabancı',
+  acquaintance: 'Tanıdık',
+  friend: 'Arkadaş',
+  closeFriend: 'Yakın Arkadaş',
+  bestFriend: 'En İyi Arkadaş',
+};
 
 export default function PhoneScene() {
   const setScene = useGameStore((s) => s.setScene);
+  const relationships = useGameStore((s) => s.relationships);
+  const [activeTab, setActiveTab] = useState('contacts');
+  const [selectedNPC, setSelectedNPC] = useState(null);
+
+  // Sadece tanışılmış NPC'ler
+  const knownNPCs = npcs.filter(
+    (npc) => relationships[npc.id] && relationships[npc.id].level > 0
+  );
+
+  if (activeTab === 'market') {
+    return <MarketScene isOnline />;
+  }
 
   return (
     <div className="scene scene--phone">
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h2>📱 Telefon</h2>
-        <p style={{ color: 'var(--color-text-muted)', marginTop: '1rem' }}>
-          Mesajlaşma ve uygulamalar Faz 4'te eklenecek.
-        </p>
-        <button
-          style={{ marginTop: '2rem', padding: '0.5rem 1.5rem', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '8px', color: 'var(--color-text-primary)', cursor: 'pointer' }}
-          onClick={() => setScene('home')}
-        >
+      <div className="phone-header">
+        <button className="location-back" onClick={() => setScene('home')}>
           ← Eve Dön
         </button>
+        <h2>📱 Telefon</h2>
       </div>
+
+      <div className="phone-tabs">
+        <button
+          className={`phone-tab ${activeTab === 'contacts' ? 'phone-tab--active' : ''}`}
+          onClick={() => { setActiveTab('contacts'); setSelectedNPC(null); }}
+        >
+          👥 Rehber
+        </button>
+        <button
+          className={`phone-tab ${activeTab === 'market' ? 'phone-tab--active' : ''}`}
+          onClick={() => setActiveTab('market')}
+        >
+          📦 Online Market
+        </button>
+      </div>
+
+      {selectedNPC ? (
+        // NPC Profil detayı
+        <div className="phone-profile">
+          <button className="phone-profile__back" onClick={() => setSelectedNPC(null)}>
+            ← Rehber
+          </button>
+          <div className="phone-profile__header">
+            <span className="phone-profile__avatar">{selectedNPC.avatar}</span>
+            <h3>{selectedNPC.name}</h3>
+            <span className="phone-profile__profession">{selectedNPC.profession}</span>
+          </div>
+          <div className="phone-profile__stats">
+            <div className="phone-profile__stat">
+              <span>Kişilik</span>
+              <span>{selectedNPC.personality}</span>
+            </div>
+            <div className="phone-profile__stat">
+              <span>İlişki Seviyesi</span>
+              <span>{relationships[selectedNPC.id]?.level || 0}/100</span>
+            </div>
+            <div className="phone-profile__stat">
+              <span>Durum</span>
+              <span>{STATUS_LABELS[getRelationshipStatus(relationships[selectedNPC.id]?.level || 0)]}</span>
+            </div>
+            <div className="phone-profile__stat">
+              <span>Buluşma Yerleri</span>
+              <span>{selectedNPC.locations.join(', ')}</span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        // Rehber listesi
+        <div className="phone-contacts">
+          {knownNPCs.length === 0 ? (
+            <div className="phone-empty">
+              <span>📭</span>
+              <p>Henüz kimseyle tanışmadın.</p>
+              <p className="phone-hint">Dışarı çık ve mekanları ziyaret et!</p>
+            </div>
+          ) : (
+            knownNPCs.map((npc) => {
+              const rel = relationships[npc.id];
+              const status = getRelationshipStatus(rel.level);
+              return (
+                <button
+                  key={npc.id}
+                  className="phone-contact"
+                  onClick={() => setSelectedNPC(npc)}
+                >
+                  <span className="phone-contact__avatar">{npc.avatar}</span>
+                  <div className="phone-contact__info">
+                    <span className="phone-contact__name">{npc.name}</span>
+                    <span className="phone-contact__status">{STATUS_LABELS[status]}</span>
+                  </div>
+                  <span className="phone-contact__level">{rel.level}</span>
+                </button>
+              );
+            })
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,138 @@
+[
+  {
+    "id": "ayse",
+    "name": "Ayşe",
+    "gender": "f",
+    "personality": "friendly",
+    "profession": "Frontend Developer",
+    "locations": ["park", "gallery", "cinema"],
+    "greeting": "Merhaba! Sen de mi buralısın?",
+    "avatar": "👩‍💻",
+    "topics": {
+      "stranger":     ["Hava güzel bugün, değil mi?"],
+      "acquaintance": ["React mı Vue mu? Tartışalım!", "CSS Grid ile her şeyi çözerim."],
+      "friend":       ["Bir projede yardım ister misin?", "Kahve içelim mi?"],
+      "closeFriend":  ["Sana bir iş fırsatı söyleyeceğim.", "Bugün moralim bozuk..."]
+    },
+    "eventPool": ["meet_ayse", "ayse_coffee", "ayse_job_referral"]
+  },
+  {
+    "id": "mehmet",
+    "name": "Mehmet",
+    "gender": "m",
+    "personality": "ambitious",
+    "profession": "DevOps Engineer",
+    "locations": ["pub", "park"],
+    "greeting": "Selam, yeni mi tanışıyoruz?",
+    "avatar": "👨‍🔧",
+    "topics": {
+      "stranger":     ["Kubernetes öğrenmeye çalışıyorum."],
+      "acquaintance": ["CI/CD pipeline kurmak sanıldığı kadar zor değil."],
+      "friend":       ["Docker Compose ile bir şeyler deneyelim mi?"],
+      "closeFriend":  ["Startup kurmayı düşünüyorum, ortak olur musun?"]
+    },
+    "eventPool": ["meet_mehmet", "mehmet_docker_tip", "mehmet_startup"]
+  },
+  {
+    "id": "zeynep",
+    "name": "Zeynep",
+    "gender": "f",
+    "personality": "creative",
+    "profession": "UX Designer",
+    "locations": ["gallery", "cinema", "park"],
+    "greeting": "Hey! Sanat sergisi güzel değil mi?",
+    "avatar": "👩‍🎨",
+    "topics": {
+      "stranger":     ["Bu galeri benim favorim."],
+      "acquaintance": ["Figma'da yeni bir plugin denedim, harika!"],
+      "friend":       ["Portfolio'na baktım, güzel işler yapmışsın."],
+      "closeFriend":  ["Birlikte bir side-project yapalım mı?"]
+    },
+    "eventPool": ["meet_zeynep", "zeynep_design_collab", "zeynep_portfolio"]
+  },
+  {
+    "id": "burak",
+    "name": "Burak",
+    "gender": "m",
+    "personality": "analytical",
+    "profession": "Data Scientist",
+    "locations": ["pub", "cinema"],
+    "greeting": "Merhaba, istatistiksel olarak burada tanışma olasılığımız %23'tü.",
+    "avatar": "🧑‍🔬",
+    "topics": {
+      "stranger":     ["Veri analitiği hakkında ne düşünüyorsun?"],
+      "acquaintance": ["MLflow ile model tracking yapıyor musun?"],
+      "friend":       ["Bir Kaggle yarışmasına birlikte girelim mi?"],
+      "closeFriend":  ["Seninle bir ML projesi yapmak istiyorum."]
+    },
+    "eventPool": ["meet_burak", "burak_ml_challenge", "burak_dataset"]
+  },
+  {
+    "id": "elif",
+    "name": "Elif",
+    "gender": "f",
+    "personality": "reserved",
+    "profession": "Backend Developer",
+    "locations": ["park", "gallery"],
+    "greeting": "Ah, merhaba...",
+    "avatar": "👩‍💼",
+    "topics": {
+      "stranger":     ["..."],
+      "acquaintance": ["Go ile microservice yazıyorum son zamanlarda."],
+      "friend":       ["Sana bir debugging trick göstereyim."],
+      "closeFriend":  ["Aslında yurt dışına taşınmayı düşünüyorum."]
+    },
+    "eventPool": ["meet_elif", "elif_debug_help", "elif_abroad"]
+  },
+  {
+    "id": "can",
+    "name": "Can",
+    "gender": "m",
+    "personality": "adventurous",
+    "profession": "Freelance Consultant",
+    "locations": ["pub", "park", "cinema"],
+    "greeting": "Eyyy! Ne yapıyorsun burada?",
+    "avatar": "🧑‍🎤",
+    "topics": {
+      "stranger":     ["Freelance hayat zor ama özgür!"],
+      "acquaintance": ["Hangi cloud provider kullanıyorsun?"],
+      "friend":       ["Bir müşterime seni önerebilirim."],
+      "closeFriend":  ["Beraber bir şirket kursak nasıl olur?"]
+    },
+    "eventPool": ["meet_can", "can_freelance_tip", "can_client_referral"]
+  },
+  {
+    "id": "selin",
+    "name": "Selin",
+    "gender": "f",
+    "personality": "ambitious",
+    "profession": "Product Manager",
+    "locations": ["cinema", "gallery", "pub"],
+    "greeting": "Merhaba! PM olarak çalışıyorum, sen?",
+    "avatar": "👩‍💼",
+    "topics": {
+      "stranger":     ["Agile vs Waterfall — hangisini tercih edersin?"],
+      "acquaintance": ["Sprint planning nasıl gidiyor?"],
+      "friend":       ["Seni bir hackathon'a davet etmek istiyorum."],
+      "closeFriend":  ["Benim takıma geçmek ister misin?"]
+    },
+    "eventPool": ["meet_selin", "selin_hackathon", "selin_team_invite"]
+  },
+  {
+    "id": "emre",
+    "name": "Emre",
+    "gender": "m",
+    "personality": "friendly",
+    "profession": "SRE / Platform Engineer",
+    "locations": ["park", "pub"],
+    "greeting": "Selam! Terraform ile uğraşıyor musun sen de?",
+    "avatar": "👨‍💻",
+    "topics": {
+      "stranger":     ["Monitoring stack'in ne?"],
+      "acquaintance": ["Prometheus + Grafana mı, Datadog mu?"],
+      "friend":       ["On-call nöbetleri yüzünden uyuyamıyorum."],
+      "closeFriend":  ["Sana bir SRE pozisyonu ayarlayabilirim."]
+    },
+    "eventPool": ["meet_emre", "emre_monitoring_tip", "emre_job_offer"]
+  }
+]

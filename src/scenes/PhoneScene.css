@@ -1,0 +1,121 @@
+/**
+ * PhoneScene.css — Telefon sahnesi stilleri
+ */
+
+.scene--phone {
+  padding: var(--space-lg);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.phone-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+
+.phone-tabs {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
+}
+
+.phone-tab {
+  flex: 1;
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.phone-tab--active {
+  background: var(--color-accent);
+  color: white;
+  border-color: var(--color-accent);
+}
+
+/* Rehber */
+.phone-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.phone-contact {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  transition: all var(--transition-fast);
+  text-align: left;
+  color: var(--color-text-primary);
+}
+
+.phone-contact:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-accent);
+}
+
+.phone-contact__avatar { font-size: 1.5rem; }
+.phone-contact__info { flex: 1; display: flex; flex-direction: column; }
+.phone-contact__name { font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm); }
+.phone-contact__status { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.phone-contact__level {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-accent);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Boş durum */
+.phone-empty {
+  text-align: center;
+  padding: var(--space-xl) 0;
+  color: var(--color-text-muted);
+}
+.phone-empty span { font-size: 2.5rem; display: block; margin-bottom: var(--space-md); }
+.phone-hint { font-size: var(--font-size-sm); margin-top: var(--space-xs); }
+
+/* Profil */
+.phone-profile { display: flex; flex-direction: column; gap: var(--space-md); }
+.phone-profile__back {
+  align-self: flex-start;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  background: none;
+}
+.phone-profile__header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.phone-profile__avatar { font-size: 3rem; }
+.phone-profile__profession {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+.phone-profile__stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.phone-profile__stat {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+}
+.phone-profile__stat span:first-child { color: var(--color-text-muted); }
+.phone-profile__stat span:last-child { font-weight: var(--font-weight-semibold); }

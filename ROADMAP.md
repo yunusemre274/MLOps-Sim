@@ -72,16 +72,16 @@
 ## Faz 4 — NPC ve Sosyal Sistem
 **Bu fazın çıkış kriteri:** Dış mekan ziyaretlerinde rastgele NPC karşılaşmalarının gerçekleşmesi, olay zincirlerinin çalışması ve ilişki barının değişmesi.
 
-- [ ] NPC veri şeması tanımlama (JSON yapısı)
-- [ ] İlk 8 NPC JSON dosyası oluşturma (4 kadın, 4 erkek — çeşitli kişilikler ve meslekler)
-- [ ] İlişki barı sistemi — NPC bazlı seviye takibi GameState'te
-- [ ] Olay motoru (EventEngine) — koşul kontrolü, olasılık hesaplama, cooldown yönetimi
-- [ ] Olay zinciri çalıştırıcı — adım adım diyalog gösterimi, seçenek sunumu, efekt uygulama
-- [ ] EventPopup UI bileşeni — NPC karşılaşma pop-up'ı (mesaj + seçenekler)
-- [ ] Mekan bazlı NPC havuzu — her mekana özel NPC karşılaşma olasılıkları
-- [ ] İlk olay seti (en az 15 olay JSON dosyası — tanışma, selamlaşma, borç, kahve daveti, iş referansı)
-- [ ] NPC profil görüntüleme ekranı (telefonda veya karşılaşmada)
-- [ ] İlişki seviyesi geçiş bildirimleri (yabancı→tanıdık→arkadaş→yakın arkadaş)
+- [x] NPC veri şeması tanımlama (JSON yapısı)
+- [x] İlk 8 NPC JSON dosyası oluşturma (4 kadın, 4 erkek — çeşitli kişilikler ve meslekler)
+- [x] İlişki barı sistemi — NPC bazlı seviye takibi GameState'te
+- [x] Olay motoru (EventEngine) — koşul kontrolü, olasılık hesaplama, cooldown yönetimi
+- [x] Olay zinciri çalıştırıcı — adım adım diyalog gösterimi, seçenek sunumu, efekt uygulama
+- [x] EventPopup UI bileşeni — NPC karşılaşma pop-up'ı (mesaj + seçenekler)
+- [x] Mekan bazlı NPC havuzu — her mekana özel NPC karşılaşma olasılıkları
+- [x] İlk olay seti (en az 15 olay JSON dosyası — tanışma, selamlaşma, borç, kahve daveti, iş referansı)
+- [x] NPC profil görüntüleme ekranı (telefonda veya karşılaşmada)
+- [x] İlişki seviyesi geçiş bildirimleri (yabancı→tanıdık→arkadaş→yakın arkadaş)
 
 ---
 
