@@ -30,7 +30,7 @@
 - [x] StatusBarsPanel bileşeni — tüm barları gösteren üst panel
 - [x] Para göstergesi UI bileşeni
 - [x] Zaman/saat göstergesi UI bileşeni
-- [ ] Bar etkileşim testleri (birim testleri — bar formüllerinin doğruluğu)
+- [x] Bar etkileşim testleri (birim testleri — bar formüllerinin doğruluğu)
 
 ---
 
