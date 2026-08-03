@@ -1,27 +1,26 @@
 # HANDOFF — Son Güncelleme: 2026-08-03
 
 ## Şu An Neredeyiz
-- Aktif Faz: Faz 1 - Bar Sistemi
-- Son tamamlanan görev: StatusBarsPanel — barlar, para ve saat göstergeleri + App.jsx entegrasyonu
-- Son commit: `[Faz 1] StatusBarsPanel — barlar, para ve saat göstergeleri + App.jsx entegrasyonu`
+- Aktif Faz: Faz 2 - Etkileşim Sistemi (henüz başlanmadı)
+- Son tamamlanan faz: Faz 1 - Bar Sistemi ✅
+- Son commit: `[Faz 1 TAMAMLANDI] Bar sistemi: GameState bars, gameBalance config, TimeEngine, BarEngine, StatusBar/Panel UI, 43 birim testi`
 
-## Tamamlanan Görevler (Faz 1)
-1. ✅ GameState store'a bar veri modeli ekleme
-2. ✅ gameBalance.config.js — tüm bar sabitleri ve denge değerleri
-3. ✅ Zaman ilerleme motoru (TimeEngine)
-4. ✅ Bar azalma/artma formülleri (BarEngine — çapraz etkiler dahil)
-5. ✅ StatusBar UI bileşeni — animasyonlu doluluk çubuğu
-6. ✅ StatusBarsPanel bileşeni — barlar + para + saat göstergeleri
-7. ✅ Para göstergesi UI bileşeni
-8. ✅ Zaman/saat göstergesi UI bileşeni
+## Faz 1 Çıkış Kriteri Doğrulaması
+- ✅ Bar göstergeleri ekranda görünüyor (StatusBarsPanel → 4 bar + para + saat)
+- ✅ Zaman aktıkça barlar matematiksel formüllerle azalıp artıyor (TimeEngine tick loop)
+- ✅ Çapraz etkiler çalışıyor (uyku↔stres, açlık↔sağlık, sağlık→global)
+- ✅ 43/43 birim testi geçiyor (BarEngine: 20, TimeEngine: 23)
 
 ## Yarım Kalan İş
-- Faz 1, Görev 9: Bar etkileşim testleri — vitest kuruldu, testler henüz yazılmadı.
+- Yok — Faz 1 tamamen tamamlandı.
 
-## Bir Sonraki Adım
-- Bar etkileşim birim testlerini yaz (BarEngine + TimeEngine)
-- Faz 1'i tamamla ve Faz 2'ye geç
+## Bir Sonraki Session'da Yapılacak İlk Şey
+- ROADMAP.md'nin Faz 2 bölümünü oku ve ilk göreve başla
 
 ## Bilinen Sorunlar / Dikkat Edilmesi Gerekenler
-- vitest 4.1.10 kurulu ve çalışıyor.
-- HANDOFF önceki session'da güncellenmemişti (Görev 3-8 arası) — şimdi düzeltildi.
+- DECAY_RATES.stress = -0.3 (negatif) → stres doğal olarak yavaşça ARTAR (hareketsiz karakter stresli). Bu tasarım kararı, etkileşim (park, pub vb.) ile stresin azaltılmasını teşvik eder.
+- vitest 4.1.10 kurulu ve çalışıyor. Test script'leri: `npm test` veya `npm run test:watch`.
+
+## Bu Session'da Alınan Önemli Kararlar
+- Stres decay mantığı: negatif rate = doğal artış (hareketsizlik stres yaratır). Mekan ziyaretleri ve etkileşimlerle düşürülür.
+- Test coverage: BarEngine (calculateBarDecay, applyInteraction, getBarStatus) + TimeEngine (timeToMinutes, minutesToTime, advanceTime, isNightTime, getTimePeriod).

@@ -10,15 +10,18 @@
 
 import useGameStore from '../store/useGameStore';
 import HomeScene from '../scenes/HomeScene';
+import ComputerScene from '../scenes/ComputerScene';
+import PhoneScene from '../scenes/PhoneScene';
+import OutdoorMenuScene from '../scenes/OutdoorMenuScene';
 
 // Sahne adı → bileşen eşlemesi
 // Yeni sahneler eklendikçe buraya import + kayıt yapılır
 const SCENE_MAP = {
   home: HomeScene,
+  computer: ComputerScene,
+  phone: PhoneScene,
+  outdoor: OutdoorMenuScene,
   // Gelecekte eklenecek:
-  // computer: ComputerScene,
-  // phone: PhoneScene,
-  // outdoor: OutdoorMenuScene,
   // market: MarketScene,
   // park: ParkScene,
   // pub: PubScene,

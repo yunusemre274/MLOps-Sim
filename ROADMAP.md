@@ -37,17 +37,17 @@
 ## Faz 2 — Ev İçi Etkileşimler
 **Bu fazın çıkış kriteri:** Ev içindeki nesnelere tıklanabilmesi, barlara doğru etkilerin yansıması ve yatağa tıklanınca gün sonu özetinin açılması.
 
-- [ ] HomeScene layout — tıklanabilir kutucuk grid yapısı
-- [ ] InteractiveItem bileşeni — genel tıklanabilir kutucuk (ikon, isim, tıklama efekti)
-- [ ] Buzdolabı etkileşimi — envanter görüntüleme, yemek yeme, açlık barı etkisi
-- [ ] Yatak etkileşimi — uyuma aksiyonu, uyku barı doldurma, zaman ilerleme
-- [ ] Gün sonu özet ekranı (DaySummaryModal) — istatistikler, olaylar, kariyer puanı
-- [ ] Bilgisayar kutucuğu — ComputerScene'e geçiş (henüz boş sahne)
-- [ ] Telefon kutucuğu — PhoneScene'e geçiş (henüz boş sahne)
-- [ ] Dolap kutucuğu — placeholder gardırop UI
-- [ ] Kapı kutucuğu — OutdoorMenuScene'e geçiş
-- [ ] Buzdolabı boş uyarı pop-up sistemi
-- [ ] Envanter (buzdolabı stoku) veri modeli GameState'e ekleme
+- [x] HomeScene layout — tıklanabilir kutucuk grid yapısı
+- [x] InteractiveItem bileşeni — genel tıklanabilir kutucuk (ikon, isim, tıklama efekti)
+- [x] Buzdolabı etkileşimi — envanter görüntüleme, yemek yeme, açlık barı etkisi
+- [x] Yatak etkileşimi — uyuma aksiyonu, uyku barı doldurma, zaman ilerleme
+- [x] Gün sonu özet ekranı (DaySummaryModal) — istatistikler, olaylar, kariyer puanı
+- [x] Bilgisayar kutucuğu — ComputerScene'e geçiş (henüz boş sahne)
+- [x] Telefon kutucuğu — PhoneScene'e geçiş (henüz boş sahne)
+- [x] Dolap kutucuğu — placeholder gardırop UI
+- [x] Kapı kutucuğu — OutdoorMenuScene'e geçiş
+- [x] Buzdolabı boş uyarı pop-up sistemi
+- [x] Envanter (buzdolabı stoku) veri modeli GameState'e ekleme
 
 ---
 

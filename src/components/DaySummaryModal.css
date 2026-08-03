@@ -1,0 +1,76 @@
+/**
+ * DaySummaryModal.css — Gün sonu özet modal stilleri
+ */
+
+.day-summary-modal {
+  max-width: 520px;
+}
+
+.day-summary__section {
+  margin-bottom: var(--space-lg);
+}
+
+.day-summary__section h4 {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-sm);
+}
+
+.day-summary__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+}
+
+.day-summary__stat {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+}
+
+.day-summary__stat span:last-child {
+  font-family: var(--font-family-mono);
+  font-weight: var(--font-weight-semibold);
+}
+
+.day-summary__events {
+  list-style: none;
+  padding: 0;
+}
+
+.day-summary__events li {
+  padding: var(--space-xs) 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.day-summary__events li:last-child {
+  border-bottom: none;
+}
+
+.day-summary__footer {
+  padding: var(--space-lg);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: center;
+}
+
+.day-summary__next-btn {
+  padding: var(--space-sm) var(--space-xl);
+  background: var(--color-accent);
+  color: white;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
+  transition: background var(--transition-fast);
+}
+
+.day-summary__next-btn:hover {
+  background: var(--color-accent-hover);
+}
