@@ -1,0 +1,41 @@
+/**
+ * OutdoorMenuScene.css — Dışarı mekan seçim sahnesi stilleri
+ */
+
+.scene--outdoor {
+  padding: var(--space-lg);
+}
+
+.outdoor-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.outdoor-header h2 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+.outdoor-back {
+  padding: var(--space-xs) var(--space-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.outdoor-back:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.outdoor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space-md);
+  max-width: 700px;
+}

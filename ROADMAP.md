@@ -54,18 +54,18 @@
 ## Faz 3 — Dışarı ve Mekanlar
 **Bu fazın çıkış kriteri:** Kapıdan çıkılıp farklı mekanlara gidilebilmesi, her mekanın bar ve para üzerinde farklı etkiler yaratması.
 
-- [ ] OutdoorMenuScene — mekan seçim kartları (market, pub, sinema, park, galeri, emlakçı)
-- [ ] Mekan etkileşim motoru — mekan ziyaretinde bar efektlerini uygulayan fonksiyon
-- [ ] Market sahnesi — ürün listesi, satın alma, buzdolabına ekleme, para düşürme
-- [ ] Park sahnesi — ücretsiz stres azaltma, sağlık bonusu, zaman tüketimi
-- [ ] Pub sahnesi — pahalı, yüksek stres azaltma, sağlık malus, alkol mekaniği
-- [ ] Sinema sahnesi — orta maliyet, stres azaltma
-- [ ] Galeri sahnesi — orta maliyet, stres azaltma, kültür puanı
-- [ ] Emlakçı sahnesi — ev listeleme, ev yükseltme (barRecoveryMultiplier), kira güncelleme
-- [ ] Kilitli mekan gösterimi (Şirket, Plaza — 'kilitli' rozeti + açılma koşulları tooltip)
-- [ ] Online market (telefon üzerinden) — daha pahalı, zaman kazandıran alternatif
-- [ ] Sigara/alkol mekaniği — anlık stres azaltma, kümülatif sağlık malus, odak bonusu timer
-- [ ] Aylık kira ödeme sistemi (ay dönümünde otomatik düşüm)
+- [x] OutdoorMenuScene — mekan seçim kartları (market, pub, sinema, park, galeri, emlakçı)
+- [x] Mekan etkileşim motoru — mekan ziyaretinde bar efektlerini uygulayan fonksiyon
+- [x] Market sahnesi — ürün listesi, satın alma, buzdolabına ekleme, para düşürme
+- [x] Park sahnesi — ücretsiz stres azaltma, sağlık bonusu, zaman tüketimi
+- [x] Pub sahnesi — pahalı, yüksek stres azaltma, sağlık malus, alkol mekaniği
+- [x] Sinema sahnesi — orta maliyet, stres azaltma
+- [x] Galeri sahnesi — orta maliyet, stres azaltma, kültür puanı
+- [x] Emlakçı sahnesi — ev listeleme, ev yükseltme (barRecoveryMultiplier), kira güncelleme
+- [x] Kilitli mekan gösterimi (Şirket, Plaza — 'kilitli' rozeti + açılma koşulları tooltip)
+- [x] Online market (telefon üzerinden) — daha pahalı, zaman kazandıran alternatif
+- [x] Sigara/alkol mekaniği — anlık stres azaltma, kümülatif sağlık malus, odak bonusu timer
+- [x] Aylık kira ödeme sistemi (ay dönümünde otomatik düşüm)
 
 ---
 

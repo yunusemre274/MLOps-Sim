@@ -130,11 +130,26 @@ const useGameStore = create((set, get) => ({
   // === Zaman yönetimi ===
   setTime: (time) => set({ currentTime: time }),
   advanceDay: () =>
-    set((state) => ({
-      dayCount: state.dayCount + 1,
-      currentTime: '08:00',
-      todayEvents: [],
-    })),
+    set((state) => {
+      const newDay = state.dayCount + 1;
+      const updates = {
+        dayCount: newDay,
+        currentTime: '08:00',
+        todayEvents: [],
+      };
+
+      // Her 30 günde bir aylık kira ödemesi
+      if (newDay % 30 === 0) {
+        const rent = state.housing.monthlyRent;
+        updates.finance = {
+          ...state.finance,
+          balance: state.finance.balance - rent,
+        };
+        updates.todayEvents = [`💰 Aylık kira ödendi: ₺${rent}`];
+      }
+
+      return updates;
+    }),
 
   // === Finansal işlemler ===
   addMoney: (amount) =>

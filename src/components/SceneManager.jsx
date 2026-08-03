@@ -13,6 +13,12 @@ import HomeScene from '../scenes/HomeScene';
 import ComputerScene from '../scenes/ComputerScene';
 import PhoneScene from '../scenes/PhoneScene';
 import OutdoorMenuScene from '../scenes/OutdoorMenuScene';
+import MarketScene from '../scenes/MarketScene';
+import ParkScene from '../scenes/ParkScene';
+import PubScene from '../scenes/PubScene';
+import CinemaScene from '../scenes/CinemaScene';
+import GalleryScene from '../scenes/GalleryScene';
+import RealtorScene from '../scenes/RealtorScene';
 
 // Sahne adı → bileşen eşlemesi
 // Yeni sahneler eklendikçe buraya import + kayıt yapılır
@@ -21,13 +27,12 @@ const SCENE_MAP = {
   computer: ComputerScene,
   phone: PhoneScene,
   outdoor: OutdoorMenuScene,
-  // Gelecekte eklenecek:
-  // market: MarketScene,
-  // park: ParkScene,
-  // pub: PubScene,
-  // cinema: CinemaScene,
-  // gallery: GalleryScene,
-  // realtor: RealtorScene,
+  market: MarketScene,
+  park: ParkScene,
+  pub: PubScene,
+  cinema: CinemaScene,
+  gallery: GalleryScene,
+  realtor: RealtorScene,
 };
 
 export default function SceneManager() {

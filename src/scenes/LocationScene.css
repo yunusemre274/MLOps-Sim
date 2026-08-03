@@ -1,0 +1,143 @@
+/**
+ * LocationScene.css — Mekan sahnesi stilleri
+ */
+
+.scene--location {
+  padding: var(--space-lg);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.location-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.location-header h2 {
+  font-size: var(--font-size-xl);
+}
+
+.location-back {
+  padding: var(--space-xs) var(--space-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.location-back:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.location-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.location-desc {
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.location-effects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.location-effect {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  background: var(--color-surface);
+}
+
+.location-effect--positive {
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  color: var(--color-success);
+}
+
+.location-effect--negative {
+  border: 1px solid rgba(239, 83, 80, 0.3);
+  color: var(--color-error);
+}
+
+.location-meta {
+  display: flex;
+  gap: var(--space-md);
+  font-size: var(--font-size-sm);
+}
+
+.location-cost {
+  font-family: var(--font-family-mono);
+  font-weight: var(--font-weight-semibold);
+}
+
+.location-cost--free {
+  color: var(--color-success);
+}
+
+.location-cost--insufficient {
+  color: var(--color-error);
+}
+
+.location-duration {
+  color: var(--color-text-muted);
+}
+
+.location-message {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.location-message--success {
+  background: rgba(76, 175, 80, 0.15);
+  color: var(--color-success);
+}
+
+.location-message--error {
+  background: rgba(239, 83, 80, 0.15);
+  color: var(--color-error);
+}
+
+.location-visit-btn {
+  padding: var(--space-sm) var(--space-xl);
+  background: var(--color-accent);
+  color: white;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  transition: background var(--transition-fast);
+  align-self: center;
+}
+
+.location-visit-btn:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.location-visit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.location-visit-btn--done {
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.location-visit-btn--done:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
