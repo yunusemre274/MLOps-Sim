@@ -1,26 +1,53 @@
 /**
- * ComputerScene.jsx — Bilgisayar sahnesi (placeholder)
- * Faz 5'te terminal/editör/tarayıcı sekmeleri ile detaylandırılacak.
+ * ComputerScene.jsx — Bilgisayar sahnesi
+ *
+ * Üç sekme: Terminal, Editör, Tarayıcı
+ * Terminal: Komut satırı arayüzü (docker, git, ls, cd vb.)
+ * Editör: Dockerfile/YAML düzenleme
+ * Tarayıcı: localhost simülasyonu
  */
 
+import { useState } from 'react';
 import useGameStore from '../store/useGameStore';
+import TerminalTab from '../components/computer/TerminalTab';
+import EditorTab from '../components/computer/EditorTab';
+import BrowserTab from '../components/computer/BrowserTab';
+import './ComputerScene.css';
+
+const TABS = [
+  { id: 'terminal', icon: '⌨️', label: 'Terminal' },
+  { id: 'editor',   icon: '📝', label: 'Editör' },
+  { id: 'browser',  icon: '🌐', label: 'Tarayıcı' },
+];
 
 export default function ComputerScene() {
   const setScene = useGameStore((s) => s.setScene);
+  const [activeTab, setActiveTab] = useState('terminal');
 
   return (
     <div className="scene scene--computer">
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h2>💻 Bilgisayar</h2>
-        <p style={{ color: 'var(--color-text-muted)', marginTop: '1rem' }}>
-          Terminal ve editör Faz 5'te eklenecek.
-        </p>
-        <button
-          style={{ marginTop: '2rem', padding: '0.5rem 1.5rem', background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: '8px', color: 'var(--color-text-primary)', cursor: 'pointer' }}
-          onClick={() => setScene('home')}
-        >
+      <div className="computer-header">
+        <button className="computer-back" onClick={() => setScene('home')}>
           ← Eve Dön
         </button>
+        <div className="computer-tabs">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              className={`computer-tab ${activeTab === tab.id ? 'computer-tab--active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="computer-content">
+        {activeTab === 'terminal' && <TerminalTab />}
+        {activeTab === 'editor' && <EditorTab />}
+        {activeTab === 'browser' && <BrowserTab />}
       </div>
     </div>
   );

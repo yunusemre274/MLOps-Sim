@@ -88,20 +88,20 @@
 ## Faz 5 — Terminal ve Dockerfile Simülasyonu (kritik faz)
 **Bu fazın çıkış kriteri:** Bilgisayar ekranında terminal ve editörün açılması, `docker build` komutu yazıldığında simüle edilmiş log'ların akması ve AST parser'ın doğru çalışması.
 
-- [ ] ComputerScene layout — terminal/editör/tarayıcı sekmeleri
-- [ ] xterm.js entegrasyonu — terminal bileşeni, tema, font ayarları
-- [ ] Monaco Editor entegrasyonu — Dockerfile ve YAML syntax highlighting
-- [ ] Simüle dosya sistemi (VirtualFileSystem) — dizinler, dosyalar, içerikler
-- [ ] Temel terminal komutları (ls, cd, cat, mkdir, pwd, echo, touch, rm)
-- [ ] Git komut simülasyonu (git clone, git status, git add, git commit, git push, git pull)
-- [ ] Dockerfile parser — tokenizer ve AST üretici (FROM, RUN, COPY, WORKDIR, EXPOSE, CMD, USER, ENV, ARG, ENTRYPOINT, HEALTHCHECK)
-- [ ] Multi-stage build desteği (FROM ... AS name ayrıştırma)
-- [ ] Build log üretici — parser AST'sinden gerçekçi Docker build çıktısı oluşturma
-- [ ] Hata simülatörü — sözdizimi hataları, bilinmeyen direktifler, eksik base image hata mesajları
-- [ ] docker build komutu simülasyonu — Dockerfile okuma → parse → build log → sonuç
-- [ ] docker run komutu simülasyonu — container state yönetimi
-- [ ] Oyun içi tarayıcı bileşeni — localhost:PORT simülasyonu (başarı/hata sayfası)
-- [ ] Dockerfile parser birim testleri
+- [x] ComputerScene layout — terminal/editör/tarayıcı sekmeleri
+- [x] xterm.js entegrasyonu — terminal bileşeni, tema, font ayarları
+- [x] Monaco Editor entegrasyonu — Dockerfile ve YAML syntax highlighting
+- [x] Simüle dosya sistemi (VirtualFileSystem) — dizinler, dosyalar, içerikler
+- [x] Temel terminal komutları (ls, cd, cat, mkdir, pwd, echo, touch, rm)
+- [x] Git komut simülasyonu (git clone, git status, git add, git commit, git push, git pull)
+- [x] Dockerfile parser — tokenizer ve AST üretici (FROM, RUN, COPY, WORKDIR, EXPOSE, CMD, USER, ENV, ARG, ENTRYPOINT, HEALTHCHECK)
+- [x] Multi-stage build desteği (FROM ... AS name ayrıştırma)
+- [x] Build log üretici — parser AST’sinden gerçekçi Docker build çıktısı oluşturma
+- [x] Hata simülatörü — sözdizimi hataları, bilinmeyen direktifler, eksik base image hata mesajları
+- [x] docker build komutu simülasyonu — Dockerfile okuma → parse → build log → sonuç
+- [x] docker run komutu simülasyonu — container state yönetimi
+- [x] Oyun içi tarayıcı bileşeni — localhost:PORT simülasyonu (başarı/hata sayfası)
+- [x] Dockerfile parser birim testleri
 
 ---
 
