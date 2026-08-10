@@ -141,14 +141,14 @@
 ## Faz 8 — Orta ve İleri Görevler
 **Bu fazın çıkış kriteri:** `docker-compose.yml` dosyalarının ayrıştırılıp simüle edilmesi ve multi-container yapıların başarıyla test edilmesi.
 
-- [ ] Docker Compose parser — services, ports, volumes, networks, depends_on, env_file, deploy.resources ayrıştırma
-- [ ] Compose build log üretici — docker compose up simülasyonu
-- [ ] Aşama 3 içeriği — Dockerfile + Compose görevleri (tek servis, iki servisli), 4-6 görev
-- [ ] Aşama 4 içeriği — çoklu servis, network, resource limit görevleri, 5-8 görev
-- [ ] Aşama 5 içeriği — CI/CD YAML, temel K8s manifest görevleri, 5-8 görev
-- [ ] Compose hata simülasyonu — servis bağımlılık hataları, network tanım hataları
-- [ ] docker compose up/down komut simülasyonu
-- [ ] Tutorial Hub genişletme — docker_compose.md, kubernetes_basics.md, github_actions.md, cicd_concepts.md, security_best_practices.md
+- [x] Docker Compose parser — services, ports, volumes, networks, depends_on, env_file, deploy.resources ayrıştırma
+- [x] Compose build log üretici — docker compose up simülasyonu
+- [x] Aşama 3 içeriği — Dockerfile + Compose görevleri (tek servis, iki servisli), 4-6 görev
+- [x] Aşama 4 içeriği — çoklu servis, network, resource limit görevleri, 5-8 görev
+- [x] Aşama 5 içeriği — CI/CD YAML, temel K8s manifest görevleri, 5-8 görev
+- [x] Compose hata simülasyonu — servis bağımlılık hataları, network tanım hataları
+- [x] docker compose up/down komut simülasyonu
+- [x] Tutorial Hub genişletme — docker_compose.md, kubernetes_basics.md, github_actions.md, cicd_concepts.md, security_best_practices.md
 
 ---
 

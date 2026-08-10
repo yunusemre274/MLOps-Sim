@@ -9,12 +9,22 @@ import { useState } from 'react';
 import linuxBasics from '../../data/tutorials/linux_basics.md?raw';
 import dockerfileBasics from '../../data/tutorials/dockerfile_basics.md?raw';
 import multistageBuild from '../../data/tutorials/multistage_build.md?raw';
+import dockerCompose from '../../data/tutorials/docker_compose.md?raw';
+import kubernetesBs from '../../data/tutorials/kubernetes_basics.md?raw';
+import githubActions from '../../data/tutorials/github_actions.md?raw';
+import cicdConcepts from '../../data/tutorials/cicd_concepts.md?raw';
+import securityBP from '../../data/tutorials/security_best_practices.md?raw';
 import './TutorialHub.css';
 
 const TUTORIALS = [
-  { id: 'linux',      title: '🐧 Linux Temel Komutlar', content: linuxBasics },
-  { id: 'dockerfile', title: '🐳 Dockerfile Temelleri',  content: dockerfileBasics },
-  { id: 'multistage', title: '🏗️ Multi-Stage Build',     content: multistageBuild },
+  { id: 'linux',      title: '🐧 Linux Temel Komutlar',  content: linuxBasics },
+  { id: 'dockerfile', title: '🐳 Dockerfile Temelleri',   content: dockerfileBasics },
+  { id: 'multistage', title: '🏗️ Multi-Stage Build',      content: multistageBuild },
+  { id: 'compose',    title: '🐙 Docker Compose',         content: dockerCompose },
+  { id: 'k8s',        title: '☸️ Kubernetes Temelleri',    content: kubernetesBs },
+  { id: 'actions',    title: '⚙️ GitHub Actions CI/CD',   content: githubActions },
+  { id: 'cicd',       title: '🔄 CI/CD Kavramları',       content: cicdConcepts },
+  { id: 'security',   title: '🔒 Güvenlik Pratikleri',    content: securityBP },
 ];
 
 export default function TutorialHub() {

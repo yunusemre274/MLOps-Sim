@@ -6,6 +6,7 @@
  */
 
 import { simulateDockerBuild, dockerRun, dockerStop, dockerPs, dockerPsAll } from './DockerSimulator.js';
+import { parseCompose, generateComposeUpLogs, generateComposeDownLogs } from './ComposeParser.js';
 
 /**
  * Bir komut satırını çalıştırır.
@@ -90,7 +91,8 @@ export function executeCommand(input, vfs, gitState) {
         'Kullanılabilir komutlar:',
         '  pwd, ls, cd, cat, mkdir, touch, rm, echo, tree',
         '  git init/clone/status/add/commit/push/pull/log',
-        '  docker build/run/stop/ps',
+        '  docker build/run/stop/ps/images',
+        '  docker compose up/down',
         '  clear, help',
       ];
 
@@ -265,7 +267,61 @@ function handleDocker(args, vfs) {
         'app          latest    a1b2c3d4e5f6   125MB',
       ];
 
+    case 'compose':
+      return handleDockerCompose(args.slice(1), vfs);
+
     default:
       return [`docker: '${subcommand}' is not a docker command.`];
+  }
+}
+
+/**
+ * Docker Compose komutları
+ */
+function handleDockerCompose(args, vfs) {
+  const subcommand = args[0];
+  const composeFile = 'docker-compose.yml';
+
+  // Compose dosyasını oku
+  const catResult = vfs.cat(composeFile);
+  if (!catResult.success) {
+    return [`ERROR: Can't find a suitable configuration file. Tried: ${composeFile}`];
+  }
+
+  const { ast } = parseCompose(catResult.content);
+
+  if (ast.errors.length > 0) {
+    return [
+      `ERROR: docker-compose.yml hataları içeriyor:`,
+      ...ast.errors.map((e) => `  - ${e.message}`),
+    ];
+  }
+
+  switch (subcommand) {
+    case 'up':
+      return generateComposeUpLogs(ast);
+
+    case 'down':
+      return generateComposeDownLogs(ast);
+
+    case 'config':
+      return [
+        `services: ${Object.keys(ast.services).join(', ')}`,
+        `networks: ${Object.keys(ast.networks).join(', ') || '(default)'}`,
+        `volumes: ${Object.keys(ast.volumes).join(', ') || '(none)'}`,
+      ];
+
+    case 'ps': {
+      const names = Object.keys(ast.services);
+      if (names.length === 0) return ['No services'];
+      const lines = ['NAME              SERVICE           STATUS'];
+      for (const name of names) {
+        lines.push(`${(name + '_1').padEnd(18)}${name.padEnd(18)}running`);
+      }
+      return lines;
+    }
+
+    default:
+      return [`docker compose: '${subcommand}' is not a command. Use up, down, config, ps`];
   }
 }

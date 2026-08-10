@@ -6,7 +6,7 @@
     "industry": "SaaS Startup",
     "description": "Hızlı büyüyen bir SaaS startup'ı. ML modellerini üretime taşımak istiyorlar.",
     "requiredRank": "junior",
-    "availableMissions": ["ts_mission_1", "ts_mission_2", "ts_mission_3"]
+    "availableMissions": ["ts_mission_1", "ts_mission_2", "ts_mission_3", "ts_compose_1", "ts_compose_2", "ts_cicd_1", "ts_k8s_1"]
   },
   {
     "id": "dataforge_ltd",
@@ -15,7 +15,7 @@
     "industry": "Veri Mühendisliği",
     "description": "Büyük ölçekli veri pipeline'ları kuran bir mühendislik firması.",
     "requiredRank": "junior",
-    "availableMissions": ["df_mission_1", "df_mission_2"]
+    "availableMissions": ["df_mission_1", "df_mission_2", "df_compose_1", "df_compose_2", "df_cicd_1", "df_security_1"]
   },
   {
     "id": "cloudpeak_tech",
@@ -24,6 +24,6 @@
     "industry": "Cloud Danışmanlık",
     "description": "Kurumsal müşterilere cloud migration ve DevOps danışmanlığı yapıyorlar.",
     "requiredRank": "junior_plus",
-    "availableMissions": ["cp_mission_1", "cp_mission_2", "cp_mission_3"]
+    "availableMissions": ["cp_mission_1", "cp_mission_2", "cp_mission_3", "cp_compose_1", "cp_compose_2", "cp_k8s_1"]
   }
 ]

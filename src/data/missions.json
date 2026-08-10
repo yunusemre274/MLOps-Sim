@@ -219,5 +219,305 @@
       "Stage 2: Backend + serve (FROM node:18-alpine)",
       "Frontend çıktısını backend'e kopyala"
     ]
+  },
+  {
+    "id": "ts_compose_1",
+    "companyId": "techstart_co",
+    "title": "FastAPI + PostgreSQL Compose",
+    "description": "FastAPI uygulamasını PostgreSQL veritabanıyla birlikte docker-compose ile ayağa kaldır.",
+    "difficulty": 3,
+    "stage": 3,
+    "reward": { "money": 400, "careerPoints": 150, "monthlyMaintenance": 45 },
+    "timeLimit": 240,
+    "repoFiles": {
+      "app.py": "from fastapi import FastAPI\nimport os\n\napp = FastAPI()\nDB_URL = os.getenv('DATABASE_URL', 'postgresql://user:pass@db:5432/mydb')\n\n@app.get('/')\ndef root():\n    return {'db': DB_URL, 'status': 'connected'}\n",
+      "requirements.txt": "fastapi==0.104.1\nuvicorn==0.24.0\npsycopg2-binary==2.9.9\n",
+      "Dockerfile": "FROM python:3.11-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install -r requirements.txt\nCOPY . .\nEXPOSE 8080\nCMD [\"uvicorn\", \"app:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8080\"]\n"
+    },
+    "expectedCriteria": {
+      "hasComposeFile": true,
+      "serviceCount": 2,
+      "hasDepends": true,
+      "hasPorts": true,
+      "hasEnvironment": true
+    },
+    "hints": [
+      "İki servis tanımla: web ve db",
+      "db servisi postgres:15-alpine image'ı kullanmalı",
+      "web servisi depends_on: db olmalı",
+      "POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB env değişkenlerini tanımla",
+      "web servisinde DATABASE_URL env değişkenini ayarla"
+    ]
+  },
+  {
+    "id": "df_compose_1",
+    "companyId": "dataforge_ltd",
+    "title": "Redis + Worker Compose",
+    "description": "Bir Redis kuyruğu ile worker servisini docker-compose ile birlikte çalıştır.",
+    "difficulty": 3,
+    "stage": 3,
+    "reward": { "money": 350, "careerPoints": 130, "monthlyMaintenance": 40 },
+    "timeLimit": 200,
+    "repoFiles": {
+      "worker.py": "import time\nimport os\n\nREDIS_URL = os.getenv('REDIS_URL', 'redis://redis:6379')\n\nwhile True:\n    print(f'Processing job from {REDIS_URL}...')\n    time.sleep(5)\n",
+      "Dockerfile": "FROM python:3.11-slim\nWORKDIR /app\nCOPY worker.py .\nCMD [\"python\", \"worker.py\"]\n"
+    },
+    "expectedCriteria": {
+      "hasComposeFile": true,
+      "serviceCount": 2,
+      "hasDepends": true
+    },
+    "hints": [
+      "redis servisi: redis:7-alpine image'ı",
+      "worker servisi: build: . ile Dockerfile kullan",
+      "worker depends_on: redis olmalı"
+    ]
+  },
+  {
+    "id": "cp_compose_1",
+    "companyId": "cloudpeak_tech",
+    "title": "Nginx Reverse Proxy + API",
+    "description": "Nginx reverse proxy arkasında bir API sunucusu çalıştır. İki servisli compose dosyası yaz.",
+    "difficulty": 3,
+    "stage": 3,
+    "reward": { "money": 380, "careerPoints": 140, "monthlyMaintenance": 42 },
+    "timeLimit": 220,
+    "repoFiles": {
+      "api/app.py": "from fastapi import FastAPI\napp = FastAPI()\n\n@app.get('/api/health')\ndef health():\n    return {'status': 'ok'}\n",
+      "api/Dockerfile": "FROM python:3.11-slim\nWORKDIR /app\nCOPY . .\nRUN pip install fastapi uvicorn\nCMD [\"uvicorn\", \"app:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\"]\n",
+      "nginx/nginx.conf": "server {\n    listen 80;\n    location /api {\n        proxy_pass http://api:8000;\n    }\n}\n"
+    },
+    "expectedCriteria": {
+      "hasComposeFile": true,
+      "serviceCount": 2,
+      "hasPorts": true,
+      "hasDepends": true
+    },
+    "hints": [
+      "nginx servisi: nginx:alpine, port 80:80",
+      "api servisi: build ile Dockerfile kullan",
+      "nginx depends_on: api",
+      "nginx.conf'u volume mount ile bağla"
+    ]
+  },
+  {
+    "id": "ts_compose_2",
+    "companyId": "techstart_co",
+    "title": "ML Pipeline: API + Model + DB + Cache",
+    "description": "4 servisli ML pipeline: FastAPI, model worker, PostgreSQL, Redis. Network ve resource limit tanımla.",
+    "difficulty": 4,
+    "stage": 4,
+    "reward": { "money": 600, "careerPoints": 220, "monthlyMaintenance": 60 },
+    "timeLimit": 300,
+    "repoFiles": {
+      "api/app.py": "from fastapi import FastAPI\napp = FastAPI()\n\n@app.post('/predict')\ndef predict():\n    return {'prediction': 0.95}\n",
+      "api/Dockerfile": "FROM python:3.11-slim\nWORKDIR /app\nCOPY . .\nRUN pip install fastapi uvicorn\nCMD [\"uvicorn\", \"app:app\", \"--host\", \"0.0.0.0\"]\n",
+      "worker/process.py": "import time\nwhile True:\n    print('Processing model batch...')\n    time.sleep(10)\n",
+      "worker/Dockerfile": "FROM python:3.11-slim\nWORKDIR /app\nCOPY . .\nCMD [\"python\", \"process.py\"]\n"
+    },
+    "expectedCriteria": {
+      "hasComposeFile": true,
+      "serviceCount": 4,
+      "hasNetworks": true,
+      "hasDepends": true,
+      "hasPorts": true
+    },
+    "hints": [
+      "4 servis: api, worker, db (postgres), cache (redis)",
+      "networks: ml-network tanımla",
+      "Tüm servisleri aynı network'e bağla",
+      "deploy.resources ile memory limit tanımla"
+    ]
+  },
+  {
+    "id": "df_compose_2",
+    "companyId": "dataforge_ltd",
+    "title": "ETL Pipeline: Extract + Transform + Load",
+    "description": "3 servisli ETL pipeline. Her servis sırayla çalışır. depends_on ve network doğru yapılandırılmalı.",
+    "difficulty": 4,
+    "stage": 4,
+    "reward": { "money": 500, "careerPoints": 200, "monthlyMaintenance": 55 },
+    "timeLimit": 280,
+    "repoFiles": {
+      "extract/main.py": "print('Extracting data from source...')\n",
+      "extract/Dockerfile": "FROM python:3.11-slim\nCOPY main.py .\nCMD [\"python\", \"main.py\"]\n",
+      "transform/main.py": "print('Transforming data...')\n",
+      "transform/Dockerfile": "FROM python:3.11-slim\nCOPY main.py .\nCMD [\"python\", \"main.py\"]\n",
+      "load/main.py": "print('Loading data to warehouse...')\n",
+      "load/Dockerfile": "FROM python:3.11-slim\nCOPY main.py .\nCMD [\"python\", \"main.py\"]\n"
+    },
+    "expectedCriteria": {
+      "hasComposeFile": true,
+      "serviceCount": 3,
+      "hasNetworks": true,
+      "hasDepends": true
+    },
+    "hints": [
+      "3 servis: extract, transform, load",
+      "transform depends_on: extract",
+      "load depends_on: transform",
+      "Ortak network tanımla"
+    ]
+  },
+  {
+    "id": "cp_compose_2",
+    "companyId": "cloudpeak_tech",
+    "title": "Microservices: Auth + API + DB + Frontend",
+    "description": "4 servisli microservice mimarisi. Frontend, auth, API ve veritabanı. Resource limit ve restart policy zorunlu.",
+    "difficulty": 5,
+    "stage": 4,
+    "reward": { "money": 700, "careerPoints": 250, "monthlyMaintenance": 70 },
+    "timeLimit": 360,
+    "repoFiles": {
+      "frontend/index.html": "<html><body><h1>CloudPeak Dashboard</h1></body></html>",
+      "auth/app.py": "from fastapi import FastAPI\napp = FastAPI()\n\n@app.post('/auth/login')\ndef login():\n    return {'token': 'jwt-token'}\n",
+      "auth/Dockerfile": "FROM python:3.11-slim\nWORKDIR /app\nCOPY . .\nRUN pip install fastapi uvicorn\nCMD [\"uvicorn\", \"app:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8001\"]\n",
+      "api/app.py": "from fastapi import FastAPI\napp = FastAPI()\n\n@app.get('/api/data')\ndef data():\n    return {'items': []}\n",
+      "api/Dockerfile": "FROM python:3.11-slim\nWORKDIR /app\nCOPY . .\nRUN pip install fastapi uvicorn\nCMD [\"uvicorn\", \"app:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8002\"]\n"
+    },
+    "expectedCriteria": {
+      "hasComposeFile": true,
+      "serviceCount": 4,
+      "hasNetworks": true,
+      "hasDepends": true,
+      "hasPorts": true
+    },
+    "hints": [
+      "4 servis: frontend (nginx), auth, api, db (postgres)",
+      "restart: unless-stopped ekle",
+      "Her servise memory limit tanımla",
+      "frontend depends_on: auth, api"
+    ]
+  },
+  {
+    "id": "ts_cicd_1",
+    "companyId": "techstart_co",
+    "title": "GitHub Actions CI Pipeline",
+    "description": "Basit bir CI pipeline'ı yaz: lint, test, Docker build. .github/workflows/ci.yml oluştur.",
+    "difficulty": 3,
+    "stage": 5,
+    "reward": { "money": 350, "careerPoints": 130, "monthlyMaintenance": 35 },
+    "timeLimit": 200,
+    "repoFiles": {
+      "app.py": "from fastapi import FastAPI\napp = FastAPI()\n\n@app.get('/')\ndef root():\n    return {'status': 'ok'}\n",
+      "requirements.txt": "fastapi==0.104.1\nuvicorn==0.24.0\n",
+      "Dockerfile": "FROM python:3.11-slim\nWORKDIR /app\nCOPY . .\nRUN pip install -r requirements.txt\nCMD [\"uvicorn\", \"app:app\"]\n"
+    },
+    "expectedCriteria": {
+      "hasCIFile": true,
+      "hasDockerBuild": true
+    },
+    "hints": [
+      "on: push ve pull_request trigger'ları ekle",
+      "steps: checkout, setup-python, install deps, run tests",
+      "Son adımda docker build -t app:latest ."
+    ]
+  },
+  {
+    "id": "df_cicd_1",
+    "companyId": "dataforge_ltd",
+    "title": "Multi-stage CI/CD Pipeline",
+    "description": "Build, test ve deploy aşamalı bir CI/CD pipeline'ı yaz. Docker image'ını registry'ye push et.",
+    "difficulty": 4,
+    "stage": 5,
+    "reward": { "money": 500, "careerPoints": 200, "monthlyMaintenance": 50 },
+    "timeLimit": 280,
+    "repoFiles": {
+      "pipeline.py": "import json\ndef process(data):\n    return [{'id': d['id'], 'score': d['value'] * 1.1} for d in data]\n",
+      "test_pipeline.py": "from pipeline import process\ndef test_process():\n    result = process([{'id': 1, 'value': 10}])\n    assert result[0]['score'] == 11.0\n",
+      "Dockerfile": "FROM python:3.11-slim\nWORKDIR /app\nCOPY . .\nCMD [\"python\", \"pipeline.py\"]\n"
+    },
+    "expectedCriteria": {
+      "hasCIFile": true,
+      "hasDockerBuild": true,
+      "hasDockerPush": true
+    },
+    "hints": [
+      "3 job: build, test, deploy",
+      "test job'u pytest çalıştırmalı",
+      "deploy job'u docker build ve push yapmalı",
+      "deploy sadece main branch'te çalışmalı"
+    ]
+  },
+  {
+    "id": "cp_k8s_1",
+    "companyId": "cloudpeak_tech",
+    "title": "Kubernetes Deployment Manifest",
+    "description": "Basit bir K8s Deployment ve Service manifest'i yaz. 3 replica, liveness probe, resource limit.",
+    "difficulty": 4,
+    "stage": 5,
+    "reward": { "money": 550, "careerPoints": 210, "monthlyMaintenance": 55 },
+    "timeLimit": 300,
+    "repoFiles": {
+      "app.py": "from fastapi import FastAPI\napp = FastAPI()\n\n@app.get('/health')\ndef health():\n    return {'status': 'healthy'}\n\n@app.get('/')\ndef root():\n    return {'message': 'Hello K8s!'}\n",
+      "Dockerfile": "FROM python:3.11-slim\nWORKDIR /app\nCOPY . .\nRUN pip install fastapi uvicorn\nEXPOSE 8080\nCMD [\"uvicorn\", \"app:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8080\"]\n"
+    },
+    "expectedCriteria": {
+      "hasK8sManifest": true,
+      "hasDeployment": true,
+      "hasService": true,
+      "replicaCount": 3
+    },
+    "hints": [
+      "apiVersion: apps/v1, kind: Deployment",
+      "spec.replicas: 3",
+      "livenessProbe: httpGet path: /health port: 8080",
+      "resources.limits: memory: 256Mi, cpu: 250m",
+      "Service: type: ClusterIP, port: 80 -> targetPort: 8080"
+    ]
+  },
+  {
+    "id": "ts_k8s_1",
+    "companyId": "techstart_co",
+    "title": "K8s ConfigMap ve Secret Yönetimi",
+    "description": "Bir uygulamayı ConfigMap ve Secret ile yapılandır. Environment variable'ları K8s manifest'ten enjekte et.",
+    "difficulty": 5,
+    "stage": 5,
+    "reward": { "money": 650, "careerPoints": 240, "monthlyMaintenance": 65 },
+    "timeLimit": 320,
+    "repoFiles": {
+      "app.py": "import os\nfrom fastapi import FastAPI\napp = FastAPI()\n\n@app.get('/config')\ndef config():\n    return {\n        'db_host': os.getenv('DB_HOST', 'unknown'),\n        'log_level': os.getenv('LOG_LEVEL', 'info')\n    }\n",
+      "Dockerfile": "FROM python:3.11-slim\nWORKDIR /app\nCOPY . .\nRUN pip install fastapi uvicorn\nCMD [\"uvicorn\", \"app:app\", \"--host\", \"0.0.0.0\"]\n"
+    },
+    "expectedCriteria": {
+      "hasK8sManifest": true,
+      "hasConfigMap": true,
+      "hasSecret": true,
+      "hasDeployment": true
+    },
+    "hints": [
+      "ConfigMap: DB_HOST, LOG_LEVEL gibi hassas olmayan ayarlar",
+      "Secret: DB_PASSWORD gibi hassas bilgiler (base64 encoded)",
+      "Deployment'ta envFrom veya env ile referans ver"
+    ]
+  },
+  {
+    "id": "df_security_1",
+    "companyId": "dataforge_ltd",
+    "title": "Docker Security Best Practices",
+    "description": "Güvenli bir Dockerfile yaz: non-root user, minimal image, no secrets in image, HEALTHCHECK.",
+    "difficulty": 4,
+    "stage": 5,
+    "reward": { "money": 480, "careerPoints": 190, "monthlyMaintenance": 48 },
+    "timeLimit": 240,
+    "repoFiles": {
+      "app.py": "from fastapi import FastAPI\napp = FastAPI()\n\n@app.get('/health')\ndef health():\n    return {'status': 'secure'}\n",
+      "requirements.txt": "fastapi==0.104.1\nuvicorn==0.24.0\n"
+    },
+    "expectedCriteria": {
+      "hasDockerfile": true,
+      "hasUser": true,
+      "hasHealthcheck": true,
+      "baseImage": "python",
+      "multiStage": true
+    },
+    "hints": [
+      "Multi-stage build ile minimal final image",
+      "USER 1001 ile non-root çalıştır",
+      "HEALTHCHECK CMD curl -f http://localhost:8080/health",
+      ".dockerignore dosyası oluştur",
+      "Secrets'ı build arg olarak GEÇİRME"
+    ]
   }
 ]
+
