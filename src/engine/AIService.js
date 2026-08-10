@@ -1,15 +1,15 @@
 /**
  * AIService.js — AI değerlendirme servis katmanı
  *
- * Gemini API entegrasyonu — Dockerfile değerlendirmesi ve pedagojik feedback.
+ * OpenAI API entegrasyonu — Dockerfile değerlendirmesi ve pedagojik feedback.
  * Frontend-only uygulama olduğu için doğrudan tarayıcıdan çağrı yapılır.
  *
- * API anahtarı .env dosyasından (VITE_GEMINI_API_KEY) okunur.
+ * API anahtarı .env dosyasından (VITE_OPENAI_API_KEY) okunur.
  * Erişilemezse kural tabanlı değerlendirmeye geri dönülür.
  */
 
-const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
-const MODEL = 'gemini-2.0-flash';
+const OPENAI_API_BASE = 'https://api.openai.com/v1/chat/completions';
+const MODEL = 'gpt-4o-mini';
 
 // Rate limiting — günlük/saatlik çağrı limiti
 const RATE_LIMIT = {
@@ -23,7 +23,6 @@ const RATE_LIMIT = {
  */
 function checkRateLimit() {
   const now = Date.now();
-  // Eski kayıtları temizle
   RATE_LIMIT.calls = RATE_LIMIT.calls.filter((t) => now - t < 24 * 60 * 60 * 1000);
 
   const lastHour = RATE_LIMIT.calls.filter((t) => now - t < 60 * 60 * 1000).length;
@@ -42,7 +41,7 @@ function checkRateLimit() {
  * API anahtarını kontrol eder.
  */
 export function getApiKey() {
-  return import.meta.env.VITE_GEMINI_API_KEY || null;
+  return import.meta.env.VITE_OPENAI_API_KEY || null;
 }
 
 /**
@@ -53,11 +52,12 @@ export function isAIAvailable() {
 }
 
 /**
- * Gemini API'sine istek gönderir.
- * @param {string} prompt - Sistem + kullanıcı prompt'u
+ * OpenAI API'sine istek gönderir.
+ * @param {string} systemPrompt - Sistem prompt'u
+ * @param {string} userPrompt - Kullanıcı prompt'u
  * @returns {Promise<string|null>} - AI yanıtı veya null
  */
-async function callGemini(prompt) {
+async function callOpenAI(systemPrompt, userPrompt) {
   const apiKey = getApiKey();
   if (!apiKey) return null;
 
@@ -70,22 +70,22 @@ async function callGemini(prompt) {
   try {
     RATE_LIMIT.calls.push(Date.now());
 
-    const response = await fetch(
-      `${GEMINI_API_BASE}/${MODEL}:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{ text: prompt }],
-          }],
-          generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 1024,
-          },
-        }),
-      }
-    );
+    const response = await fetch(OPENAI_API_BASE, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        temperature: 0.3,
+        max_tokens: 1024,
+      }),
+    });
 
     if (!response.ok) {
       console.error('[AIService] API hatası:', response.status);
@@ -93,7 +93,7 @@ async function callGemini(prompt) {
     }
 
     const data = await response.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    return data.choices?.[0]?.message?.content || null;
   } catch (error) {
     console.error('[AIService] Bağlantı hatası:', error.message);
     return null;
@@ -109,8 +109,32 @@ async function callGemini(prompt) {
  * @returns {Promise<Object>} - AI feedback objesi
  */
 export async function evaluateWithAI(dockerfileContent, mission, ruleBasedResult) {
-  const prompt = buildEvaluationPrompt(dockerfileContent, mission);
-  const response = await callGemini(prompt);
+  const systemPrompt = `Sen bir MLOps eğitmenisin. Öğrencilerin Dockerfile yazımını değerlendiriyorsun.
+Her zaman Türkçe yanıt ver. Pedagojik ve teşvik edici ol.
+Yanıtını SADECE JSON formatında ver, başka metin ekleme.`;
+
+  const userPrompt = `Aşağıdaki Dockerfile'ı değerlendir.
+
+## Görev: ${mission.title}
+${mission.description}
+
+## Beklenen Kriterler:
+${JSON.stringify(mission.expectedCriteria, null, 2)}
+
+## Öğrencinin Dockerfile'ı:
+\`\`\`dockerfile
+${dockerfileContent}
+\`\`\`
+
+## Yanıt Formatı (JSON):
+{
+  "summary": "Genel değerlendirme (2-3 cümle)",
+  "strengths": ["İyi yapılan şeyler"],
+  "improvements": ["Geliştirilmesi gereken noktalar"],
+  "tips": ["Öğretici ipuçları ve best practice önerileri"]
+}`;
+
+  const response = await callOpenAI(systemPrompt, userPrompt);
 
   // Fallback: AI erişilemezse kural tabanlı sonucu kullan
   if (!response) {
@@ -137,7 +161,6 @@ export async function evaluateWithAI(dockerfileContent, mission, ruleBasedResult
       maxScore: ruleBasedResult.maxScore,
     };
   } catch {
-    // Parse hatası — ham metin olarak döndür
     return {
       source: 'ai',
       summary: response.substring(0, 500),
@@ -151,38 +174,9 @@ export async function evaluateWithAI(dockerfileContent, mission, ruleBasedResult
 }
 
 /**
- * Değerlendirme prompt'u oluşturur.
- */
-function buildEvaluationPrompt(dockerfileContent, mission) {
-  return `Sen bir MLOps eğitmenisin. Aşağıdaki Dockerfile'ı değerlendir ve öğrenciye Türkçe pedagojik feedback ver.
-
-## Görev: ${mission.title}
-${mission.description}
-
-## Beklenen Kriterler:
-${JSON.stringify(mission.expectedCriteria, null, 2)}
-
-## Öğrencinin Dockerfile'ı:
-\`\`\`dockerfile
-${dockerfileContent}
-\`\`\`
-
-## Yanıt Formatı (JSON):
-{
-  "summary": "Genel değerlendirme (2-3 cümle)",
-  "strengths": ["İyi yapılan şeyler"],
-  "improvements": ["Geliştirilmesi gereken noktalar"],
-  "tips": ["Öğretici ipuçları ve best practice önerileri"]
-}
-
-DİKKAT: Sadece JSON döndür, başka metin ekleme.`;
-}
-
-/**
  * AI yanıtından JSON parse eder.
  */
 function parseAIResponse(response) {
-  // JSON bloğunu çıkar
   const jsonMatch = response.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
     throw new Error('JSON bulunamadı');
@@ -192,13 +186,10 @@ function parseAIResponse(response) {
 
 /**
  * Dinamik senaryo metni üretimi — şablon + seed → AI'dan README metni.
- *
- * @param {Object} mission - Görev bilgileri
- * @param {number} seed - Rastgele seed (çeşitlilik için)
- * @returns {Promise<string>} - Üretilmiş README metni
  */
 export async function generateScenarioText(mission, seed = 0) {
-  const prompt = `Sen bir yazılım projesi yöneticisisin. Aşağıdaki görev için kısa bir README.md senaryosu yaz (Türkçe, 5-10 satır).
+  const systemPrompt = 'Sen bir yazılım projesi yöneticisisin. Türkçe yaz.';
+  const userPrompt = `Aşağıdaki görev için kısa bir README.md senaryosu yaz (5-10 satır).
 
 Görev: ${mission.title}
 Açıklama: ${mission.description}
@@ -206,9 +197,8 @@ Seed: ${seed}
 
 Senaryo, sanki gerçek bir şirketin projesiymış gibi yazılmalı. Proje adı, kısa açıklama, kurulum talimatları ve kullanım örnekleri içermeli.`;
 
-  const response = await callGemini(prompt);
+  const response = await callOpenAI(systemPrompt, userPrompt);
   if (!response) {
-    // Fallback: statik senaryo
     return `# ${mission.title}\n\n${mission.description}\n\nBu proje Docker container'ında çalıştırılmak üzere tasarlanmıştır.\n`;
   }
   return response;

@@ -103,7 +103,7 @@ export default function AIFeedbackCard({ dockerfileContent, mission, ruleBasedRe
           {/* Kaynak bilgisi */}
           <div className="ai-feedback__source">
             {feedback.source === 'ai'
-              ? '🤖 Gemini AI tarafından değerlendirildi'
+              ? '🤖 OpenAI tarafından değerlendirildi'
               : '📋 Kural tabanlı değerlendirme (AI kullanılamadı)'}
           </div>
         </div>
