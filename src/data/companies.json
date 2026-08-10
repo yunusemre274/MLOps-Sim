@@ -1,0 +1,29 @@
+[
+  {
+    "id": "techstart_co",
+    "name": "TechStart A.Ş.",
+    "logo": "🚀",
+    "industry": "SaaS Startup",
+    "description": "Hızlı büyüyen bir SaaS startup'ı. ML modellerini üretime taşımak istiyorlar.",
+    "requiredRank": "junior",
+    "availableMissions": ["ts_mission_1", "ts_mission_2", "ts_mission_3"]
+  },
+  {
+    "id": "dataforge_ltd",
+    "name": "DataForge Ltd.",
+    "logo": "⚒️",
+    "industry": "Veri Mühendisliği",
+    "description": "Büyük ölçekli veri pipeline'ları kuran bir mühendislik firması.",
+    "requiredRank": "junior",
+    "availableMissions": ["df_mission_1", "df_mission_2"]
+  },
+  {
+    "id": "cloudpeak_tech",
+    "name": "CloudPeak Technologies",
+    "logo": "☁️",
+    "industry": "Cloud Danışmanlık",
+    "description": "Kurumsal müşterilere cloud migration ve DevOps danışmanlığı yapıyorlar.",
+    "requiredRank": "junior_plus",
+    "availableMissions": ["cp_mission_1", "cp_mission_2", "cp_mission_3"]
+  }
+]

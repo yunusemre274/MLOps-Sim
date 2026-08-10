@@ -108,20 +108,20 @@
 ## Faz 6 — Görev Sistemi (Junior Seviyeleri)
 **Bu fazın çıkış kriteri:** Oyuncunun iş bulma platformundan görev alıp, terminalde çözerek teslim edebilmesi ve para/puan kazanabilmesi.
 
-- [ ] Görev (Mission) veri modeli — JSON şeması
-- [ ] İlk 3 şirket (CompanyContract) JSON dosyası oluşturma
-- [ ] İş bulma platformu UI (LinkedIn benzeri) — ilan listesi, başvuru, mülakat diyaloğu
-- [ ] GitHub simülasyonu — repo listesi, repo içeriği görüntüleme
-- [ ] Görev repo'su oluşturma akışı — statik asset + senaryo metni birleştirme
-- [ ] Aşama 1 statik asset'leri — 3 farklı FastAPI uygulaması (main.py + requirements.txt)
-- [ ] Aşama 1 görev şablonları (3-5 görev JSON dosyası)
-- [ ] Aşama 2 statik asset'leri — Python multi-stage, Go, Node.js uygulamaları
-- [ ] Aşama 2 görev şablonları (4-6 görev JSON dosyası)
-- [ ] Check Mission (kural tabanlı) — expectedCriteria ile parser çıktısı karşılaştırma
-- [ ] Görev sonuç ekranı — puan, feedback, ödül gösterimi
-- [ ] Aylık bakım geliri sistemi — tamamlanan görevlerden tekrarlayan gelir
-- [ ] Kariyer puanı ve rütbe ilerleme sistemi
-- [ ] Tutorial Hub — en az 3 eğitim dosyası (linux_basics.md, dockerfile_basics.md, multistage_build.md)
+- [x] Görev (Mission) veri modeli — JSON şeması
+- [x] İlk 3 şirket (CompanyContract) JSON dosyası oluşturma
+- [x] İş bulma platformu UI (LinkedIn benzeri) — ilan listesi, başvuru, mülakat diyaloğu
+- [x] GitHub simülasyonu — repo listesi, repo içeriği görüntüleme
+- [x] Görev repo'su oluşturma akışı — statik asset + senaryo metni birleştirme
+- [x] Aşama 1 statik asset'leri — 3 farklı FastAPI uygulaması (main.py + requirements.txt)
+- [x] Aşama 1 görev şablonları (3-5 görev JSON dosyası)
+- [x] Aşama 2 statik asset'leri — Python multi-stage, Go, Node.js uygulamaları
+- [x] Aşama 2 görev şablonları (4-6 görev JSON dosyası)
+- [x] Check Mission (kural tabanlı) — expectedCriteria ile parser çıktısı karşılaştırma
+- [x] Görev sonuç ekranı — puan, feedback, ödül gösterimi
+- [x] Aylık bakım geliri sistemi — tamamlanan görevlerden tekrarlayan gelir
+- [x] Kariyer puanı ve rütbe ilerleme sistemi
+- [x] Tutorial Hub — en az 3 eğitim dosyası (linux_basics.md, dockerfile_basics.md, multistage_build.md)
 
 ---
 

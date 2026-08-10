@@ -1,0 +1,223 @@
+[
+  {
+    "id": "ts_mission_1",
+    "companyId": "techstart_co",
+    "title": "FastAPI Hello World Containerize",
+    "description": "Basit bir FastAPI uygulamasını Docker'a taşı. Dockerfile oluştur, build et ve çalıştır.",
+    "difficulty": 1,
+    "stage": 1,
+    "reward": { "money": 150, "careerPoints": 50, "monthlyMaintenance": 20 },
+    "timeLimit": 120,
+    "repoFiles": {
+      "app.py": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get('/')\ndef root():\n    return {'message': 'Hello MLOps!'}\n",
+      "requirements.txt": "fastapi==0.104.1\nuvicorn==0.24.0\n"
+    },
+    "expectedCriteria": {
+      "hasDockerfile": true,
+      "baseImage": "python",
+      "hasWorkdir": true,
+      "hasCopy": true,
+      "hasExpose": true,
+      "hasCmd": true,
+      "exposedPort": 8080
+    },
+    "hints": [
+      "FROM python:3.11-slim ile başla",
+      "WORKDIR /app oluştur",
+      "requirements.txt'i kopyala ve pip install yap",
+      "EXPOSE 8080 ile portu belirt",
+      "CMD ile uvicorn başlat"
+    ]
+  },
+  {
+    "id": "ts_mission_2",
+    "companyId": "techstart_co",
+    "title": "Çok Aşamalı Build ile Optimizasyon",
+    "description": "Mevcut Dockerfile'ı multi-stage build ile optimize et. Build aşaması ve runtime aşamasını ayır.",
+    "difficulty": 2,
+    "stage": 2,
+    "reward": { "money": 250, "careerPoints": 100, "monthlyMaintenance": 35 },
+    "timeLimit": 180,
+    "repoFiles": {
+      "app.py": "from fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass Item(BaseModel):\n    name: str\n    price: float\n\n@app.post('/items')\ndef create_item(item: Item):\n    return {'item': item.dict(), 'status': 'created'}\n",
+      "requirements.txt": "fastapi==0.104.1\nuvicorn==0.24.0\npydantic==2.5.0\n"
+    },
+    "expectedCriteria": {
+      "hasDockerfile": true,
+      "multiStage": true,
+      "stageCount": 2,
+      "baseImage": "python",
+      "hasCmd": true
+    },
+    "hints": [
+      "İlk stage: FROM python:3.11 AS builder",
+      "Builder'da requirements.txt kopyala ve pip install yap",
+      "İkinci stage: FROM python:3.11-slim",
+      "Builder'dan sadece gerekli paketleri kopyala"
+    ]
+  },
+  {
+    "id": "ts_mission_3",
+    "companyId": "techstart_co",
+    "title": "ML Model Serving",
+    "description": "Eğitilmiş bir ML modelini FastAPI ile serve et. Model dosyasını container'a dahil et.",
+    "difficulty": 2,
+    "stage": 2,
+    "reward": { "money": 300, "careerPoints": 120, "monthlyMaintenance": 40 },
+    "timeLimit": 180,
+    "repoFiles": {
+      "app.py": "from fastapi import FastAPI\nimport json\n\napp = FastAPI()\n\n# Basit model simülasyonu\nmodel_data = {'type': 'linear', 'weights': [0.5, 0.3]}\n\n@app.post('/predict')\ndef predict(features: dict):\n    result = sum(w * f for w, f in zip(model_data['weights'], features.get('values', [0, 0])))\n    return {'prediction': result}\n\n@app.get('/health')\ndef health():\n    return {'status': 'healthy', 'model': model_data['type']}\n",
+      "requirements.txt": "fastapi==0.104.1\nuvicorn==0.24.0\n",
+      "model.json": "{\"type\": \"linear\", \"weights\": [0.5, 0.3]}"
+    },
+    "expectedCriteria": {
+      "hasDockerfile": true,
+      "baseImage": "python",
+      "hasCopy": true,
+      "hasExpose": true,
+      "hasHealthcheck": false,
+      "hasCmd": true
+    },
+    "hints": [
+      "Model dosyasını (model.json) container'a kopyala",
+      "HEALTHCHECK eklemek bonus puan verir"
+    ]
+  },
+  {
+    "id": "df_mission_1",
+    "companyId": "dataforge_ltd",
+    "title": "Python Data Pipeline Containerize",
+    "description": "Bir veri işleme script'ini Docker container'ına taşı.",
+    "difficulty": 1,
+    "stage": 1,
+    "reward": { "money": 175, "careerPoints": 60, "monthlyMaintenance": 25 },
+    "timeLimit": 120,
+    "repoFiles": {
+      "pipeline.py": "import json\nimport sys\n\ndef process_data(input_file):\n    with open(input_file) as f:\n        data = json.load(f)\n    results = [{'id': d['id'], 'score': d['value'] * 1.1} for d in data]\n    print(json.dumps(results, indent=2))\n\nif __name__ == '__main__':\n    process_data(sys.argv[1] if len(sys.argv) > 1 else 'data.json')\n",
+      "requirements.txt": "",
+      "data.json": "[{\"id\": 1, \"value\": 42}, {\"id\": 2, \"value\": 73}]"
+    },
+    "expectedCriteria": {
+      "hasDockerfile": true,
+      "baseImage": "python",
+      "hasWorkdir": true,
+      "hasCopy": true,
+      "hasCmd": true
+    },
+    "hints": [
+      "Python 3.11-slim kullan",
+      "Tüm dosyaları kopyala",
+      "CMD ile pipeline.py'yi çalıştır"
+    ]
+  },
+  {
+    "id": "df_mission_2",
+    "companyId": "dataforge_ltd",
+    "title": "Go API Containerize",
+    "description": "Basit bir Go web API'sini Docker container'ına taşı. Multi-stage build kullan.",
+    "difficulty": 2,
+    "stage": 2,
+    "reward": { "money": 280, "careerPoints": 110, "monthlyMaintenance": 30 },
+    "timeLimit": 180,
+    "repoFiles": {
+      "main.go": "package main\n\nimport (\n    \"fmt\"\n    \"net/http\"\n)\n\nfunc main() {\n    http.HandleFunc(\"/\", func(w http.ResponseWriter, r *http.Request) {\n        fmt.Fprintf(w, \"Hello from Go!\")\n    })\n    http.ListenAndServe(\":8080\", nil)\n}\n",
+      "go.mod": "module myapp\n\ngo 1.21\n"
+    },
+    "expectedCriteria": {
+      "hasDockerfile": true,
+      "multiStage": true,
+      "stageCount": 2,
+      "baseImage": "golang",
+      "hasExpose": true,
+      "hasCmd": true
+    },
+    "hints": [
+      "Builder stage: FROM golang:1.21 AS builder",
+      "go build ile binary oluştur",
+      "Runtime stage: FROM alpine veya scratch kullan",
+      "Binary'yi kopyala ve EXPOSE 8080"
+    ]
+  },
+  {
+    "id": "cp_mission_1",
+    "companyId": "cloudpeak_tech",
+    "title": "Node.js API Containerize",
+    "description": "Express.js tabanlı bir API'yi Docker'a taşı.",
+    "difficulty": 1,
+    "stage": 1,
+    "reward": { "money": 200, "careerPoints": 70, "monthlyMaintenance": 25 },
+    "timeLimit": 120,
+    "repoFiles": {
+      "index.js": "const express = require('express');\nconst app = express();\nconst PORT = process.env.PORT || 3000;\n\napp.get('/', (req, res) => res.json({ status: 'ok' }));\napp.get('/health', (req, res) => res.json({ healthy: true }));\n\napp.listen(PORT, () => console.log(`Server on port ${PORT}`));\n",
+      "package.json": "{\"name\": \"api\", \"version\": \"1.0.0\", \"main\": \"index.js\", \"dependencies\": {\"express\": \"^4.18.0\"}}"
+    },
+    "expectedCriteria": {
+      "hasDockerfile": true,
+      "baseImage": "node",
+      "hasWorkdir": true,
+      "hasCopy": true,
+      "hasExpose": true,
+      "hasCmd": true
+    },
+    "hints": [
+      "FROM node:18-alpine kullan",
+      "Önce package.json kopyala, npm install yap",
+      "Sonra kaynak kodu kopyala",
+      "EXPOSE 3000 ve CMD [\"node\", \"index.js\"]"
+    ]
+  },
+  {
+    "id": "cp_mission_2",
+    "companyId": "cloudpeak_tech",
+    "title": "Nginx Static Site",
+    "description": "Statik bir web sitesini Nginx container'ında serve et.",
+    "difficulty": 1,
+    "stage": 1,
+    "reward": { "money": 130, "careerPoints": 40, "monthlyMaintenance": 15 },
+    "timeLimit": 90,
+    "repoFiles": {
+      "index.html": "<!DOCTYPE html>\n<html>\n<head><title>CloudPeak</title></head>\n<body><h1>Welcome to CloudPeak</h1></body>\n</html>\n",
+      "nginx.conf": "server { listen 80; location / { root /usr/share/nginx/html; } }"
+    },
+    "expectedCriteria": {
+      "hasDockerfile": true,
+      "baseImage": "nginx",
+      "hasCopy": true,
+      "hasExpose": true,
+      "exposedPort": 80
+    },
+    "hints": [
+      "FROM nginx:alpine kullan",
+      "HTML dosyasını /usr/share/nginx/html'e kopyala",
+      "EXPOSE 80"
+    ]
+  },
+  {
+    "id": "cp_mission_3",
+    "companyId": "cloudpeak_tech",
+    "title": "Multi-stage Node.js Build",
+    "description": "React frontend + Express backend'i tek Dockerfile'da multi-stage build ile birleştir.",
+    "difficulty": 3,
+    "stage": 2,
+    "reward": { "money": 400, "careerPoints": 150, "monthlyMaintenance": 50 },
+    "timeLimit": 240,
+    "repoFiles": {
+      "server.js": "const express = require('express');\nconst path = require('path');\nconst app = express();\n\napp.use(express.static('dist'));\napp.get('/api/status', (req, res) => res.json({ ok: true }));\napp.listen(3000);\n",
+      "package.json": "{\"name\": \"fullstack\", \"dependencies\": {\"express\": \"^4.18.0\"}}",
+      "frontend/index.html": "<html><body><div id='app'>Loading...</div></body></html>"
+    },
+    "expectedCriteria": {
+      "hasDockerfile": true,
+      "multiStage": true,
+      "stageCount": 2,
+      "baseImage": "node",
+      "hasExpose": true,
+      "hasCmd": true
+    },
+    "hints": [
+      "Stage 1: Frontend build (FROM node:18 AS frontend)",
+      "Stage 2: Backend + serve (FROM node:18-alpine)",
+      "Frontend çıktısını backend'e kopyala"
+    ]
+  }
+]

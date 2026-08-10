@@ -1,0 +1,226 @@
+/**
+ * JobPlatformScene.css — İş platformu stilleri
+ */
+
+.scene--jobplatform {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 60px);
+  overflow: hidden;
+}
+
+.jp-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.jp-back {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-xs);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+}
+.jp-back:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+
+.jp-rank-badge {
+  margin-left: auto;
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+}
+.jp-rank-label {
+  padding: 2px 10px;
+  background: var(--color-accent);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+.jp-rank-points {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-family-mono);
+}
+
+.jp-notification {
+  padding: var(--space-sm) var(--space-lg);
+  background: #1a4d2e;
+  color: #a6e3a1;
+  font-size: var(--font-size-sm);
+  text-align: center;
+  animation: jpFadeIn 0.3s ease;
+}
+@keyframes jpFadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+.jp-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Sidebar */
+.jp-sidebar {
+  width: 260px;
+  background: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border);
+  padding: var(--space-md);
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.jp-sidebar h3 { font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--space-sm); }
+
+.jp-company-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-xs);
+  text-align: left;
+  color: var(--color-text-primary);
+  transition: all var(--transition-fast);
+}
+.jp-company-card:hover:not(:disabled) { border-color: var(--color-accent); }
+.jp-company-card--active { border-color: var(--color-accent); background: var(--color-surface-hover); }
+.jp-company-card--locked { opacity: 0.5; cursor: not-allowed; }
+
+.jp-company-logo { font-size: 1.5rem; }
+.jp-company-info { flex: 1; display: flex; flex-direction: column; }
+.jp-company-name { font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm); }
+.jp-company-industry { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.jp-lock { font-size: var(--font-size-sm); }
+
+/* Main panel */
+.jp-main {
+  flex: 1;
+  padding: var(--space-lg);
+  overflow-y: auto;
+}
+
+.jp-empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: var(--space-xl) 0;
+}
+.jp-empty span { font-size: 3rem; display: block; margin-bottom: var(--space-md); }
+
+.jp-company-header {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+.jp-company-header__logo { font-size: 2.5rem; }
+.jp-company-header p { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-top: var(--space-xs); }
+
+/* Mission cards */
+.jp-missions { display: flex; flex-direction: column; gap: var(--space-md); }
+
+.jp-mission-card {
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast);
+}
+.jp-mission-card:hover { border-color: var(--color-accent); }
+.jp-mission-card--done { opacity: 0.7; }
+
+.jp-mission-card__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-xs); }
+.jp-mission-card__header h4 { font-size: var(--font-size-md); }
+
+.jp-badge {
+  font-size: var(--font-size-xs);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+.jp-badge--done { background: #1a4d2e; color: #a6e3a1; }
+.jp-badge--active { background: #4d3a1a; color: #f9e2af; }
+
+.jp-mission-card__desc { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-sm); }
+
+.jp-mission-card__meta {
+  display: flex;
+  gap: var(--space-md);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.jp-mission-card__actions { display: flex; gap: var(--space-xs); }
+.jp-mission-card__actions button {
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--font-size-xs);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+}
+.jp-btn--primary {
+  background: var(--color-accent) !important;
+  color: white !important;
+  border-color: var(--color-accent) !important;
+}
+
+/* Mission detail */
+.jp-mission-detail { max-width: 600px; }
+.jp-detail-back {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  background: none;
+  margin-bottom: var(--space-md);
+}
+
+.jp-detail-section {
+  margin-top: var(--space-lg);
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+}
+.jp-detail-section h4 { font-size: var(--font-size-sm); margin-bottom: var(--space-sm); }
+
+.jp-detail-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-xs) var(--space-md);
+  font-size: var(--font-size-sm);
+}
+.jp-detail-grid span:nth-child(odd) { color: var(--color-text-muted); }
+
+.jp-file-list { display: flex; flex-direction: column; gap: 4px; }
+.jp-file-item {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.jp-hints {
+  padding-left: var(--space-lg);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+.jp-hints li { margin-bottom: 4px; }
+
+.jp-accept-btn {
+  margin-top: var(--space-lg);
+  padding: var(--space-sm) var(--space-xl);
+  background: var(--color-accent);
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  width: 100%;
+}
+.jp-accept-btn:hover { filter: brightness(1.1); }

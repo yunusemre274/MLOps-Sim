@@ -1,0 +1,122 @@
+/**
+ * MissionResultModal.css — Görev sonuç ekranı stilleri
+ */
+
+.mr-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: mrFade 0.2s ease;
+}
+@keyframes mrFade { from { opacity: 0; } to { opacity: 1; } }
+
+.mr-modal {
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  max-width: 480px;
+  width: 90%;
+  overflow: hidden;
+  animation: mrSlide 0.3s ease;
+}
+@keyframes mrSlide { from { transform: translateY(20px); } to { transform: translateY(0); } }
+
+.mr-header {
+  padding: var(--space-lg);
+  text-align: center;
+}
+.mr-header--pass { background: linear-gradient(135deg, #1a4d2e, #2d6e41); }
+.mr-header--fail { background: linear-gradient(135deg, #4d1a1a, #6e2d2d); }
+.mr-header__icon { font-size: 2.5rem; display: block; margin-bottom: var(--space-xs); }
+.mr-header h2 { color: white; font-size: var(--font-size-lg); }
+
+.mr-body { padding: var(--space-lg); }
+.mr-body h3 { font-size: var(--font-size-md); margin-bottom: var(--space-md); }
+
+/* Puan çubuğu */
+.mr-score { margin-bottom: var(--space-lg); }
+.mr-score__bar {
+  height: 12px;
+  background: var(--color-surface);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: var(--space-xs);
+}
+.mr-score__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent), #a6e3a1);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+.mr-score__text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-family: var(--font-family-mono);
+}
+
+/* Kontrol sonuçları */
+.mr-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: var(--space-lg);
+}
+.mr-check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px var(--space-sm);
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-sm);
+}
+.mr-check--pass { background: rgba(166, 227, 161, 0.1); }
+.mr-check--fail { background: rgba(243, 139, 168, 0.1); }
+.mr-check__points {
+  margin-left: auto;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+}
+
+/* Ödüller */
+.mr-rewards {
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-md);
+}
+.mr-rewards h4 { font-size: var(--font-size-sm); margin-bottom: var(--space-sm); }
+.mr-reward-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px var(--space-md);
+  font-size: var(--font-size-sm);
+}
+.mr-reward-grid span:nth-child(even) {
+  color: #a6e3a1;
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Feedback */
+.mr-feedback {
+  padding: var(--space-md);
+  background: rgba(243, 139, 168, 0.1);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  color: #f38ba8;
+}
+
+.mr-close {
+  display: block;
+  width: 100%;
+  padding: var(--space-md);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  border-top: 1px solid var(--color-border);
+}
+.mr-close:hover { background: var(--color-surface-hover); }

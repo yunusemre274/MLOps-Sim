@@ -138,14 +138,19 @@ const useGameStore = create((set, get) => ({
         todayEvents: [],
       };
 
-      // Her 30 günde bir aylık kira ödemesi
+      // Her 30 günde bir aylık kira ödemesi + pasif gelir
       if (newDay % 30 === 0) {
         const rent = state.housing.monthlyRent;
+        const passiveIncome = state.finance.monthlyPassiveIncome;
+        const netChange = passiveIncome - rent;
         updates.finance = {
           ...state.finance,
-          balance: state.finance.balance - rent,
+          balance: state.finance.balance + netChange,
         };
-        updates.todayEvents = [`💰 Aylık kira ödendi: ₺${rent}`];
+        updates.todayEvents = [
+          `💰 Aylık kira ödendi: ₺${rent}`,
+          ...(passiveIncome > 0 ? [`💼 Bakım geliri: +₺${passiveIncome}`] : []),
+        ];
       }
 
       return updates;
@@ -195,17 +200,58 @@ const useGameStore = create((set, get) => ({
 
   // === Kariyer işlemleri ===
   addCareerPoints: (points) =>
-    set((state) => ({
-      character: {
-        ...state.character,
-        careerPoints: state.character.careerPoints + points,
-      },
-    })),
+    set((state) => {
+      const newPoints = state.character.careerPoints + points;
+      const newRank = calculateRank(newPoints);
+      return {
+        character: {
+          ...state.character,
+          careerPoints: newPoints,
+          rank: newRank,
+        },
+      };
+    }),
 
   setRank: (rank) =>
     set((state) => ({
       character: { ...state.character, rank },
     })),
+
+  // === Görev yönetimi ===
+  acceptMission: (missionId) =>
+    set((state) => {
+      if (state.career.activeMissions.includes(missionId)) return state;
+      return {
+        career: {
+          ...state.career,
+          activeMissions: [...state.career.activeMissions, missionId],
+        },
+      };
+    }),
+
+  completeMission: (missionId, moneyReward, careerReward, monthlyMaintenance) =>
+    set((state) => {
+      const newPoints = state.character.careerPoints + careerReward;
+      const newRank = calculateRank(newPoints);
+      return {
+        character: {
+          ...state.character,
+          careerPoints: newPoints,
+          rank: newRank,
+          totalCompletedMissions: state.character.totalCompletedMissions + 1,
+        },
+        career: {
+          ...state.career,
+          activeMissions: state.career.activeMissions.filter((id) => id !== missionId),
+          completedMissions: [...state.career.completedMissions, missionId],
+        },
+        finance: {
+          ...state.finance,
+          balance: state.finance.balance + moneyReward,
+          monthlyPassiveIncome: state.finance.monthlyPassiveIncome + (monthlyMaintenance || 0),
+        },
+      };
+    }),
 
   // === Envanter ===
   addToFridge: (item) =>
@@ -236,5 +282,25 @@ const useGameStore = create((set, get) => ({
   // === Tam reset (yeni oyun) ===
   resetGame: () => set(initialState),
 }));
+
+/**
+ * Kariyer puanına göre rütbe hesapla.
+ * Eşikler gameBalance.config.js'e taşınabilir.
+ */
+const RANK_THRESHOLDS = [
+  { rank: 'lead',       minPoints: 2000 },
+  { rank: 'senior',     minPoints: 1200 },
+  { rank: 'mid_senior', minPoints: 700 },
+  { rank: 'mid',        minPoints: 400 },
+  { rank: 'junior_plus', minPoints: 150 },
+  { rank: 'junior',     minPoints: 0 },
+];
+
+function calculateRank(careerPoints) {
+  for (const tier of RANK_THRESHOLDS) {
+    if (careerPoints >= tier.minPoints) return tier.rank;
+  }
+  return 'junior';
+}
 
 export default useGameStore;
