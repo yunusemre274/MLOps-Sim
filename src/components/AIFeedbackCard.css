@@ -1,0 +1,81 @@
+/**
+ * AIFeedbackCard.css — AI değerlendirme kartı stilleri
+ */
+
+.ai-feedback {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-top: var(--space-md);
+}
+
+.ai-feedback__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.ai-feedback__icon { font-size: 1.2rem; }
+.ai-feedback__header h4 { font-size: var(--font-size-sm); flex: 1; }
+
+.ai-feedback__trigger {
+  padding: 4px 12px;
+  font-size: var(--font-size-xs);
+  background: linear-gradient(135deg, #4285f4, #7b61ff);
+  color: white;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+.ai-feedback__trigger:hover:not(:disabled) { filter: brightness(1.15); }
+.ai-feedback__trigger:disabled { opacity: 0.6; cursor: wait; }
+
+.ai-feedback__toggle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.ai-feedback__body {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  animation: aiFadeIn 0.3s ease;
+}
+@keyframes aiFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.ai-feedback__summary {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  padding: var(--space-sm);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+}
+
+.ai-feedback__section {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+}
+.ai-feedback__section h5 {
+  font-size: var(--font-size-xs);
+  margin-bottom: var(--space-xs);
+}
+.ai-feedback__section ul {
+  padding-left: var(--space-lg);
+  font-size: var(--font-size-sm);
+}
+.ai-feedback__section li { margin-bottom: 4px; }
+
+.ai-feedback__section--good { background: rgba(166, 227, 161, 0.1); color: #a6e3a1; }
+.ai-feedback__section--improve { background: rgba(249, 226, 175, 0.1); color: #f9e2af; }
+.ai-feedback__section--tips { background: rgba(137, 180, 250, 0.1); color: #89b4fa; }
+
+.ai-feedback__source {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-align: right;
+  font-style: italic;
+}

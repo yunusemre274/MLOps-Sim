@@ -128,13 +128,13 @@
 ## Faz 7 — AI Değerlendirme Katmanı
 **Bu fazın çıkış kriteri:** Görev tesliminde Gemini API'sine çağrı atılıp pedagojik ve yapılandırılmış geri bildirim alınabilmesi.
 
-- [ ] AI servis katmanı — Gemini API entegrasyonu (backend endpoint)
-- [ ] Check Mission AI modu — dosyaları + kriterleri AI'ya gönderme, pedagojik feedback alma
-- [ ] AI feedback UI bileşeni — detaylı değerlendirme kartı (doğru/yanlış/ipucu)
-- [ ] Dinamik senaryo metni üretimi — şablon + seed → AI'dan README metni alma
-- [ ] API anahtar yönetimi — .env dosyası, güvenli çağrı
-- [ ] Fallback mekanizması — AI erişilemezse kural tabanlı değerlendirmeye geri dönüş
-- [ ] Rate limiting ve maliyet kontrolü — günlük/saatlik çağrı limiti
+- [x] AI servis katmanı — Gemini API entegrasyonu (backend endpoint)
+- [x] Check Mission AI modu — dosyaları + kriterleri AI'ya gönderme, pedagojik feedback alma
+- [x] AI feedback UI bileşeni — detaylı değerlendirme kartı (doğru/yanlış/ipucu)
+- [x] Dinamik senaryo metni üretimi — şablon + seed → AI'dan README metni alma
+- [x] API anahtar yönetimi — .env dosyası, güvenli çağrı
+- [x] Fallback mekanizması — AI erişilemezse kural tabanlı değerlendirmeye geri dönüş
+- [x] Rate limiting ve maliyet kontrolü — günlük/saatlik çağrı limiti
 
 ---
 
