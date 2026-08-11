@@ -170,13 +170,13 @@
 ## Faz 10 — NPC Popülasyonu Genişletme
 **Bu fazın çıkış kriteri:** Toplam 20 NPC'nin aktif olarak dünyada yer alması, partnerlik mekanizmasının ve mesajlaşma sisteminin çalışması.
 
-- [ ] Kalan 12 NPC JSON dosyası oluşturma (toplam 20 NPC'ye tamamlama)
-- [ ] Yeni olay zincirleri — flört, ilişki, kavga, kıskançlık, aldatma, ayrılma, barışma
-- [ ] Partner ilişki sistemi — özel bar, küsme/ayrılma mekanizması
-- [ ] Kariyer-NPC kesişimi olayları — iş referansı, iş teklifi, ortak proje
-- [ ] Mekan bazlı olay havuzlarını genişletme (her mekana en az 5 benzersiz olay)
-- [ ] NPC mesajlaşma sistemi (telefon) — proaktif NPC mesajları, davetler
-- [ ] NPC zamanlama sistemi (hafta içi/sonu farklı mekan dağılımları)
+- [x] Kalan 12 NPC JSON dosyası oluşturma (toplam 20 NPC'ye tamamlama)
+- [x] Yeni olay zincirleri — flört, ilişki, kavga, kıskançlık, aldatma, ayrılma, barışma
+- [x] Partner ilişki sistemi — özel bar, küsme/ayrılma mekanizması
+- [x] Kariyer-NPC kesişimi olayları — iş referansı, iş teklifi, ortak proje
+- [x] Mekan bazlı olay havuzlarını genişletme (her mekana en az 5 benzersiz olay)
+- [x] NPC mesajlaşma sistemi (telefon) — proaktif NPC mesajları, davetler
+- [x] NPC zamanlama sistemi (hafta içi/sonu farklı mekan dağılımları)
 
 ---
 

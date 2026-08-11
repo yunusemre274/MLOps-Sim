@@ -134,5 +134,215 @@
       "closeFriend":  ["Sana bir SRE pozisyonu ayarlayabilirim."]
     },
     "eventPool": ["meet_emre", "emre_monitoring_tip", "emre_job_offer"]
+  },
+  {
+    "id": "deniz",
+    "name": "Deniz",
+    "gender": "f",
+    "personality": "creative",
+    "profession": "UX Designer",
+    "locations": ["gallery", "cinema", "park"],
+    "greeting": "Hey! Bugün çok yaratıcı hissediyorum.",
+    "avatar": "🎨",
+    "topics": {
+      "stranger":     ["UI tasarımla uğraşıyor musun?"],
+      "acquaintance": ["Figma'da prototip yapmayı çok seviyorum."],
+      "friend":       ["Senin için bir portfolio sayfası tasarlayayım mı?"],
+      "closeFriend":  ["Birlikte bir startup kurabiliriz!"]
+    },
+    "eventPool": ["meet_deniz", "deniz_design_tip", "deniz_collab"],
+    "romantic": true
+  },
+  {
+    "id": "ali",
+    "name": "Ali",
+    "gender": "m",
+    "personality": "nerdy",
+    "profession": "ML Engineer",
+    "locations": ["pub", "park"],
+    "greeting": "Selam! Model accuracy'n nasıl?",
+    "avatar": "🧑‍🔬",
+    "topics": {
+      "stranger":     ["Transformer mimarisi hakkında ne düşünüyorsun?"],
+      "acquaintance": ["Fine-tuning mu, RAG mı? İkisi de güzel."],
+      "friend":       ["GPU erişimin varsa birlikte antrenman yapalım."],
+      "closeFriend":  ["Kaggle yarışmasına beraber girelim mi?"]
+    },
+    "eventPool": ["meet_ali", "ali_ml_collab", "ali_kaggle"]
+  },
+  {
+    "id": "mert",
+    "name": "Mert",
+    "gender": "m",
+    "personality": "competitive",
+    "profession": "Backend Developer",
+    "locations": ["pub", "cinema"],
+    "greeting": "Hey bro, bugün nasıl gidiyor?",
+    "avatar": "💻",
+    "topics": {
+      "stranger":     ["Go mu Rust mı? Tartışalım."],
+      "acquaintance": ["Microservice'lere geçiş yapıyoruz."],
+      "friend":       ["Bir side project'te birlikte çalışalım mı?"],
+      "closeFriend":  ["Sana bir tech lead pozisyonu önereceğim."]
+    },
+    "eventPool": ["meet_mert", "mert_code_review", "mert_job_referral"]
+  },
+  {
+    "id": "yasemin",
+    "name": "Yasemin",
+    "gender": "f",
+    "personality": "empathetic",
+    "profession": "Product Manager",
+    "locations": ["cinema", "gallery", "pub"],
+    "greeting": "Merhaba! Sprint planning yapıyor musunuz?",
+    "avatar": "📊",
+    "topics": {
+      "stranger":     ["Agile metodolojisi hakkında ne düşünüyorsun?"],
+      "acquaintance": ["OKR'ler ve KPI'lar gerçekten işe yarıyor mu?"],
+      "friend":       ["Seninle brainstorm yapmak istiyorum."],
+      "closeFriend":  ["Seni ekibime almak istiyorum, düşünür müsün?"]
+    },
+    "eventPool": ["meet_yasemin", "yasemin_sprint", "yasemin_hire"],
+    "romantic": true
+  },
+  {
+    "id": "ozan",
+    "name": "Ozan",
+    "gender": "m",
+    "personality": "chill",
+    "profession": "Freelancer",
+    "locations": ["park", "pub", "gallery"],
+    "greeting": "Selam dostum, hayat güzel!",
+    "avatar": "🎸",
+    "topics": {
+      "stranger":     ["Freelance çalışmayı denedin mi?"],
+      "acquaintance": ["Upwork'te iyi projeler var son zamanlarda."],
+      "friend":       ["Bir müşterime seni önerebilirim."],
+      "closeFriend":  ["Beraber coworking'te çalışalım mı?"]
+    },
+    "eventPool": ["meet_ozan", "ozan_freelance_tip", "ozan_client_referral"]
+  },
+  {
+    "id": "naz",
+    "name": "Naz",
+    "gender": "f",
+    "personality": "mysterious",
+    "profession": "Security Engineer",
+    "locations": ["pub", "cinema"],
+    "greeting": "...",
+    "avatar": "🕵️‍♀️",
+    "topics": {
+      "stranger":     ["VPN kullanıyor musun?"],
+      "acquaintance": ["OWASP Top 10'u biliyor musun?"],
+      "friend":       ["Bir CTF yarışmasına birlikte katılalım mı?"],
+      "closeFriend":  ["Sana pentest yapmayı öğretebilirim."]
+    },
+    "eventPool": ["meet_naz", "naz_security_tip", "naz_ctf"]
+  },
+  {
+    "id": "kerem",
+    "name": "Kerem",
+    "gender": "m",
+    "personality": "entrepreneurial",
+    "profession": "CTO",
+    "locations": ["gallery", "pub"],
+    "greeting": "Merhaba, hangi startup ekosistemine dahilsin?",
+    "avatar": "🚀",
+    "topics": {
+      "stranger":     ["Tech stack'in ne?"],
+      "acquaintance": ["Series A aldık, büyüyoruz!"],
+      "friend":       ["Bizim şirkette CTO arıyoruz, ilgilenir misin?"],
+      "closeFriend":  ["Birlikte yatırımcılara pitch yapalım."]
+    },
+    "eventPool": ["meet_kerem", "kerem_startup_advice", "kerem_investment"]
+  },
+  {
+    "id": "buse",
+    "name": "Buse",
+    "gender": "f",
+    "personality": "optimistic",
+    "profession": "Data Scientist",
+    "locations": ["park", "cinema", "gallery"],
+    "greeting": "Selam! Bugün çok enerjik hissediyorum!",
+    "avatar": "📈",
+    "topics": {
+      "stranger":     ["Python mı R mı?"],
+      "acquaintance": ["Pandas ile veri analizi çok keyifli."],
+      "friend":       ["Bir veri seti üzerinde birlikte çalışalım mı?"],
+      "closeFriend":  ["Seninle paper yazmak istiyorum!"]
+    },
+    "eventPool": ["meet_buse", "buse_data_collab", "buse_paper"],
+    "romantic": true
+  },
+  {
+    "id": "hakan",
+    "name": "Hakan",
+    "gender": "m",
+    "personality": "mentor",
+    "profession": "Staff Engineer",
+    "locations": ["pub", "park"],
+    "greeting": "Hoş geldin genç mühendis.",
+    "avatar": "🧓",
+    "topics": {
+      "stranger":     ["Kaç yıldır sektördesin?"],
+      "acquaintance": ["Design patterns öğren, hayatını kurtarır."],
+      "friend":       ["Kariyer planın ne? Yardım edebilirim."],
+      "closeFriend":  ["Seni mentee olarak alırım, ne dersin?"]
+    },
+    "eventPool": ["meet_hakan", "hakan_mentorship", "hakan_career_advice"]
+  },
+  {
+    "id": "irem",
+    "name": "İrem",
+    "gender": "f",
+    "personality": "playful",
+    "profession": "QA Engineer",
+    "locations": ["cinema", "park", "pub"],
+    "greeting": "Heyy! Bug buldun mu bugün?",
+    "avatar": "🐛",
+    "topics": {
+      "stranger":     ["Test yazmayı sever misin?"],
+      "acquaintance": ["Selenium ile otomasyon çok eğlenceli."],
+      "friend":       ["Senin projeni test edeyim mi?"],
+      "closeFriend":  ["Bug bounty programına beraber katılalım!"]
+    },
+    "eventPool": ["meet_irem", "irem_test_collab", "irem_bug_bounty"],
+    "romantic": true
+  },
+  {
+    "id": "caglar",
+    "name": "Çağlar",
+    "gender": "m",
+    "personality": "grumpy",
+    "profession": "Legacy System Admin",
+    "locations": ["pub"],
+    "greeting": "Hmm, ne istiyorsun?",
+    "avatar": "🧔",
+    "topics": {
+      "stranger":     ["Docker falan hikaye, gerçek admin ssh ile çalışır."],
+      "acquaintance": ["20 yıllık Perl script'im var, hâlâ çalışıyor."],
+      "friend":       ["Tamam sen haklısın, container'lar da güzel."],
+      "closeFriend":  ["Bana Kubernetes öğretir misin?"]
+    },
+    "eventPool": ["meet_caglar", "caglar_debate", "caglar_learns_k8s"]
+  },
+  {
+    "id": "defne",
+    "name": "Defne",
+    "gender": "f",
+    "personality": "ambitious",
+    "profession": "Cloud Architect",
+    "locations": ["gallery", "park", "cinema"],
+    "greeting": "Multi-cloud strategy hakkında konuşalım mı?",
+    "avatar": "☁️",
+    "topics": {
+      "stranger":     ["AWS mi Azure mi GCP mi?"],
+      "acquaintance": ["Terraform ile IaC yapıyoruz."],
+      "friend":       ["Well-Architected Review yapalım mı?"],
+      "closeFriend":  ["Seninle bir cloud consultancy kurabiliriz."]
+    },
+    "eventPool": ["meet_defne", "defne_cloud_tip", "defne_partnership"],
+    "romantic": true
   }
 ]
+

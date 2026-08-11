@@ -50,6 +50,12 @@ const initialState = {
   // NPC ilişkileri — NPC verisiyle eşleşecek
   relationships: {},
 
+  // Partner ilişki sistemi
+  partner: null, // { npcId, startDay, mood: 'happy'|'angry'|'broken_up' }
+
+  // NPC mesajları (telefon)
+  npcMessages: [], // [{ id, from, text, day, read }]
+
   // Kariyer durumu
   career: {
     currentEmployer: null,
@@ -311,6 +317,38 @@ const useGameStore = create((set, get) => ({
   addEvent: (event) =>
     set((state) => ({
       todayEvents: [...state.todayEvents, event],
+    })),
+
+  // === Partner ilişki sistemi ===
+  setPartner: (npcId) =>
+    set((state) => ({
+      partner: { npcId, startDay: state.dayCount, mood: 'happy' },
+    })),
+
+  breakUp: () =>
+    set(() => ({
+      partner: null,
+    })),
+
+  setPartnerMood: (mood) =>
+    set((state) => ({
+      partner: state.partner ? { ...state.partner, mood } : null,
+    })),
+
+  // === NPC mesajlaşma (telefon) ===
+  addNpcMessage: (from, text) =>
+    set((state) => ({
+      npcMessages: [
+        ...state.npcMessages,
+        { id: `msg_${Date.now()}`, from, text, day: state.dayCount, read: false },
+      ],
+    })),
+
+  markMessageRead: (msgId) =>
+    set((state) => ({
+      npcMessages: state.npcMessages.map((m) =>
+        m.id === msgId ? { ...m, read: true } : m
+      ),
     })),
 
   // === Oyun pause/resume ===
