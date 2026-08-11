@@ -20,6 +20,7 @@ import CinemaScene from '../scenes/CinemaScene';
 import GalleryScene from '../scenes/GalleryScene';
 import RealtorScene from '../scenes/RealtorScene';
 import JobPlatformScene from '../scenes/JobPlatformScene';
+import PlazaScene from '../scenes/PlazaScene';
 
 // Sahne adı → bileşen eşlemesi
 // Yeni sahneler eklendikçe buraya import + kayıt yapılır
@@ -35,6 +36,7 @@ const SCENE_MAP = {
   gallery: GalleryScene,
   realtor: RealtorScene,
   jobplatform: JobPlatformScene,
+  plaza: PlazaScene,
 };
 
 export default function SceneManager() {

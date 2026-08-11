@@ -138,11 +138,21 @@ const useGameStore = create((set, get) => ({
         todayEvents: [],
       };
 
-      // Her 30 günde bir aylık kira ödemesi + pasif gelir
+      // Her 30 günde bir aylık kira ödemesi + pasif gelir + şirket finansı
       if (newDay % 30 === 0) {
         const rent = state.housing.monthlyRent;
         const passiveIncome = state.finance.monthlyPassiveIncome;
-        const netChange = passiveIncome - rent;
+
+        // Şirket gider/gelirleri
+        const company = state.career.ownCompany;
+        let companyExpense = 0;
+        let companyIncome = 0;
+        if (company) {
+          companyExpense = company.employees.reduce((s, e) => s + e.salary, 0) + company.monthlyRent;
+          companyIncome = company.clients.reduce((s, c) => s + c.baseIncome, 0);
+        }
+
+        const netChange = passiveIncome + companyIncome - rent - companyExpense;
         updates.finance = {
           ...state.finance,
           balance: state.finance.balance + netChange,
@@ -150,7 +160,34 @@ const useGameStore = create((set, get) => ({
         updates.todayEvents = [
           `💰 Aylık kira ödendi: ₺${rent}`,
           ...(passiveIncome > 0 ? [`💼 Bakım geliri: +₺${passiveIncome}`] : []),
+          ...(companyIncome > 0 ? [`🏢 Müşteri geliri: +₺${companyIncome}`] : []),
+          ...(companyExpense > 0 ? [`📋 Şirket giderleri: -₺${companyExpense}`] : []),
         ];
+
+        // Şirket varsa müşteri çekme şansı (her ay)
+        if (company && company.reputation > 0) {
+          const chance = company.reputation / 200;
+          if (Math.random() < chance) {
+            const sectors = ['Fintech', 'Sağlık', 'Eğitim', 'Lojistik', 'Enerji', 'Oyun'];
+            const names = ['AlphaInc', 'BetaCorp', 'Neosoft', 'GigaTech', 'VeriPlus', 'SmartOps'];
+            const newClient = {
+              id: `client_${newDay}`,
+              name: names[Math.floor(Math.random() * names.length)],
+              sector: sectors[Math.floor(Math.random() * sectors.length)],
+              baseIncome: 100 + Math.floor(Math.random() * 300),
+              satisfaction: 70 + Math.floor(Math.random() * 25),
+              startDay: newDay,
+            };
+            updates.career = {
+              ...state.career,
+              ownCompany: {
+                ...company,
+                clients: [...company.clients, newClient],
+              },
+            };
+            updates.todayEvents.push(`🤝 Yeni müşteri: ${newClient.name} (${newClient.sector})`);
+          }
+        }
       }
 
       return updates;

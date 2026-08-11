@@ -3,25 +3,34 @@
  *
  * Kapıdan çıkıldığında gösterilir. Oyuncu buradan mekanlara gider.
  * Kilitli mekanlar gri/devre dışı olarak gösterilir.
+ * Plaza ve Şirket mekanları rütbe/durum ile açılır.
  */
 
 import useGameStore from '../store/useGameStore';
 import InteractiveItem from '../components/InteractiveItem';
 import './OutdoorMenuScene.css';
 
-const LOCATIONS = [
-  { id: 'market',  icon: '🏪', label: 'Market',   targetScene: 'market',  locked: false },
-  { id: 'park',    icon: '🌳', label: 'Park',     targetScene: 'park',    locked: false },
-  { id: 'pub',     icon: '🍺', label: 'Pub',      targetScene: 'pub',     locked: false },
-  { id: 'cinema',  icon: '🎬', label: 'Sinema',   targetScene: 'cinema',  locked: false },
-  { id: 'gallery', icon: '🎨', label: 'Galeri',   targetScene: 'gallery', locked: false },
-  { id: 'realtor', icon: '🏠', label: 'Emlakçı',  targetScene: 'realtor', locked: false },
-  { id: 'plaza',   icon: '🏢', label: 'Plaza',    targetScene: 'plaza',   locked: true, unlockHint: 'Senior rütbe gerekli' },
-  { id: 'company', icon: '🏗️', label: 'Şirket',   targetScene: 'company', locked: true, unlockHint: 'Şirket kurma gerekli' },
-];
+const RANK_ORDER = ['junior', 'junior_plus', 'mid', 'mid_senior', 'senior', 'lead'];
 
 export default function OutdoorMenuScene() {
   const setScene = useGameStore((s) => s.setScene);
+  const rank = useGameStore((s) => s.character.rank);
+  const ownCompany = useGameStore((s) => s.career.ownCompany);
+
+  const rankIdx = RANK_ORDER.indexOf(rank);
+  const plazaUnlocked = rankIdx >= 4; // senior+
+  const companyUnlocked = !!ownCompany;
+
+  const LOCATIONS = [
+    { id: 'market',  icon: '🏪', label: 'Market',   targetScene: 'market',  locked: false },
+    { id: 'park',    icon: '🌳', label: 'Park',     targetScene: 'park',    locked: false },
+    { id: 'pub',     icon: '🍺', label: 'Pub',      targetScene: 'pub',     locked: false },
+    { id: 'cinema',  icon: '🎬', label: 'Sinema',   targetScene: 'cinema',  locked: false },
+    { id: 'gallery', icon: '🎨', label: 'Galeri',   targetScene: 'gallery', locked: false },
+    { id: 'realtor', icon: '🏠', label: 'Emlakçı',  targetScene: 'realtor', locked: false },
+    { id: 'plaza',   icon: '🏢', label: 'Plaza',    targetScene: 'plaza',   locked: !plazaUnlocked, unlockHint: 'Senior rütbe gerekli' },
+    { id: 'company', icon: '🏗️', label: 'Şirketim', targetScene: 'plaza',   locked: !companyUnlocked, unlockHint: 'Önce şirket kur' },
+  ];
 
   return (
     <div className="scene scene--outdoor">
@@ -49,3 +58,4 @@ export default function OutdoorMenuScene() {
     </div>
   );
 }
+

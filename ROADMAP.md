@@ -155,15 +155,15 @@
 ## Faz 9 — Kariyer İlerleme ve Şirket Kurma
 **Bu fazın çıkış kriteri:** Belirli aşamaya gelen oyuncunun şirket kurması, NPC işe alabilmesi ve finans tablosunu yönetebilmesi.
 
-- [ ] Rütbe sistemi tam implementasyonu — aşama geçiş koşulları, kilit açma bildirimleri
-- [ ] Şirket kurma ön koşul kontrolü (görev sayısı, rütbe, para, ofis)
-- [ ] Şirket kurma akışı — isim seçme, ofis kiralama, başlangıç ayarları
-- [ ] Plaza sahnesi — ofis seçenekleri, kiralama UI
-- [ ] NPC çalışan işe alma sistemi — aday NPC listesi, maaş belirleme, kabul/red
-- [ ] Görev delegasyonu — NPC çalışana görev atama, çalışanın hata oranına göre sonuç
-- [ ] NPC çalışan çıktısı inceleme — hatalı Dockerfile review, geri bildirim
-- [ ] Şirket finans paneli — aylık gelir, gider, kâr, sunucu maliyeti
-- [ ] Müşteri portföy yönetimi — aktif müşteriler, memnuniyet, yeni müşteri çekme
+- [x] Rütbe sistemi tam implementasyonu — aşama geçiş koşulları, kilit açma bildirimleri
+- [x] Şirket kurma ön koşul kontrolü (görev sayısı, rütbe, para, ofis)
+- [x] Şirket kurma akışı — isim seçme, ofis kiralama, başlangıç ayarları
+- [x] Plaza sahnesi — ofis seçenekleri, kiralama UI
+- [x] NPC çalışan işe alma sistemi — aday NPC listesi, maaş belirleme, kabul/red
+- [x] Görev delegasyonu — NPC çalışana görev atama, çalışanın hata oranına göre sonuç
+- [x] NPC çalışan çıktısı inceleme — hatalı Dockerfile review, geri bildirim
+- [x] Şirket finans paneli — aylık gelir, gider, kâr, sunucu maliyeti
+- [x] Müşteri portföy yönetimi — aktif müşteriler, memnuniyet, yeni müşteri çekme
 
 ---
 
