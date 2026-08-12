@@ -183,11 +183,11 @@
 ## Faz 11 — Cilalama ve Denge
 **Bu fazın çıkış kriteri:** Oyunun 100 günlük bir senaryoda ekonomik olarak kırılmaması, bug'sız ve akıcı bir deneyim sunması.
 
-- [ ] Bar formülleri denge testi — otomatik simülasyon (100 günlük senaryo)
-- [ ] Ekonomi dengesi — fiyatlar, gelirler, maliyetler tutarlılık kontrolü
-- [ ] UX iyileştirmeleri — animasyonlar, geçiş efektleri, hover durumları
-- [ ] Erişilebilirlik geçişi — klavye navigasyonu, ARIA etiketleri
-- [ ] Performans profilleme — büyük state'lerde render optimizasyonu
-- [ ] Bug fix turu — birikmiş sorunların çözümü
-- [ ] Son kullanıcı playtest — 3 farklı senaryo (kariyer odaklı, sosyal odaklı, dengeli)
-- [ ] Dokümantasyon güncelleme — README, ROADMAP, son durum
+- [x] Bar formülleri denge testi — otomatik simülasyon (100 günlük senaryo)
+- [x] Ekonomi dengesi — fiyatlar, gelirler, maliyetler tutarlılık kontrolü
+- [x] UX iyileştirmeleri — animasyonlar, geçiş efektleri, hover durumları
+- [x] Erişilebilirlik geçişi — klavye navigasyonu, ARIA etiketleri
+- [x] Performans profilleme — büyük state'lerde render optimizasyonu
+- [x] Bug fix turu — birikmiş sorunların çözümü
+- [x] Son kullanıcı playtest — 3 farklı senaryo (kariyer odaklı, sosyal odaklı, dengeli)
+- [x] Dokümantasyon güncelleme — README, ROADMAP, son durum

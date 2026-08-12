@@ -27,9 +27,17 @@ export default function StatusBar({ barName, current, max }) {
   const status = getBarStatus(current, barName);
 
   return (
-    <div className={`status-bar status-bar--${status}`} title={`${BAR_LABELS[barName]}: ${percentage}%`}>
+    <div
+      className={`status-bar status-bar--${status}`}
+      title={`${BAR_LABELS[barName]}: ${percentage}%`}
+      role="progressbar"
+      aria-label={BAR_LABELS[barName]}
+      aria-valuenow={percentage}
+      aria-valuemin={0}
+      aria-valuemax={100}
+    >
       <div className="status-bar__header">
-        <span className="status-bar__icon">{BAR_ICONS[barName]}</span>
+        <span className="status-bar__icon" aria-hidden="true">{BAR_ICONS[barName]}</span>
         <span className="status-bar__label">{BAR_LABELS[barName]}</span>
         <span className="status-bar__value">{percentage}%</span>
       </div>
