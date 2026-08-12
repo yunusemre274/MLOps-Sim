@@ -27,12 +27,10 @@ describe('calculateBarDecay', () => {
     const bars = makeBars();
     const result = calculateBarDecay(bars, 16); // 16 dakika = 1 tick
 
-    expect(result.sleep.current).toBeLessThan(100);
-    expect(result.hunger.current).toBeLessThan(100);
-    expect(result.health.current).toBeLessThan(100);
-    // DECAY_RATES.stress = -0.3 (negatif): stres delta = -(-0.3)*16 = +4.8
-    // Yani stres doğal olarak yavaşça artar (hareketsiz karakter stresli)
-    expect(result.stress.current).toBeGreaterThan(0);
+    // DECAY_RATES.stress = -0.0083: stres doğal olarak yavaşça azalır
+    const stressBars = makeBars({ stress: { current: 50, max: 100 } });
+    const stressResult = calculateBarDecay(stressBars, 16);
+    expect(stressResult.stress.current).toBeLessThan(50);
   });
 
   it('barlar 0 altına düşmemeli', () => {

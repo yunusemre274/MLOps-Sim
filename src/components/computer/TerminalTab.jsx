@@ -6,21 +6,15 @@
  */
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import VirtualFileSystem from '../../engine/VirtualFileSystem';
+import { globalVFS } from '../../engine/VirtualFileSystem';
 import { executeCommand } from '../../engine/CommandRouter';
 import './TerminalTab.css';
 
 export default function TerminalTab() {
-  const vfsRef = useRef(null);
+  const vfs = globalVFS;
   const gitStateRef = useRef({ initialized: false, staged: [], commits: [], branch: 'main' });
   const inputRef = useRef(null);
   const outputRef = useRef(null);
-
-  // VFS'yi bir kez oluştur
-  if (!vfsRef.current) {
-    vfsRef.current = new VirtualFileSystem();
-  }
-  const vfs = vfsRef.current;
 
   const [history, setHistory] = useState([
     { type: 'system', text: 'MLOps-Sim Terminal v1.0' },

@@ -11,8 +11,9 @@
 
 // === ZAMAN SİSTEMİ ===
 export const TIME = {
-  // Oyun hızı: 1 gerçek saniye = 16 oyun dakikası
-  GAME_MINUTES_PER_REAL_SECOND: 16,
+  // Oyun hızı: 5x çarpanı (1 oyun dakikası = 12 gerçek saniye -> 1 gerçek saniyede 1/12 = 0.0833 oyun dk)
+  GAME_TIME_MULTIPLIER: 5,
+  GAME_MINUTES_PER_REAL_SECOND: 5 / 60,
 
   // Tick aralığı (ms) — her tick'te barlar güncellenir
   TICK_INTERVAL_MS: 1000,
@@ -20,8 +21,6 @@ export const TIME = {
   // Gün başlangıç/bitiş saatleri
   DAY_START_HOUR: 8,
   DAY_END_HOUR: 2, // Gece 02:00 — ertesi gün
-
-  // Eylem bazlı zaman tüketimi (dakika)
   ACTIONS: {
     eat: 15,
     sleep: 480,       // 8 saat
@@ -33,19 +32,19 @@ export const TIME = {
     goToGallery: 90,
     smoke: 10,
     drink: 20,
-    useComputer: 0,   // Bilgisayar — zaman ayrıca iç modülde hesaplanır
-    usePhone: 0,      // Telefon — zaman ayrıca iç modülde hesaplanır
+    useComputer: 0,
+    usePhone: 0,
   },
 };
 
 // === BAR SİSTEMİ ===
 export const BARS = {
-  // Dakika başına azalma oranları (tick başına uygulanır)
+  // Dakika başına azalma oranları (5x zaman çarpanı ile uygulanır)
   DECAY_RATES: {
-    sleep:   0.8,   // Uyku barı dakika başına 0.8 puan düşer
-    hunger:  1.2,   // Açlık barı dakika başına 1.2 puan düşer
-    health:  0.1,   // Sağlık yavaş düşer (dolaylı etkilerle hızlanır)
-    stress:  -0.3,  // Stres doğal olarak yavaşça düşer (negatif = azalma)
+    sleep:   0.0333, // Saat başına 2.0 puan (16 uyanık saat = 32 puan azalma)
+    hunger:  0.10,   // Saat başına 6.0 puan (8 saat = 48 puan azalma -> kritik seviye)
+    health:  0.0033, // Saat başına 0.2 puan
+    stress:  -0.0083, // Saat başına 0.5 puan doğal rahatlama (negatif = azalma)
   },
 
   // Eşik değerleri — kritik seviyeler

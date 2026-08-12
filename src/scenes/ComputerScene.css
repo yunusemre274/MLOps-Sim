@@ -1,66 +1,128 @@
 /**
- * ComputerScene.css — Bilgisayar sahnesi stilleri
+ * ComputerScene.css — Windows XP Masaüstü Stilleri
  */
 
-.scene--computer {
+.xp-desktop-scene {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 60px); /* StatusPanel yüksekliği çıkarıldı */
+  height: calc(100vh - 60px); /* StatusPanel yüksekliği düşülür */
+  position: relative;
   overflow: hidden;
+  user-select: none;
 }
 
-.computer-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-xs) var(--space-md);
-  background: var(--color-bg-secondary);
-  border-bottom: 1px solid var(--color-border);
-  flex-shrink: 0;
-}
-
-.computer-back {
-  padding: var(--space-xs) var(--space-sm);
-  font-size: var(--font-size-xs);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-text-secondary);
-  transition: all var(--transition-fast);
-}
-
-.computer-back:hover {
-  background: var(--color-surface-hover);
-  color: var(--color-text-primary);
-}
-
-.computer-tabs {
-  display: flex;
-  gap: 2px;
-}
-
-.computer-tab {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  padding: var(--space-xs) var(--space-md);
-  font-size: var(--font-size-sm);
-  background: transparent;
-  color: var(--color-text-muted);
-  border-bottom: 2px solid transparent;
-  transition: all var(--transition-fast);
-}
-
-.computer-tab:hover {
-  color: var(--color-text-primary);
-}
-
-.computer-tab--active {
-  color: var(--color-text-primary);
-  border-bottom-color: var(--color-accent);
-}
-
-.computer-content {
+/* XP Bliss Arka Planı */
+.xp-desktop {
   flex: 1;
+  background: linear-gradient(180deg, #1f6fd8 0%, #2f83ee 50%, #4b9bfa 100%);
+  position: relative;
   overflow: hidden;
+}
+
+/* Simge Grid'i (Sol Üstte Kolonlar Halinde) */
+.xp-desktop__icons {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 16px;
+  padding: 16px;
+  height: calc(100% - 40px);
+  width: max-content;
+}
+
+.xp-desktop-icon {
+  width: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.1s ease;
+}
+
+.xp-desktop-icon:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.xp-desktop-icon--selected {
+  background: rgba(11, 80, 200, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.xp-desktop-icon__img {
+  font-size: 32px;
+  line-height: 1;
+  filter: drop-shadow(1px 2px 3px rgba(0, 0, 0, 0.5));
+}
+
+.xp-desktop-icon__text {
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  word-break: break-word;
+  line-height: 1.2;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Windows XP Bağlam Menüsü (Context Menu) */
+.xp-context-menu {
+  position: absolute;
+  z-index: 9999;
+  background: #ece9d8;
+  border: 2px solid #0055ea;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+  padding: 2px;
+  width: 170px;
+  font-family: 'Tahoma', sans-serif;
+  font-size: 11px;
+}
+
+.xp-context-menu__item {
+  padding: 4px 10px;
+  color: #000;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.xp-context-menu__item:hover {
+  background: #316ac5;
+  color: #fff;
+}
+
+.xp-context-menu__divider {
+  height: 1px;
+  background: #aca899;
+  margin: 3px 2px;
+}
+
+/* Özellikler Modalı */
+.xp-properties-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.xp-properties-modal__content {
+  background: #ece9d8;
+  border: 2px solid #0055ea;
+  padding: 20px;
+  border-radius: 4px;
+  color: #000;
+  min-width: 280px;
+}
+.xp-properties-modal__content button {
+  margin-top: 16px;
+  padding: 4px 16px;
+  background: #d4d0c8;
+  border: 1px solid #716f64;
+  cursor: pointer;
 }

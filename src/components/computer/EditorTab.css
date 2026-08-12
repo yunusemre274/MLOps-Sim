@@ -1,5 +1,5 @@
 /**
- * EditorTab.css — Kod editörü stilleri
+ * EditorTab.css — Kod editörü & Entegre Terminal stilleri
  */
 
 .editor {
@@ -12,7 +12,7 @@
 .editor__tabs {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   padding: 0 8px;
   background: #181825;
   border-bottom: 1px solid #313244;
@@ -21,13 +21,17 @@
 }
 
 .editor__file-tab {
-  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
   font-size: 12px;
   color: #6c7086;
   background: transparent;
   border-bottom: 2px solid transparent;
   transition: all 0.15s;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .editor__file-tab:hover { color: #cdd6f4; }
@@ -37,13 +41,45 @@
   background: #1e1e2e;
 }
 
+.editor__dirty-dot {
+  color: #f9e2af;
+  font-size: 10px;
+}
+
+.editor__close-tab {
+  font-size: 10px;
+  color: #585b70;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+.editor__close-tab:hover {
+  background: #f38ba8;
+  color: #1e1e2e;
+}
+
 .editor__new-file {
   padding: 6px 10px;
   font-size: 12px;
   color: #585b70;
   background: transparent;
+  cursor: pointer;
 }
 .editor__new-file:hover { color: #a6e3a1; }
+
+.editor__toggle-term {
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #89b4fa;
+  background: #313244;
+  border: 1px solid #45475a;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.editor__toggle-term:hover,
+.editor__toggle-term--active {
+  background: #89b4fa;
+  color: #1e1e2e;
+}
 
 .editor__save {
   margin-left: auto;
@@ -53,6 +89,7 @@
   background: transparent;
   border: 1px solid #313244;
   border-radius: 4px;
+  cursor: pointer;
 }
 .editor__save:hover { background: #313244; }
 
@@ -80,6 +117,15 @@
   color: #cdd6f4;
   background: #313244;
   border-radius: 4px;
+  cursor: pointer;
+}
+
+.editor__main-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
 }
 
 .editor__body {
@@ -147,6 +193,41 @@
   z-index: 1;
 }
 
+/* Entegre Terminal Paneli (Bottom Drawer) */
+.editor__terminal-panel {
+  height: 220px;
+  background: #11111b;
+  border-top: 2px solid #89b4fa;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.editor__terminal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 12px;
+  background: #181825;
+  font-size: 11px;
+  color: #89b4fa;
+  font-weight: 600;
+  border-bottom: 1px solid #313244;
+}
+
+.editor__terminal-header button {
+  background: transparent;
+  border: none;
+  color: #f38ba8;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.editor__terminal-body {
+  flex: 1;
+  overflow: hidden;
+}
+
 .editor__statusbar {
   display: flex;
   gap: 16px;
@@ -156,4 +237,13 @@
   font-size: 11px;
   color: #585b70;
   flex-shrink: 0;
+}
+
+.editor__statusbar-term-link {
+  margin-left: auto;
+  color: #89b4fa;
+  cursor: pointer;
+}
+.editor__statusbar-term-link:hover {
+  text-decoration: underline;
 }

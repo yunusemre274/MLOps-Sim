@@ -1,45 +1,185 @@
 /**
- * CommandRouter.js — Terminal komut yönlendiricisi
+ * CommandRouter.js — Terminal komut yönlendiricisi (Faz 15 / GÖREV GRUBU 2 Genişletmesi & Round 6 Docker CLI)
  *
- * Kullanıcının girdiği komutları parse edip ilgili engine'e yönlendirir.
- * Desteklenen komut aileleri: dosya sistemi, git, docker
+ * Kullanıcının girdiği komutları parse edip ilgili motorlara yönlendirir.
+ * Desteklenen komut aileleri: Linux VFS, Git, Docker & Docker Compose
  */
 
-import { simulateDockerBuild, dockerRun, dockerStop, dockerPs, dockerPsAll } from './DockerSimulator.js';
+import {
+  simulateDockerBuild,
+  dockerRun,
+  dockerStop,
+  dockerStart,
+  dockerRestart,
+  dockerRm,
+  dockerRmi,
+  dockerPs,
+  dockerPsAll,
+  dockerImages,
+  dockerLogs,
+  dockerExec,
+  dockerInspectContainer,
+  dockerPruneContainers,
+  dockerTop,
+  dockerRename,
+  dockerCp,
+  dockerImageInspect,
+  dockerImagePrune,
+  dockerImageHistory,
+  dockerPull,
+  dockerPush,
+  dockerTag,
+  dockerVolumeCreate,
+  dockerVolumeLs,
+  dockerVolumeRm,
+  dockerVolumeInspect,
+  dockerVolumePrune,
+  dockerNetworkCreate,
+  dockerNetworkLs,
+  dockerNetworkRm,
+  dockerNetworkInspect,
+  dockerNetworkConnect,
+  dockerNetworkDisconnect,
+  dockerNetworkPrune,
+  dockerSystemDf,
+  dockerSystemPrune,
+  dockerStats,
+  dockerHelp,
+} from './DockerSimulator.js';
 import { parseCompose, generateComposeUpLogs, generateComposeDownLogs } from './ComposeParser.js';
+import { windowManager } from './WindowManager.js';
+
+// Global komut geçmişi ve ortam değişkenleri
+const commandHistory = [];
+const envVars = {
+  PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+  HOME: '/home/user',
+  USER: 'user',
+  SHELL: '/bin/bash',
+  TERM: 'xterm-256color',
+};
+
+// Takip edilen paketler (apt-get install simülasyonu)
+const installedPackages = new Set(['curl', 'wget', 'git', 'docker', 'python3', 'pip']);
 
 /**
- * Bir komut satırını çalıştırır.
- * @param {string} input - Kullanıcının girdiği komut
- * @param {VirtualFileSystem} vfs - Sanal dosya sistemi instance'ı
- * @param {Object} gitState - Git durumu { initialized, staged, commits, branch }
- * @returns {string[]} Çıktı satırları
+ * Ana komut çalıştırma fonksiyonu
  */
-export function executeCommand(input, vfs, gitState) {
+export function executeCommand(input, vfs, gitState = { initialized: false, staged: [], commits: [], branch: 'main' }) {
   const trimmed = input.trim();
   if (!trimmed) return [];
+
+  commandHistory.push(trimmed);
+
+  if (trimmed === 'docker compose' || trimmed.startsWith('docker compose ')) {
+    const composeArgs = trimmed.replace(/^docker\s+compose\s*/, '').split(/\s+/).filter(Boolean);
+    return handleDockerCompose(composeArgs, vfs);
+  }
+  if (trimmed.startsWith('docker-compose')) {
+    return handleDockerCompose(trimmed.split(/\s+/).slice(1), vfs);
+  }
 
   const parts = trimmed.split(/\s+/);
   const cmd = parts[0];
   const args = parts.slice(1);
 
   switch (cmd) {
-    // === Dosya Sistemi ===
     case 'pwd':
       return [vfs.pwd()];
 
     case 'ls': {
-      const result = vfs.ls(args[0]);
+      const isLongFormat = args.includes('-l') || args.includes('-la') || args.includes('-al');
+      const targetArg = args.find((a) => !a.startsWith('-')) || vfs.pwd();
+      const result = vfs.ls(targetArg);
       if (!result.success) return [result.error];
       if (result.entries.length === 0) return ['(boş dizin)'];
-      return result.entries.map((e) =>
-        e.type === 'dir' ? `\x1b[34m${e.name}/\x1b[0m` : e.name
-      );
+
+      if (isLongFormat) {
+        const lines = [`total ${result.entries.length * 4}`];
+        for (const e of result.entries) {
+          let perms = '-rw-r--r--';
+          let displayName = e.name;
+
+          if (e.type === 'dir') {
+            perms = 'drwxr-xr-x';
+            displayName = `\x1b[34m${e.name}/\x1b[0m`;
+          } else if (e.type === 'app') {
+            perms = 'arwxr-xr-x';
+            displayName = `\x1b[36m[app] ${e.name}\x1b[0m`;
+          }
+
+          const size = String(e.size).padStart(6);
+          const date = e.date || 'Jan 12 08:00';
+          lines.push(`${perms}  1 user user  ${size} ${date} ${displayName}`);
+        }
+        return lines;
+      }
+
+      return result.entries.map((e) => {
+        if (e.type === 'dir') return `\x1b[34m${e.name}/\x1b[0m`;
+        if (e.type === 'app') return `\x1b[36m[app] ${e.name}\x1b[0m`;
+        return e.name;
+      });
     }
 
     case 'cd': {
-      const result = vfs.cd(args[0]);
+      const rawPath = trimmed.substring(2).trim();
+      let path = rawPath;
+      if ((rawPath.startsWith('"') && rawPath.endsWith('"')) || (rawPath.startsWith("'") && rawPath.endsWith("'"))) {
+        path = rawPath.slice(1, -1);
+      } else {
+        path = rawPath.replace(/\\ /g, ' ');
+      }
+      const result = vfs.cd(path || args[0]);
       return result.success ? [] : [result.error];
+    }
+
+    case 'open': {
+      const rawTarget = trimmed.substring(4).trim();
+      if (!rawTarget) return ['kullanım: open <dosya|klasör|uygulama>'];
+
+      let targetName = rawTarget;
+      if ((rawTarget.startsWith('"') && rawTarget.endsWith('"')) || (rawTarget.startsWith("'") && rawTarget.endsWith("'"))) {
+        targetName = rawTarget.slice(1, -1);
+      } else {
+        targetName = rawTarget.replace(/\\ /g, ' ');
+      }
+
+      const currentCwd = vfs.pwd();
+      const targetFullPath = targetName.startsWith('/') ? targetName : `${currentCwd}/${targetName}`.replace(/\/+/g, '/');
+      const { node, found } = vfs._getNode(targetFullPath);
+
+      if (!found) {
+        return [`open: ${targetName}: Böyle bir dosya veya dizin yok.`];
+      }
+
+      if (node._type === 'app') {
+        windowManager.openApp(node.appId);
+        return [];
+      }
+
+      if (node._type === 'dir') {
+        windowManager.openApp('explorer', { initialPath: targetFullPath });
+        return [];
+      }
+
+      if (node._type === 'file') {
+        const ext = targetName.toLowerCase();
+        const isSupportedCodeFile = [
+          '.py', '.js', '.ts', '.go', '.md', '.txt', '.json', '.yml', '.yaml', '.env', '.sh', '.gitignore', 'dockerfile'
+        ].some((e) => ext.endsWith(e) || ext.includes('dockerfile'));
+
+        if (isSupportedCodeFile) {
+          windowManager.openApp('editor', {
+            initialFile: { name: targetName, path: targetFullPath, content: node.content },
+          });
+          return [];
+        }
+
+        return [`open: ${targetName}: Bu dosya türünü açacak bir uygulama yok.`];
+      }
+
+      return [`open: ${targetName}: Tanınmayan düğüm türü.`];
     }
 
     case 'cat': {
@@ -48,9 +188,42 @@ export function executeCommand(input, vfs, gitState) {
       return result.success ? result.content.split('\n') : [result.error];
     }
 
+    case 'head': {
+      if (!args[0]) return ['head: dosya adı gerekli'];
+      const lines = parseInt(args.find((a) => a.startsWith('-n'))?.replace('-n', '')) || 10;
+      const file = args.find((a) => !a.startsWith('-')) || args[0];
+      const result = vfs.cat(file);
+      if (!result.success) return [result.error];
+      return result.content.split('\n').slice(0, lines);
+    }
+
+    case 'tail': {
+      if (!args[0]) return ['tail: dosya adı gerekli'];
+      const lines = parseInt(args.find((a) => a.startsWith('-n'))?.replace('-n', '')) || 10;
+      const file = args.find((a) => !a.startsWith('-')) || args[0];
+      const result = vfs.cat(file);
+      if (!result.success) return [result.error];
+      const allLines = result.content.split('\n');
+      return allLines.slice(Math.max(0, allLines.length - lines));
+    }
+
+    case 'cp': {
+      if (args.length < 2) return ['cp: kaynak ve hedef gerekli'];
+      const result = vfs.cp(args[0], args[1]);
+      return result.success ? [] : [result.error];
+    }
+
+    case 'mv': {
+      if (args.length < 2) return ['mv: kaynak ve hedef gerekli'];
+      const result = vfs.mv(args[0], args[1]);
+      return result.success ? [] : [result.error];
+    }
+
     case 'mkdir': {
       if (!args[0]) return ['mkdir: dizin adı gerekli'];
-      const result = vfs.mkdir(args[0]);
+      const recursive = args.includes('-p');
+      const dirPath = args.find((a) => !a.startsWith('-')) || args[0];
+      const result = vfs.mkdir(dirPath, recursive);
       return result.success ? [] : [result.error];
     }
 
@@ -61,15 +234,70 @@ export function executeCommand(input, vfs, gitState) {
     }
 
     case 'rm': {
-      if (!args[0]) return ['rm: dosya/dizin adı gerekli'];
-      const result = vfs.rm(args[0]);
+      if (!args[0]) return ['rm: dosya veya dizin adı gerekli'];
+      const recursive = args.includes('-r') || args.includes('-rf') || args.includes('-f');
+      const target = args.find((a) => !a.startsWith('-')) || args[0];
+      const result = vfs.rm(target, recursive);
       return result.success ? [] : [result.error];
     }
 
     case 'echo': {
-      const result = vfs.echo(args);
-      if (result.output !== undefined) return [result.output];
-      return result.success ? [] : [result.error];
+      const text = args.join(' ');
+      if (text.includes('>')) {
+        const [content, file] = text.split('>').map((s) => s.trim());
+        const result = vfs.writeFile(file, content.replace(/^["']|["']$/g, '') + '\n');
+        return result.success ? [] : [result.error];
+      }
+      return [text.replace(/^["']|["']$/g, '')];
+    }
+
+    case 'env':
+      return Object.entries(envVars).map(([k, v]) => `${k}=${v}`);
+
+    case 'export': {
+      if (!args[0] || !args[0].includes('=')) return ['usage: export VAR=value'];
+      const [k, ...vParts] = args[0].split('=');
+      envVars[k] = vParts.join('=').replace(/^["']|["']$/g, '');
+      return [];
+    }
+
+    case 'grep': {
+      if (args.length < 2) return ['usage: grep <pattern> <file>'];
+      const result = vfs.grep(args[0], args[1]);
+      return result.success ? result.lines : [result.error];
+    }
+
+    case 'find': {
+      const dir = args.find((a) => !a.startsWith('-')) || '.';
+      return vfs.find(dir);
+    }
+
+    case 'history':
+      return commandHistory.map((cmdStr, i) => ` ${i + 1}  ${cmdStr}`);
+
+    case 'apt-get':
+    case 'apt': {
+      const sub = args[0];
+      if (sub === 'update') {
+        return [
+          'Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]',
+          'Get:2 http://deb.debian.org/debian-security bookworm-security InRelease [48.0 kB]',
+          'Reading package lists... Done',
+        ];
+      }
+      if (sub === 'install') {
+        const pkg = args[1];
+        if (!pkg) return ['apt-get install: paket adı gerekli'];
+        installedPackages.add(pkg);
+        return [
+          `Reading package lists... Done`,
+          `Building dependency tree... Done`,
+          `The following NEW packages will be installed: ${pkg}`,
+          `0 upgraded, 1 newly installed, 0 to remove.`,
+          `Setting up ${pkg} (1.0.0-1) ...`,
+        ];
+      }
+      return ['apt-get update | apt-get install <package>'];
     }
 
     case 'tree': {
@@ -77,102 +305,90 @@ export function executeCommand(input, vfs, gitState) {
       return lines.length > 0 ? lines : ['(boş dizin)'];
     }
 
-    // === Git Simülasyonu ===
+    // Git Simülasyonu
     case 'git':
       return handleGit(args, vfs, gitState);
 
-    // === Docker Simülasyonu ===
+    // Docker Simülasyonu
     case 'docker':
       return handleDocker(args, vfs);
 
-    // === Yardım ===
+    case 'docker-compose':
+      return handleDockerCompose(args.slice(1), vfs);
+
     case 'help':
+    case 'man': {
+      if (args[0] === 'ls') {
+        return [
+          'ls - Dizin içeriğini listeler.',
+          'Kullanım: ls [-l] [dizin]',
+          '',
+          'Biçimlendirme Notları:',
+          '  - Klasörler mavi renkle ve sonuna / eklenerek gösterilir (örn. projects/).',
+          '  - [app] etiketi ve turkuaz (cyan) renkli girdiler çalıştırılabilir uygulama kısayollarıdır (örn. [app] Terminal).',
+          '  - ls -l çıktısındaki en baştaki "a" harfi uygulama düğümlerini temsil eder (arwxr-xr-x).',
+        ];
+      }
       return [
         'Kullanılabilir komutlar:',
-        '  pwd, ls, cd, cat, mkdir, touch, rm, echo, tree',
-        '  git init/clone/status/add/commit/push/pull/log',
-        '  docker build/run/stop/ps/images',
-        '  docker compose up/down',
-        '  clear, help',
-      ];
-
-    case 'clear':
-      return ['__CLEAR__']; // Terminal bileşeni bu özel değeri yakalar
-
-    case 'whoami':
-      return ['mlops-engineer'];
-
-    case 'date':
-      return [new Date().toLocaleString('tr-TR')];
-
-    case 'uname':
-      return ['MLOps-Sim Docker Engine v1.0 (simulated)'];
-
-    default:
-      return [`${cmd}: komut bulunamadı. 'help' yazarak kullanılabilir komutları görebilirsin.`];
-  }
-}
-
-/**
- * Git komutları
- */
-function handleGit(args, vfs, gitState) {
-  const subcommand = args[0];
-
-  switch (subcommand) {
-    case 'init':
-      if (gitState.initialized) return ['Reinitializing existing Git repository'];
-      gitState.initialized = true;
-      gitState.branch = 'main';
-      gitState.commits = [];
-      gitState.staged = [];
-      vfs.mkdir('.git');
-      return ['Initialized empty Git repository in ' + vfs.pwd() + '/.git/'];
-
-    case 'clone': {
-      const url = args[1];
-      if (!url) return ['usage: git clone <repository>'];
-      const repoName = url.split('/').pop()?.replace('.git', '') || 'repo';
-      vfs.mkdir(repoName);
-      gitState.initialized = true;
-      gitState.branch = 'main';
-      gitState.commits = [{ hash: 'a1b2c3d', message: 'Initial commit', author: 'remote' }];
-      gitState.staged = [];
-      return [
-        `Cloning into '${repoName}'...`,
-        'remote: Enumerating objects: 42, done.',
-        'remote: Counting objects: 100% (42/42), done.',
-        'remote: Compressing objects: 100% (30/30), done.',
-        'Receiving objects: 100% (42/42), 12.5 KiB, done.',
+        '  Linux: pwd, ls, cd, open, cat, head, tail, cp, mv, mkdir, touch, rm, echo, env, export, grep, find, history, clear, apt-get',
+        '  Git: git init/clone/status/add/commit/push/pull/log',
+        '  Docker: docker build/run/ps/stop/start/rm/rmi/images/logs/exec/inspect/cp/stats/top/system/volume/network/container/image',
+        '  Compose: docker-compose up/down/ps/config veya docker compose ...',
       ];
     }
 
+    case 'clear':
+      return ['__CLEAR__'];
+
+    default:
+      return [`bash: ${cmd}: command not found`];
+  }
+}
+
+// === GIT DISPATCHER ===
+function handleGit(args, vfs, gitState) {
+  const subcommand = args[0];
+  switch (subcommand) {
+    case 'init':
+      gitState.initialized = true;
+      vfs.mkdir('.git', true);
+      return ['Initialized empty Git repository in ' + vfs.pwd() + '/.git/'];
+    case 'clone': {
+      const url = args[1] || 'https://github.com/mlops/project.git';
+      const repoName = url.split('/').pop().replace('.git', '') || 'mlops-project';
+      gitState.initialized = true;
+      vfs.mkdir(repoName, true);
+      vfs.mkdir(`${repoName}/.git`, true);
+      vfs.touch(`${repoName}/README.md`);
+      vfs.writeFile(`${repoName}/README.md`, `# ${repoName}\nMLOps repository cloned successfully.\n`);
+      return [
+        `Cloning into '${repoName}'...`,
+        'remote: Enumerating objects: 12, done.',
+        'remote: Total 12 (delta 2), reused 10 (delta 1)',
+        'Unpacking objects: 100% (12/12), done.',
+      ];
+    }
     case 'status':
       if (!gitState.initialized) return ['fatal: not a git repository'];
       return [
         `On branch ${gitState.branch}`,
         gitState.staged.length > 0
-          ? `Changes to be committed:\n  ${gitState.staged.join('\n  ')}`
+          ? `Changes to be committed:\n  ${gitState.staged.map((f) => `staged: ${f}`).join('\n  ')}`
           : 'nothing to commit, working tree clean',
       ];
-
     case 'add': {
       if (!gitState.initialized) return ['fatal: not a git repository'];
       const file = args[1];
       if (!file) return ['Nothing specified, nothing added.'];
       if (file === '.' || file === '-A') {
         const ls = vfs.ls();
-        if (ls.success) {
-          gitState.staged = ls.entries.map((e) => e.name);
-        }
+        if (ls.success) gitState.staged = ls.entries.map((e) => e.name);
       } else {
-        if (!gitState.staged.includes(file)) {
-          gitState.staged.push(file);
-        }
+        if (!gitState.staged.includes(file)) gitState.staged.push(file);
       }
       return [];
     }
-
     case 'commit': {
       if (!gitState.initialized) return ['fatal: not a git repository'];
       if (gitState.staged.length === 0) return ['nothing to commit'];
@@ -182,146 +398,298 @@ function handleGit(args, vfs, gitState) {
       gitState.commits.push({ hash, message, author: 'you' });
       const count = gitState.staged.length;
       gitState.staged = [];
-      return [
-        `[${gitState.branch} ${hash}] ${message}`,
-        ` ${count} file(s) changed`,
-      ];
+      return [`[${gitState.branch} ${hash}] ${message}`, ` ${count} file(s) changed`];
     }
-
     case 'push':
       if (!gitState.initialized) return ['fatal: not a git repository'];
-      return [
-        `Enumerating objects: ${gitState.commits.length}, done.`,
-        'Counting objects: 100%, done.',
-        `To origin/${gitState.branch}`,
-        '   a1b2c3d..f4e5d6c  main -> main',
-      ];
-
+      return [`Enumerating objects: ${gitState.commits.length}, done.`, `To origin/${gitState.branch}`, '   a1b2c3d..f4e5d6c  main -> main'];
     case 'pull':
       if (!gitState.initialized) return ['fatal: not a git repository'];
       return ['Already up to date.'];
-
     case 'log':
       if (!gitState.initialized) return ['fatal: not a git repository'];
       if (gitState.commits.length === 0) return ['No commits yet'];
-      return gitState.commits.slice().reverse().map((c) =>
-        `\x1b[33m${c.hash}\x1b[0m ${c.message} (${c.author})`
-      );
-
+      return gitState.commits.slice().reverse().map((c) => `\x1b[33m${c.hash}\x1b[0m ${c.message} (${c.author})`);
     case 'branch':
       if (!gitState.initialized) return ['fatal: not a git repository'];
       return [`* ${gitState.branch}`];
-
     default:
       return [`git: '${subcommand}' is not a git command.`];
   }
 }
 
-/**
- * Docker komutları
- */
+// === DOCKER DISPATCHER (ROUND 6 SINGLE HANDLER CORE) ===
 function handleDocker(args, vfs) {
-  const subcommand = args[0];
+  if (args.length === 0 || args.includes('--help')) {
+    const group = args[0] !== '--help' ? args[0] : null;
+    return dockerHelp(group);
+  }
 
-  switch (subcommand) {
-    case 'build': {
-      const fileFlag = args.indexOf('-f');
-      const dockerfilePath = fileFlag !== -1 ? args[fileFlag + 1] : 'Dockerfile';
-      const result = simulateDockerBuild(vfs, dockerfilePath);
-      return result.logs;
+  const sub = args[0];
+
+  if (args.includes('--version') || sub === 'version') {
+    return ['Docker version 24.0.7, build afdd53b'];
+  }
+
+  // 1. CONTAINER MANAGEMENT COMMANDS
+  if (sub === 'container') {
+    const action = args[1];
+    if (!action || action === '--help') return dockerHelp('container');
+
+    switch (action) {
+      case 'run': return handleDockerRun(args.slice(2));
+      case 'ls': return handleDockerPs(args.slice(2));
+      case 'stop': return handleDockerStop(args.slice(2));
+      case 'start': return handleDockerStart(args.slice(2));
+      case 'restart': return handleDockerRestart(args.slice(2));
+      case 'rm': return handleDockerRm(args.slice(2));
+      case 'logs': return handleDockerLogs(args.slice(2));
+      case 'exec': return handleDockerExec(args.slice(2));
+      case 'inspect': return dockerInspectContainer(args[2]);
+      case 'prune': return dockerPruneContainers();
+      case 'top': return dockerTop(args[2]);
+      case 'rename': return handleDockerRename(args.slice(2));
+      case 'cp': return handleDockerCp(args.slice(2), vfs);
+      default: return [`docker: 'container ${action}' is not a docker command. See 'docker container --help'.`];
     }
+  }
 
-    case 'run': {
-      const image = args[args.length - 1] || 'app:latest';
-      const portIdx = args.indexOf('-p');
-      let port = 8080;
-      if (portIdx !== -1 && args[portIdx + 1]) {
-        const portMap = args[portIdx + 1].split(':');
-        port = parseInt(portMap[0]) || 8080;
-      }
-      const result = dockerRun(image, { port });
-      return [result.message];
+  // 2. IMAGE MANAGEMENT COMMANDS
+  if (sub === 'image') {
+    const action = args[1];
+    if (!action || action === '--help') return dockerHelp('image');
+
+    switch (action) {
+      case 'ls': return handleDockerImages(args.slice(2));
+      case 'rm': return handleDockerRmi(args.slice(2));
+      case 'inspect': return dockerImageInspect(args[2]);
+      case 'history': return dockerImageHistory(args[2]);
+      case 'prune': return dockerImagePrune();
+      case 'pull': return dockerPull(args[2] || 'alpine');
+      case 'push': return dockerPush(args[2] || 'app:latest');
+      case 'tag': return handleDockerTag(args.slice(2));
+      default: return [`docker: 'image ${action}' is not a docker command. See 'docker image --help'.`];
     }
+  }
 
-    case 'stop': {
-      const cid = args[1];
-      if (!cid) return ['Usage: docker stop <container_id>'];
-      const result = dockerStop(cid);
-      return [result.message];
+  // 3. VOLUME MANAGEMENT COMMANDS
+  if (sub === 'volume') {
+    const action = args[1];
+    if (!action || action === '--help') return dockerHelp('volume');
+
+    switch (action) {
+      case 'create': return [dockerVolumeCreate(args[2] || 'app_vol')];
+      case 'ls': return handleDockerVolumeLs();
+      case 'rm': return handleDockerVolumeRm(args[2]);
+      case 'inspect': return dockerVolumeInspect(args[2]);
+      case 'prune': return dockerVolumePrune();
+      default: return [`docker: 'volume ${action}' is not a docker command. See 'docker volume --help'.`];
     }
+  }
 
-    case 'ps': {
-      const all = args.includes('-a');
-      const list = all ? dockerPsAll() : dockerPs();
-      if (list.length === 0) return ['CONTAINER ID   IMAGE   STATUS   PORTS'];
-      const lines = ['CONTAINER ID   IMAGE          STATUS      PORTS'];
-      for (const c of list) {
-        lines.push(`${c.id.substring(0, 12)}   ${c.image.padEnd(12)}   ${c.status.padEnd(10)}  0.0.0.0:${c.port}`);
-      }
-      return lines;
+  // 4. NETWORK MANAGEMENT COMMANDS
+  if (sub === 'network') {
+    const action = args[1];
+    if (!action || action === '--help') return dockerHelp('network');
+
+    switch (action) {
+      case 'create': return [dockerNetworkCreate(args[2] || 'my_net')];
+      case 'ls': return handleDockerNetworkLs();
+      case 'rm': return handleDockerNetworkRm(args[2]);
+      case 'inspect': return dockerNetworkInspect(args[2]);
+      case 'connect': return handleDockerNetworkConnect(args.slice(2));
+      case 'disconnect': return handleDockerNetworkDisconnect(args.slice(2));
+      case 'prune': return dockerNetworkPrune();
+      default: return [`docker: 'network ${action}' is not a docker command. See 'docker network --help'.`];
     }
+  }
 
-    case 'images':
-      return [
-        'REPOSITORY   TAG       IMAGE ID       SIZE',
-        'app          latest    a1b2c3d4e5f6   125MB',
-      ];
+  // 5. SYSTEM MANAGEMENT COMMANDS
+  if (sub === 'system') {
+    const action = args[1];
+    if (!action || action === '--help') return dockerHelp('system');
 
-    case 'compose':
-      return handleDockerCompose(args.slice(1), vfs);
+    switch (action) {
+      case 'df': return dockerSystemDf();
+      case 'prune': return dockerSystemPrune({ all: args.includes('-a') });
+      default: return [`docker: 'system ${action}' is not a docker command. See 'docker system --help'.`];
+    }
+  }
 
-    default:
-      return [`docker: '${subcommand}' is not a docker command.`];
+  // 6. CLASSIC / SHORT ALIASES (ROUTED TO SAME CORE HANDLERS)
+  switch (sub) {
+    case 'build': return handleDockerBuild(args.slice(1), vfs);
+    case 'run': return handleDockerRun(args.slice(1));
+    case 'ps': return handleDockerPs(args.slice(1));
+    case 'stop': return handleDockerStop(args.slice(1));
+    case 'start': return handleDockerStart(args.slice(1));
+    case 'restart': return handleDockerRestart(args.slice(1));
+    case 'rm': return handleDockerRm(args.slice(1));
+    case 'rmi': return handleDockerRmi(args.slice(1));
+    case 'images': return handleDockerImages(args.slice(1));
+    case 'logs': return handleDockerLogs(args.slice(1));
+    case 'exec': return handleDockerExec(args.slice(1));
+    case 'inspect': return dockerInspectContainer(args[1]);
+    case 'pull': return dockerPull(args[1] || 'alpine');
+    case 'push': return dockerPush(args[1] || 'app:latest');
+    case 'tag': return handleDockerTag(args.slice(1));
+    case 'cp': return handleDockerCp(args.slice(1), vfs);
+    case 'top': return dockerTop(args[1]);
+    case 'rename': return handleDockerRename(args.slice(1));
+    case 'stats': return dockerStats();
+    default: return [`docker: '${sub}' is not a docker command. See 'docker --help'.`];
   }
 }
 
-/**
- * Docker Compose komutları
- */
-function handleDockerCompose(args, vfs) {
-  const subcommand = args[0];
-  const composeFile = 'docker-compose.yml';
+// === DOCKER HELPER ACTION BUILDERS ===
 
-  // Compose dosyasını oku
+function handleDockerBuild(subArgs, vfs) {
+  const fileFlag = subArgs.indexOf('-f');
+  const dockerfilePath = fileFlag !== -1 ? subArgs[fileFlag + 1] : 'Dockerfile';
+  const result = simulateDockerBuild(vfs, dockerfilePath);
+  return result.logs;
+}
+
+function handleDockerRun(subArgs) {
+  const image = subArgs.find((a) => !a.startsWith('-')) || 'app:latest';
+  const portIdx = subArgs.indexOf('-p');
+  let port = 8080;
+  if (portIdx !== -1 && subArgs[portIdx + 1]) {
+    const portMap = subArgs[portIdx + 1].split(':');
+    port = parseInt(portMap[0]) || 8080;
+  }
+  const nameIdx = subArgs.indexOf('--name');
+  const name = nameIdx !== -1 ? subArgs[nameIdx + 1] : undefined;
+
+  const result = dockerRun(image, { port, name });
+  return [result.message];
+}
+
+function handleDockerStop(subArgs) {
+  const cid = subArgs[0];
+  if (!cid) return ['Usage: docker stop <container>'];
+  return [dockerStop(cid).message];
+}
+
+function handleDockerStart(subArgs) {
+  const cid = subArgs[0];
+  if (!cid) return ['Usage: docker start <container>'];
+  return [dockerStart(cid).message];
+}
+
+function handleDockerRestart(subArgs) {
+  const cid = subArgs[0];
+  if (!cid) return ['Usage: docker restart <container>'];
+  return [dockerRestart(cid).message];
+}
+
+function handleDockerRm(subArgs) {
+  const cid = subArgs[0];
+  if (!cid) return ['Usage: docker rm <container>'];
+  return [dockerRm(cid).message];
+}
+
+function handleDockerRmi(subArgs) {
+  const img = subArgs[0];
+  if (!img) return ['Usage: docker rmi <image>'];
+  return [dockerRmi(img).message];
+}
+
+function handleDockerPs(subArgs) {
+  const all = subArgs.includes('-a');
+  const list = all ? dockerPsAll() : dockerPs();
+  if (list.length === 0) return ['CONTAINER ID   IMAGE   STATUS   PORTS'];
+  const lines = ['CONTAINER ID   IMAGE          STATUS      PORTS'];
+  for (const c of list) {
+    lines.push(`${c.id.substring(0, 12)}   ${c.image.padEnd(12)}   ${c.status.padEnd(10)}  0.0.0.0:${c.port}`);
+  }
+  return lines;
+}
+
+function handleDockerImages() {
+  const imgs = dockerImages();
+  const lines = ['REPOSITORY          TAG         IMAGE ID       SIZE'];
+  for (const img of imgs) {
+    lines.push(`${img.repository.padEnd(18)}  ${img.tag.padEnd(10)}  ${img.id.substring(0, 12)}   ${img.size}`);
+  }
+  return lines;
+}
+
+function handleDockerLogs(subArgs) {
+  const cid = subArgs[0];
+  if (!cid) return ['Usage: docker logs <container>'];
+  return dockerLogs(cid);
+}
+
+function handleDockerExec(subArgs) {
+  const cid = subArgs.find((a) => !a.startsWith('-'));
+  const cmd = subArgs.slice(subArgs.indexOf(cid) + 1).join(' ');
+  return dockerExec(cid, cmd);
+}
+
+function handleDockerRename(subArgs) {
+  if (subArgs.length < 2) return ['Usage: docker rename <old-name> <new-name>'];
+  return [dockerRename(subArgs[0], subArgs[1]).message];
+}
+
+function handleDockerTag(subArgs) {
+  if (subArgs.length < 2) return ['Usage: docker tag <source-image> <target-tag>'];
+  return [dockerTag(subArgs[0], subArgs[1])];
+}
+
+function handleDockerCp(subArgs, vfs) {
+  if (subArgs.length < 2) return ['Usage: docker cp <container>:<path> <host-path>'];
+  return dockerCp(vfs, subArgs[0], subArgs[1]);
+}
+
+function handleDockerVolumeLs() {
+  const vols = dockerVolumeLs();
+  return ['DRIVER    VOLUME NAME', ...vols.map((v) => `${v.driver.padEnd(8)}  ${v.name}`)];
+}
+
+function handleDockerVolumeRm(name) {
+  if (!name) return ['Usage: docker volume rm <volume>'];
+  return [dockerVolumeRm(name).message];
+}
+
+function handleDockerNetworkLs() {
+  const nets = dockerNetworkLs();
+  return ['NETWORK ID     NAME      DRIVER', ...nets.map((n) => `${n.id.substring(0, 12)}   ${n.name.padEnd(8)}  ${n.driver}`)];
+}
+
+function handleDockerNetworkRm(name) {
+  if (!name) return ['Usage: docker network rm <network>'];
+  return [dockerNetworkRm(name).message];
+}
+
+function handleDockerNetworkConnect(subArgs) {
+  if (subArgs.length < 2) return ['Usage: docker network connect <network> <container>'];
+  return [dockerNetworkConnect(subArgs[0], subArgs[1])];
+}
+
+function handleDockerNetworkDisconnect(subArgs) {
+  if (subArgs.length < 2) return ['Usage: docker network disconnect <network> <container>'];
+  return [dockerNetworkDisconnect(subArgs[0], subArgs[1])];
+}
+
+// === DOCKER COMPOSE DISPATCHER ===
+function handleDockerCompose(args, vfs) {
+  const composeFile = 'docker-compose.yml';
   const catResult = vfs.cat(composeFile);
   if (!catResult.success) {
     return [`ERROR: Can't find a suitable configuration file. Tried: ${composeFile}`];
   }
 
   const { ast } = parseCompose(catResult.content);
-
   if (ast.errors.length > 0) {
-    return [
-      `ERROR: docker-compose.yml hataları içeriyor:`,
-      ...ast.errors.map((e) => `  - ${e.message}`),
-    ];
+    return ast.errors.map((e) => `ERROR: ${e.message}`);
   }
 
-  switch (subcommand) {
-    case 'up':
-      return generateComposeUpLogs(ast);
+  const sub = args[0];
+  if (sub === 'up') return generateComposeUpLogs(ast);
+  if (sub === 'down') return generateComposeDownLogs(ast);
+  if (sub === 'ps') return ['NAME              SERVICE   STATUS    PORTS', 'app-web-1         web       running   0.0.0.0:8080->8080/tcp'];
+  if (sub === 'config') return catResult.content.split('\n');
 
-    case 'down':
-      return generateComposeDownLogs(ast);
-
-    case 'config':
-      return [
-        `services: ${Object.keys(ast.services).join(', ')}`,
-        `networks: ${Object.keys(ast.networks).join(', ') || '(default)'}`,
-        `volumes: ${Object.keys(ast.volumes).join(', ') || '(none)'}`,
-      ];
-
-    case 'ps': {
-      const names = Object.keys(ast.services);
-      if (names.length === 0) return ['No services'];
-      const lines = ['NAME              SERVICE           STATUS'];
-      for (const name of names) {
-        lines.push(`${(name + '_1').padEnd(18)}${name.padEnd(18)}running`);
-      }
-      return lines;
-    }
-
-    default:
-      return [`docker compose: '${subcommand}' is not a command. Use up, down, config, ps`];
-  }
+  return ['docker compose: up, down, ps, config'];
 }

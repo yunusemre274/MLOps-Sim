@@ -51,12 +51,12 @@ export function calculateBarDecay(bars, elapsedMinutes) {
     : 1.0;
   const healthDelta = -DECAY_RATES.health * elapsedMinutes * hungerHealthMultiplier * globalMultiplier;
 
-  // Stres değişimi — doğal olarak düşer, uyku düşükken artışa döner
-  const sleepStressMultiplier = sleep <= CROSS_EFFECTS.sleepLowThreshold
-    ? CROSS_EFFECTS.sleepLowStressMultiplier
-    : 1.0;
-  // DECAY_RATES.stress negatif → doğal azalma; çarpan arttıkça azalma yavaşlar/artışa döner
-  const stressDelta = -DECAY_RATES.stress * elapsedMinutes * sleepStressMultiplier * globalMultiplier;
+  // Stres değişimi — normalde doğal olarak yavaşça azalır, uyku kritikse hafifçe artar
+  let stressRate = DECAY_RATES.stress; // -0.0083
+  if (sleep <= CROSS_EFFECTS.sleepLowThreshold) {
+    stressRate = 0.02; // Düşük uykuda yavaşça artışa geçer
+  }
+  const stressDelta = stressRate * elapsedMinutes * globalMultiplier;
 
   // --- Yeni değerleri hesapla (0-max arasında clamp) ---
   return {

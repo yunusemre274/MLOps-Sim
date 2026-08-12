@@ -9,6 +9,8 @@
  */
 
 import { create } from 'zustand';
+import { globalVFS } from '../engine/VirtualFileSystem';
+import missions from '../data/missions.json';
 
 // --- İlk durum (initial state) ---
 const initialState = {
@@ -264,6 +266,10 @@ const useGameStore = create((set, get) => ({
   acceptMission: (missionId) =>
     set((state) => {
       if (state.career.activeMissions.includes(missionId)) return state;
+      const targetMission = missions.find((m) => m.id === missionId);
+      if (targetMission) {
+        globalVFS.syncMission(targetMission);
+      }
       return {
         career: {
           ...state.career,

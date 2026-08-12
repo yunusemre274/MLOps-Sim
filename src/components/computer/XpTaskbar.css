@@ -1,0 +1,274 @@
+/**
+ * XpTaskbar.css — Windows XP Görev Çubuğu Stilleri
+ */
+
+.xp-taskbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  background: linear-gradient(180deg, #1f2f86 0%, #3165d4 10%, #1941a5 50%, #1f48ad 100%);
+  display: flex;
+  align-items: center;
+  z-index: 9999;
+  user-select: none;
+  border-top: 1px solid #3c82eb;
+}
+
+/* Başlat Butonu Container */
+.xp-start-container {
+  position: relative;
+  height: 100%;
+}
+
+/* Yeşil XP Başlat Butonu */
+.xp-start-btn {
+  height: 100%;
+  padding: 0 16px 0 12px;
+  background: linear-gradient(180deg, #66bb44 0%, #44aa22 25%, #228800 60%, #116600 100%);
+  border: none;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.4), 2px 0 5px rgba(0, 0, 0, 0.4);
+}
+
+.xp-start-btn:hover {
+  background: linear-gradient(180deg, #77cc55 0%, #55bb33 25%, #339911 60%, #227711 100%);
+}
+
+.xp-start-btn--active {
+  background: linear-gradient(180deg, #227711 0%, #116600 100%);
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.xp-start-btn__flag {
+  font-size: 16px;
+  color: #ffcc00;
+  font-weight: bold;
+}
+
+.xp-start-btn__text {
+  color: white;
+  font-style: italic;
+  font-weight: bold;
+  font-size: 15px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+/* Başlat Menüsü Pop-up */
+.xp-start-menu {
+  position: absolute;
+  bottom: 32px;
+  left: 0;
+  width: 380px;
+  background: #ffffff;
+  border: 2px solid #0055ea;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: xpSlideUp 0.15s ease-out;
+}
+
+@keyframes xpSlideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.xp-start-menu__header {
+  height: 52px;
+  background: linear-gradient(180deg, #0058ee 0%, #3a93ff 50%, #0055ea 100%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+  border-bottom: 2px solid #e5a000;
+}
+
+.xp-start-menu__avatar {
+  font-size: 24px;
+  background: white;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.xp-start-menu__body {
+  display: flex;
+  min-height: 240px;
+}
+
+.xp-start-menu__left {
+  flex: 1;
+  background: white;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.xp-start-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  text-align: left;
+  background: transparent;
+  border: none;
+}
+
+.xp-start-menu__item:hover {
+  background: #316ac5;
+  color: white;
+}
+
+.xp-start-menu__item:hover small {
+  color: #d0e0ff;
+}
+
+.xp-start-menu__icon {
+  font-size: 20px;
+}
+
+.xp-start-menu__item strong {
+  display: block;
+  font-size: 13px;
+}
+
+.xp-start-menu__item small {
+  font-size: 11px;
+  color: #666;
+}
+
+.xp-start-menu__right {
+  width: 140px;
+  background: #d3e5fa;
+  border-left: 1px solid #99bbee;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.xp-start-menu__link {
+  font-size: 12px;
+  font-weight: 600;
+  color: #003399;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 3px;
+}
+
+.xp-start-menu__link:hover {
+  background: #316ac5;
+  color: white;
+}
+
+.xp-start-menu__footer {
+  height: 40px;
+  background: linear-gradient(180deg, #4282d6 0%, #2960b7 100%);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 12px;
+}
+
+.xp-shutdown-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(180deg, #e5664d 0%, #cc2a0c 100%);
+  color: white;
+  border: 1px solid white;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.xp-shutdown-btn:hover {
+  background: linear-gradient(180deg, #f78069 0%, #e03212 100%);
+}
+
+/* Açık Pencere Butonları */
+.xp-taskbar__windows {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 6px;
+  overflow-x: auto;
+}
+
+.xp-taskbar-item {
+  height: 24px;
+  max-width: 160px;
+  min-width: 100px;
+  background: linear-gradient(180deg, #3c82e6 0%, #2159c4 50%, #1643a6 100%);
+  border: 1px solid #143580;
+  border-radius: 3px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.xp-taskbar-item:hover {
+  background: linear-gradient(180deg, #5193f3 0%, #2f69d8 100%);
+}
+
+.xp-taskbar-item--active {
+  background: linear-gradient(180deg, #153a8a 0%, #2458bd 50%, #3069d6 100%);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.6);
+  border-color: #0b2259;
+}
+
+.xp-taskbar-item__icon {
+  font-size: 13px;
+}
+
+.xp-taskbar-item__title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sistem Tepsisi & Saat */
+.xp-taskbar__tray {
+  height: 100%;
+  background: linear-gradient(180deg, #0e80e5 0%, #0855a8 100%);
+  border-left: 1px solid #1066c0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  color: white;
+  font-size: 12px;
+}
+
+.xp-taskbar__tray-icon {
+  font-size: 13px;
+}
+
+.xp-taskbar__clock {
+  font-weight: bold;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}

@@ -29,36 +29,54 @@ export default function StatusBarsPanel() {
 
   const advanceDayAction = useGameStore((s) => s.advanceDay);
 
-  // Tick loop — her saniyede barları ve saati güncelle
+  // Tick loop — delta-time ölçümü ile barları ve saati güncelle
   const tickRef = useRef(null);
+  const lastTickRef = useRef(null);
 
   useEffect(() => {
     if (isPaused) {
-      clearInterval(tickRef.current);
+      if (tickRef.current) {
+        clearInterval(tickRef.current);
+        tickRef.current = null;
+      }
       return;
     }
 
+    lastTickRef.current = Date.now();
+
     tickRef.current = setInterval(() => {
+      const now = Date.now();
+      const deltaMs = now - (lastTickRef.current || now);
+      lastTickRef.current = now;
+
+      // Gerçek geçen süreye göre oyun dakikasını hesapla (1 sn = 16 oyun dakikası)
+      const realSeconds = deltaMs / 1000;
+      const gameMinutes = getMinutesPerTick() * realSeconds;
+
       const state = useGameStore.getState();
-      const minutesPerTick = getMinutesPerTick();
 
       // Barları güncelle
-      const newBars = calculateBarDecay(state.bars, minutesPerTick);
+      const newBars = calculateBarDecay(state.bars, gameMinutes);
 
       // Zamanı ilerlet
-      const { newTime, dayEnded } = advanceTime(state.currentTime, minutesPerTick);
+      const { newTime, dayEnded } = advanceTime(state.currentTime, gameMinutes);
 
-      // Store'u güncelle — doğrudan set ile (performans)
+      // Store'u güncelle
       useGameStore.setState({ bars: newBars, currentTime: newTime });
 
       // Gün bittiyse
       if (dayEnded) {
-        advanceDayAction();
+        useGameStore.getState().advanceDay();
       }
     }, getTickInterval());
 
-    return () => clearInterval(tickRef.current);
-  }, [isPaused, advanceDayAction]);
+    return () => {
+      if (tickRef.current) {
+        clearInterval(tickRef.current);
+        tickRef.current = null;
+      }
+    };
+  }, [isPaused]);
 
   const timePeriod = getTimePeriod(currentTime);
 

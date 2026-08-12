@@ -1,0 +1,168 @@
+/**
+ * FileExplorerTab.css — Windows XP Dosya Gezgini Stilleri
+ */
+
+.xp-explorer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ffffff;
+  font-family: Tahoma, 'Segoe UI', sans-serif;
+  font-size: 12px;
+  color: #000000;
+  user-select: none;
+}
+
+/* Araç & Adres Çubuğu */
+.xp-explorer__toolbar {
+  height: 36px;
+  background: #ece9d8;
+  border-bottom: 1px solid #d0cbaf;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px;
+}
+
+.xp-explorer__nav-btns {
+  display: flex;
+  align-items: center;
+}
+
+.xp-explorer__nav-btn {
+  background: linear-gradient(180deg, #ffffff 0%, #ece9d8 100%);
+  border: 1px solid #7f9db9;
+  border-radius: 3px;
+  padding: 3px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  color: #333;
+}
+
+.xp-explorer__nav-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.xp-explorer__address-bar {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #7f9db9;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  font-size: 12px;
+}
+
+.xp-explorer__address-icon {
+  font-size: 12px;
+}
+
+.xp-explorer__address-text {
+  font-weight: 500;
+  color: #333;
+}
+
+/* Gövde */
+.xp-explorer__body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* XP Sol Mavi Panel */
+.xp-explorer__sidebar {
+  width: 170px;
+  background: linear-gradient(180deg, #748aff 0%, #4058d6 100%);
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-right: 1px solid #3048b6;
+  overflow-y: auto;
+}
+
+.xp-explorer__panel {
+  background: #ffffff;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  overflow: hidden;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.xp-explorer__panel-title {
+  background: linear-gradient(180deg, #215dc6 0%, #12419c 100%);
+  color: white;
+  font-weight: bold;
+  font-size: 11px;
+  padding: 4px 8px;
+}
+
+.xp-explorer__panel-content {
+  padding: 8px;
+  background: #d6dff7;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.xp-explorer__panel-content div {
+  cursor: pointer;
+  color: #003399;
+  font-weight: 500;
+}
+
+.xp-explorer__panel-content div:hover {
+  text-decoration: underline;
+}
+
+/* Klasör & Dosya Grid */
+.xp-explorer__content {
+  flex: 1;
+  background: #ffffff;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.xp-explorer__grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 16px;
+}
+
+.xp-explorer__item {
+  width: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-align: center;
+}
+
+.xp-explorer__item:hover {
+  background: #e5f3ff;
+  border-color: #70c0e8;
+}
+
+.xp-explorer__item-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.xp-explorer__item-name {
+  font-size: 11px;
+  word-break: break-word;
+  color: #333;
+}
+
+.xp-explorer__empty {
+  color: #888;
+  font-style: italic;
+}

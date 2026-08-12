@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { dockerPs } from '../../engine/DockerSimulator';
 import './BrowserTab.css';
 
-export default function BrowserTab() {
+export default function BrowserTab({ browserName = 'Chrome' }) {
   const [url, setUrl] = useState('http://localhost:8080');
   const [navigated, setNavigated] = useState(false);
 
@@ -26,6 +26,7 @@ export default function BrowserTab() {
   return (
     <div className="browser">
       <form className="browser__toolbar" onSubmit={handleNavigate}>
+        <span className="browser__brand-tag">{browserName === 'Edge' ? '🟦 Edge' : '🔴 Chrome'}</span>
         <button type="button" className="browser__nav-btn" disabled>←</button>
         <button type="button" className="browser__nav-btn" disabled>→</button>
         <button type="button" className="browser__nav-btn" onClick={() => setNavigated(true)}>↻</button>

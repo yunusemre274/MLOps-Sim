@@ -183,6 +183,7 @@
 ## Faz 11 — Cilalama ve Denge
 **Bu fazın çıkış kriteri:** Oyunun 100 günlük bir senaryoda ekonomik olarak kırılmaması, bug'sız ve akıcı bir deneyim sunması.
 
+- [x] [Bugfix] Zaman/bar hız senkronizasyon hatası düzeltildi
 - [x] Bar formülleri denge testi — otomatik simülasyon (100 günlük senaryo)
 - [x] Ekonomi dengesi — fiyatlar, gelirler, maliyetler tutarlılık kontrolü
 - [x] UX iyileştirmeleri — animasyonlar, geçiş efektleri, hover durumları
@@ -191,3 +192,88 @@
 - [x] Bug fix turu — birikmiş sorunların çözümü
 - [x] Son kullanıcı playtest — 3 farklı senaryo (kariyer odaklı, sosyal odaklı, dengeli)
 - [x] Dokümantasyon güncelleme — README, ROADMAP, son durum
+
+---
+
+## Faz 12 — Bilgisayar Simülasyonu Yenileme (Windows XP Masaüstü)
+**Bu fazın çıkış kriteri:** Oyuncu bilgisayara tıkladığında XP tarzı bir masaüstü açılır; terminal, dosya gezgini, kod editörü ve tarayıcı bu masaüstü içinde bağımsız pencereler olarak çalışır ve birbirleriyle veri paylaşır (dosya gezgininden açılan dosya editörde görünür gibi).
+
+- [x] Pencere Yöneticisi (WindowManager) bileşeninin temel iskeleti (aç/kapat/sürükle/boyutlandır/z-index)
+- [x] Masaüstü sahnesi (arka plan, simge grid'i, taskbar iskeleti)
+- [x] Terminal'in pencere sistemine entegrasyonu
+- [x] Dosya gezgini penceresi + Projeler klasörü + görev veri modeliyle bağlantı
+- [x] Kod editörünün (Monaco) pencere sistemine entegrasyonu, dosya gezgininden dosya açma akışı
+- [x] Chrome/Edge simgeleri + mevcut tarayıcı modülünün pencere sistemine entegrasyonu
+- [x] Taskbar saat senkronizasyonu (düzeltilmiş zaman sistemiyle bağlantılı)
+- [x] Görsel cila: XP Luna renk paleti, pencere çerçeve stilleri, simge görselleri
+- [x] (Düşük öncelik, opsiyonel) Çöp kutusu etkileşimi
+- [x] [Bugfix Round 4] .app uzantı sızıntısının temizlenmesi ve görünen etiketlerin (label) ayrıştırılması
+- [x] [Bugfix Round 4] Dosya Gezgini VFS okumasının düzeltilmesi ve React Error Boundary entegrasyonu
+- [x] [Bugfix Round 4] Pencere kontrol butonlarının (küçült/büyüt/kapat) düzeltilmesi
+- [x] [Bugfix Round 4 TAMAMLANDI] 6 adımlık regresyon ve pencere kontrol doğrulama testi geçildi
+- [x] Bağımsız WindowManagerEngine mimarisi ve birim testleri (`tests/WindowManager.test.js`)
+- [x] XP Başlat menüsü, başlık çubuğu çift tık ile maximize toggle ve taskbar pencere mantığı
+- [x] [Round 5] ls çıktısında klasör/uygulama ayrımı (`[app]` turkuaz etiket, `a` kip izinleri)
+- [x] [Round 5] open komutu eklendi (app, dir, file destekli WindowManager entegrasyonu)
+- [x] [Round 5] cd hata mesajı netleştirildi (uygulama kısayolları için open önerisi)
+- [x] [Round 5 TAMAMLANDI] Zorunlu 6 adımlık doğrulama testi geçildi (`tests/Round5Verification.test.js`)
+- [x] [Round 6] Docker CLI tam komut kapsaması (`container`, `image`, `volume`, `network`, `system`, `cp`, `stats`, `top`, `inspect`, `pull`, `push`, `tag`)
+- [x] [Round 6] Tek çekirdek handler ve çoklu alias mimarisinin `CLAUDE.md` ve `AGENTS.md` dosyalarına kaydedilmesi
+- [x] [Round 6 TAMAMLANDI] Zorunlu 6 senaryoluk Docker doğrulama testi geçildi (`tests/Round6DockerVerification.test.js`)
+
+---
+
+## Faz 13 — Sanal Dosya Sistemi (Single Source of Truth VFS) [GÖREV GRUBU 1]
+**Bu fazın çıkış kriteri:** Terminal, Dosya Gezgini ve Kod Editörü'nün tek bir merkezi VFS (GameState VFS) üzerinden oku/yaz yapması, path şemasının (`/home/user/desktop`, `/home/user/projects/<id>`) tam senkronize çalışması.
+
+- [x] Single Source of Truth VFS veri yapısının GameState'e (Zustand) taşınması
+- [x] Masaüstü simgelerinin VFS `/home/user/desktop` dizini ile senkronize edilmesi
+- [x] Görev kabul edildiğinde repo dosyalarının VFS `/home/user/projects/<görev-id>` altına aktarılması
+- [x] Terminal `cd`, `pwd`, `ls` komutlarının VFS ağacına tam bağlanması
+- [x] Kod Editörü kaydetme mantığının VFS'e doğrudan yazacak şekilde güncellenmesi ve `cat` ile Terminalde doğrulanması
+- [x] [Bugfix Round 3] VFS tek kaynak reaktivite düzeltmesi — terminal/masaüstü/dosya gezgini senkronize edildi (10 adımlık doğrulama testi geçildi)
+
+---
+
+## Faz 14 — Denge ve Zaman Hızı Revizyonu (2. Tur) [GÖREV GRUBU 4]
+**Bu fazın çıkış kriteri:** Oyun hızının 5x'e ayarlanması (1 dk = 12 real sec), bar azalma ve stres formüllerinin yeniden ölçeklenmesi, 10 dk sürüklenme testinin başarıyla geçmesi.
+
+- [x] Zaman çarpanının 5x olarak güncellenmesi (`GAME_TIME_MULTIPLIER = 5`, 1 oyun dk = 12 real sec)
+- [x] Bar azalma oranlarının saatlik bazda yeniden kalibre edilmesi (uyku ~3.5 gün, açlık ~8 oyun saati)
+- [x] Stres katlanma formülünün ve çoklu faktör ağırlıklandırılmasının yeniden yapılandırılması
+- [x] Barların pürüzsüz delta-time zaman dilimlerinde güncellenmesi
+- [x] 10 dakikalık gerçek zaman rölanti (idle) test senaryosunun yazılması ve HANDOFF.md'ye doğrulanması
+
+---
+
+## Faz 15 — Terminal Komut Seti ve Docker Runtime Simülasyonu [GÖREV GRUBU 2]
+**Bu fazın çıkış kriteri:** Gelişmiş Linux (`cp`, `mv`, `rm -rf`, `chmod`, `apt-get`, `env`, `grep`, `find`, `history` vb.) ve Docker runtime (`docker run -p`, `ps`, `logs`, `exec -it`, `network`, `volume`, `compose`) komutlarının simüle edilmesi.
+
+- [x] Gelişmiş Linux dosya/dizin komutları (`cp`, `mv`, `rm -rf`, `mkdir -p`, `touch`, `cat`, `head`, `tail`)
+- [x] İzinler, paket yönetimi ve ortam değişkenleri (`chmod`, `chown`, `apt-get install`, `env`, `export`, `echo $VAR`)
+- [x] Arama ve sistem komutları (`grep`, `find`, `history`, `clear`, `man`/`help`)
+- [x] Docker container runtime state'i ve `docker run` bayrakları (`-p`, `-d`, `--name`, `-e`, `-v`, `--network`, `--rm`)
+- [x] Docker konteyner ve imaj yönetimi (`docker ps -a`, `stop`, `rm`, `rmi`, `images`, `logs`)
+- [x] Docker Network & Volume yönetimi (`docker network`, `docker volume`)
+- [x] Docker Exec & Version simülasyonu (`docker exec -it`, `docker --version`)
+- [x] Docker Compose CLI genişletmesi (`docker-compose` ve `docker compose` tiresiz destek)
+- [x] Docker runtime state'inin localhost tarayıcı kontrolüne ve Check Mission'a bağlanması
+
+---
+
+## Faz 16 — Entegre IDE Terminali ve Çoklu Dosya Desteği [GÖREV GRUBU 3]
+**Bu fazın çıkış kriteri:** Kod Editörü içerisine alt terminal paneli gömülmesi, VSCode tarzı sekmeli dosya yönetimi ve 9+ dosya türü için sözdizimi vurgulama & ikon desteği.
+
+- [x] Kod Editörü penceresinin alt kısmına açılır-kapanır entegre terminal paneli eklenmesi (component reuse)
+- [x] VSCode tarzı çoklu dosya sekme (tab) yönetimi ve kaydedilmemiş değişiklik göstergesi
+- [x] 9+ dosya türü için sözdizimi vurgulama ve ikon desteği (`.md`, `.txt`, `.json`, `.go`, `.js`/`.ts`, `.env`, `.yml`, `.gitignore`, `.sh`)
+
+---
+
+## Faz 17 — Masaüstü Etkileşimleri ve Kaynak İzleme (Monitoring) [GÖREV GRUBU 5]
+**Bu fazın çıkış kriteri:** Masaüstü simgelerinin sürüklenebilmesi, sağ tık bağlam menüsü (Context Menu) ve kaynak kullanımı izleme (Monitoring/Task Manager) uygulamasının eklenmesi.
+
+- [x] Masaüstü simgelerinin sürüklenebilir (Drag & Drop) yapılması
+- [x] Masaüstü boş alan sağ tık bağlam menüsü (Sırala, Yenile, Yapıştır, Yeni Klasör/Metin Belgesi)
+- [x] Masaüstü simge sağ tık bağlam menüsü (Aç, Yeniden Adlandır, Sil)
+- [x] Yeni "Monitoring" (Görev Yöneticisi) uygulaması ve çalışan container'lara bağlı kaynak grafik simülasyonu

@@ -1,0 +1,120 @@
+/**
+ * MonitoringTab.css — Windows XP Görev Yöneticisi stilleri
+ */
+
+.monitoring {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ece9d8;
+  color: #000;
+  font-family: 'Tahoma', 'Segoe UI', sans-serif;
+  font-size: 11px;
+}
+
+.monitoring__tabs {
+  display: flex;
+  background: #ece9d8;
+  border-bottom: 2px solid #716f64;
+  padding: 4px 8px 0;
+  gap: 4px;
+}
+
+.monitoring__tab {
+  padding: 4px 12px;
+  background: #d4d0c8;
+  border: 1px solid #716f64;
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+  cursor: pointer;
+}
+.monitoring__tab--active {
+  background: #fff;
+  font-weight: bold;
+}
+
+.monitoring__body {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.monitoring__card {
+  background: #fff;
+  border: 1px solid #716f64;
+  border-radius: 3px;
+  padding: 10px;
+}
+
+.monitoring__card-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.monitoring__val {
+  color: #0055ea;
+}
+
+.monitoring__progress-bar {
+  height: 16px;
+  background: #e0e0e0;
+  border: 1px solid #a0a0a0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.monitoring__progress-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+.monitoring__progress-fill--cpu { background: linear-[#3b82f6]; background-color: #2563eb; }
+.monitoring__progress-fill--ram { background-color: #10b981; }
+.monitoring__progress-fill--disk { background-color: #f59e0b; }
+
+.monitoring__chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 48px;
+  background: #111827;
+  border: 1px solid #374151;
+  padding: 4px;
+  margin-top: 8px;
+}
+
+.monitoring__chart-bar {
+  flex: 1;
+  background: #10b981;
+  min-height: 2px;
+  transition: height 0.3s ease;
+}
+
+.monitoring__processes {
+  flex: 1;
+  padding: 8px;
+  overflow-y: auto;
+}
+
+.monitoring__table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+.monitoring__table th, .monitoring__table td {
+  border: 1px solid #d4d0c8;
+  padding: 6px 8px;
+  text-align: left;
+}
+.monitoring__table th {
+  background: #ece9d8;
+  font-weight: bold;
+}
+.monitoring__status--running {
+  color: #059669;
+  font-weight: bold;
+}
