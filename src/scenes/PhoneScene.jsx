@@ -10,6 +10,7 @@ import useGameStore from '../store/useGameStore';
 import npcs from '../data/npcs.json';
 import { getRelationshipStatus } from '../engine/EventEngine';
 import MarketScene from './MarketScene';
+import PhoneJobApp from '../components/phone/PhoneJobApp';
 import './PhoneScene.css';
 
 const STATUS_LABELS = {
@@ -23,7 +24,7 @@ const STATUS_LABELS = {
 export default function PhoneScene() {
   const setScene = useGameStore((s) => s.setScene);
   const relationships = useGameStore((s) => s.relationships);
-  const [activeTab, setActiveTab] = useState('contacts');
+  const [activeTab, setActiveTab] = useState('contacts'); // 'contacts' | 'jobs' | 'market'
   const [selectedNPC, setSelectedNPC] = useState(null);
 
   // Sadece tanışılmış NPC'ler
@@ -52,14 +53,22 @@ export default function PhoneScene() {
           👥 Rehber
         </button>
         <button
+          className={`phone-tab ${activeTab === 'jobs' ? 'phone-tab--active' : ''}`}
+          onClick={() => { setActiveTab('jobs'); setSelectedNPC(null); }}
+        >
+          💼 Kariyer
+        </button>
+        <button
           className={`phone-tab ${activeTab === 'market' ? 'phone-tab--active' : ''}`}
           onClick={() => setActiveTab('market')}
         >
-          📦 Online Market
+          📦 Market
         </button>
       </div>
 
-      {selectedNPC ? (
+      {activeTab === 'jobs' ? (
+        <PhoneJobApp />
+      ) : selectedNPC ? (
         // NPC Profil detayı
         <div className="phone-profile">
           <button className="phone-profile__back" onClick={() => setSelectedNPC(null)}>
