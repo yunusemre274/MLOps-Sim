@@ -19,22 +19,29 @@ const KNOWN_IMAGES = new Set([
 
 /**
  * Dockerfile AST'sinden gerçekçi build log satırları üretir.
+ *
+ * 4 Katmanlı Doğrulama:
+ * Katman 1: Sözdizimi hataları (ast.errors)
+ * Katman 2: Semantik kontroller (Base image geçerliliği, VFS build context'inde COPY/ADD dosya kontrolü, stage isimleri)
  */
-export function generateBuildLogs(ast) {
+export function generateBuildLogs(ast, vfs = null, contextDir = '/home/user', targetTag = 'app:latest') {
   const logs = [];
   const errors = [];
   let stepCount = 0;
 
+  // Katman 1: Sözdizimi Doğrulama
   if (ast.errors.length > 0) {
     for (const err of ast.errors) {
-      errors.push(`ERROR: Satır ${err.line}: ${err.message}`);
-      logs.push(`\x1b[31mERROR\x1b[0m: Satır ${err.line}: ${err.message}`);
+      errors.push(err.message);
+      logs.push(`\x1b[31mERROR\x1b[0m: ${err.message}`);
     }
     return { logs, success: false, errors, imageId: null };
   }
 
   logs.push('Sending build context to Docker daemon  2.048kB');
   logs.push('');
+
+  const previousStageNames = new Set();
 
   for (let si = 0; si < ast.stages.length; si++) {
     const stage = ast.stages[si];
@@ -43,9 +50,10 @@ export function generateBuildLogs(ast) {
     stepCount++;
     logs.push(`Step ${stepCount}/${countTotalSteps(ast)} : FROM ${stage.baseImage}:${stage.tag}${stageName}`);
 
-    if (!KNOWN_IMAGES.has(stage.baseImage)) {
+    // Katman 2: Base Image Doğrulama
+    if (!KNOWN_IMAGES.has(stage.baseImage) && !images[`${stage.baseImage}:${stage.tag}`] && !images[stage.baseImage]) {
       logs.push(` ---> Pulling from library/${stage.baseImage}`);
-      logs.push(`\x1b[31mERROR\x1b[0m: manifest for ${stage.baseImage}:${stage.tag} not found: manifest unknown`);
+      logs.push(`\x1b[31mERROR\x1b[0m: Error response from daemon: pull access denied for ${stage.baseImage}, repository does not exist or may require 'docker login'`);
       errors.push(`Base image bulunamadı: ${stage.baseImage}:${stage.tag}`);
       return { logs, success: false, errors, imageId: null };
     }
@@ -57,9 +65,38 @@ export function generateBuildLogs(ast) {
     logs.push(` ---> ${randomHex(6)}`);
     logs.push('');
 
+    if (stage.name) {
+      previousStageNames.add(stage.name);
+    }
+
     for (const instr of stage.instructions) {
       stepCount++;
       logs.push(`Step ${stepCount}/${countTotalSteps(ast)} : ${instr.directive} ${instr.args}`);
+
+      // Katman 2: COPY / ADD VFS Build Context Semantik Doğrulama
+      if ((instr.directive === 'COPY' || instr.directive === 'ADD') && vfs) {
+        const { sources, fromStage } = instr.parsed;
+
+        if (fromStage) {
+          if (!previousStageNames.has(fromStage)) {
+            logs.push(`\x1b[31mERROR\x1b[0m: invalid from flag: stage ${fromStage} does not exist`);
+            errors.push(`invalid from flag: stage ${fromStage} does not exist`);
+            return { logs, success: false, errors, imageId: null };
+          }
+        } else if (sources && sources.length > 0) {
+          for (const src of sources) {
+            if (src === '.' || src === './') continue;
+            const fullPath = `${contextDir}/${src}`.replace(/\/+/g, '/');
+            const fileCheck = vfs.cat(fullPath);
+            const dirCheck = vfs.ls(fullPath);
+            if (!fileCheck.success && !dirCheck.success) {
+              logs.push(`\x1b[31mERROR\x1b[0m: COPY failed: file not found in build context: ${src}`);
+              errors.push(`COPY failed: file not found in build context: ${src}`);
+              return { logs, success: false, errors, imageId: null };
+            }
+          }
+        }
+      }
 
       switch (instr.directive) {
         case 'RUN':
@@ -97,17 +134,21 @@ export function generateBuildLogs(ast) {
 
   const imageId = randomHex(6);
   logs.push(`Successfully built ${imageId}`);
-  logs.push(`Successfully tagged app:latest`);
+  logs.push(`Successfully tagged ${targetTag}`);
 
   // Bildirilen image'ı yerel image listesine ekle
-  images['app:latest'] = {
+  const [repo, tag] = targetTag.includes(':') ? targetTag.split(':') : [targetTag, 'latest'];
+  images[targetTag] = {
     id: imageId,
-    repository: 'app',
-    tag: 'latest',
+    repository: repo,
+    tag: tag || 'latest',
     size: '125MB',
     created: 'Just now',
     ast,
   };
+  if (repo !== targetTag) {
+    images[repo] = images[targetTag];
+  }
 
   return { logs, success: true, errors: [], imageId };
 }
@@ -757,7 +798,7 @@ export function resetContainers() {
   containerIdCounter = 1;
 }
 
-export function simulateDockerBuild(vfs, dockerfilePath = 'Dockerfile') {
+export function simulateDockerBuild(vfs, dockerfilePath = 'Dockerfile', options = {}) {
   const result = vfs.cat(dockerfilePath);
   if (!result.success) {
     return {
@@ -768,8 +809,15 @@ export function simulateDockerBuild(vfs, dockerfilePath = 'Dockerfile') {
     };
   }
 
+  let contextDir = vfs.pwd();
+  if (dockerfilePath.includes('/')) {
+    const parts = dockerfilePath.split('/');
+    parts.pop();
+    contextDir = parts.join('/') || '/';
+  }
+
   const { ast } = parseDockerfile(result.content);
-  return generateBuildLogs(ast);
+  return generateBuildLogs(ast, vfs, contextDir, options.tag || 'app:latest');
 }
 
 function randomHex(len) {

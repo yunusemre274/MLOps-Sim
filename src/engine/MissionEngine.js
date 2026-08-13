@@ -161,6 +161,16 @@ export function checkMission(dockerfileContent, criteria) {
     }
   }
 
+  // Non-root USER kontrolü
+  if (criteria.hasUser || criteria.nonRootUser) {
+    maxScore += 15;
+    const pass = ast.stages.some((s) =>
+      s.instructions.some((i) => i.directive === 'USER')
+    );
+    if (pass) score += 15;
+    checks.push({ name: 'Non-root USER tanımlanmış', passed: pass, points: 15 });
+  }
+
   const passed = score >= maxScore * 0.7; // %70 geçme eşiği
 
   return { passed, score, maxScore, checks };

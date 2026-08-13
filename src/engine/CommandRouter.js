@@ -659,7 +659,9 @@ function handleDocker(args, vfs) {
 function handleDockerBuild(subArgs, vfs) {
   const fileFlag = subArgs.indexOf('-f');
   const dockerfilePath = fileFlag !== -1 ? subArgs[fileFlag + 1] : 'Dockerfile';
-  const result = simulateDockerBuild(vfs, dockerfilePath);
+  const tagFlag = subArgs.indexOf('-t');
+  const tag = tagFlag !== -1 ? subArgs[tagFlag + 1] : 'app:latest';
+  const result = simulateDockerBuild(vfs, dockerfilePath, { tag });
   return result.logs;
 }
 

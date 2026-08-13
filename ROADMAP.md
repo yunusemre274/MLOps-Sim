@@ -277,3 +277,44 @@
 - [x] Masaüstü boş alan sağ tık bağlam menüsü (Sırala, Yenile, Yapıştır, Yeni Klasör/Metin Belgesi)
 - [x] Masaüstü simge sağ tık bağlam menüsü (Aç, Yeniden Adlandır, Sil)
 - [x] Yeni "Monitoring" (Görev Yöneticisi) uygulaması ve çalışan container'lara bağlı kaynak grafik simülasyonu
+
+---
+
+## Faz 18 — Telefon DevJobs Mobil Uygulaması
+**Bu fazın çıkış kriteri:** Telefonda LinkedIn tarzı DevJobs Mobile kariyer uygulamasının eklenmesi, Single Source of Truth store ve kilitli Yetenek Avı sekmesi.
+
+- [x] DevJobs Mobile arayüzü (`PhoneJobApp.jsx` & `PhoneJobApp.css`)
+- [x] Merkezi `useGameStore` üzerinden çift yönlü iş kabul reaktivitesi
+- [x] Kilitli Yetenek Avı sekmesi ve bildirim sistemi
+
+---
+
+## Faz 19 — Gerçekçi DevOps Görev Akışı ve Doğrulama Motoru Sıkılaştırması (Round 6 & Round 7)
+**Bu fazın çıkış kriteri:** Docker CLI tam komut kapsaması, 4 katmanlı sıkı doğrulama motoru, `git clone` ile dizine repo klonlama ve `git push` ile CI/CD remote pipeline çalıştırma.
+
+- [x] **Round 6 — Docker CLI Tam Komut Kapsaması (Tek Handler Mimarisi):**
+  - [x] `docker container` yönetim komutları (`run`, `ls`/`ls -a`, `stop`, `start`, `restart`, `rm`, `logs`, `exec`, `inspect`, `prune`, `top`, `rename`, `cp`)
+  - [x] `docker image` yönetim komutları (`ls`, `rm`, `inspect`, `history`, `prune`, `pull`, `push`, `tag`)
+  - [x] `docker volume` & `docker network` yönetim komutları (`create`, `ls`, `rm`, `inspect`, `connect`, `disconnect`, `prune`)
+  - [x] `docker system` komutları (`df`, `prune`) ve ekstra CLI araçları (`stats`, `top`, `cp`)
+  - [x] Detaylı Docker yardım sistemi (`docker --help`, `docker <resource> --help`)
+
+- [x] **Round 7 — 4 Katmanlı Docker/Compose Doğrulama Motoru:**
+  - [x] Katman 1 (Sözdizimi Doğrulama): Tanınmayan direktif ve ilk satırın FROM olması kontrolü
+  - [x] Katman 2 (Semantik / Referans Bütünlüğü): `COPY`/`ADD` kaynaklarının VFS build context'inde varlığı, base image doğrulaması
+  - [x] Katman 3 (Görev Kriteri Doğrulama): `checkMission` ile multi-stage, non-root user, EXPOSE port kuralları
+  - [x] Katman 4 (Runtime Doğrulama): `docker run` ve `git push` sırasında çalışan container & port kontrolü
+
+- [x] **DevJobs & Git Entegrasyonu:**
+  - [x] `git clone <url>` ile bulunulan VFS dizinine repo dosyalarının yazılması
+  - [x] `git push` ile remote CI/CD pipeline'ın tetiklenmesi ve `ready_to_deliver` durumu
+  - [x] İş Platformunda (DevJobs) kopyalanabilir siyah Git URL kutusu ve "Görevi Teslim Et" butonu
+
+---
+
+## 🔮 İleriye Dönük Faz — Kubernetes Simülasyonu & 4-Katmanlı Manifest Doğrulama (Tasarım Notu)
+*Kubernetes fazı başladığında uygulanacak 4-katmanlı doğrulama standardı:*
+1. **Katman 1 (YAML & Şema Sözdizimi):** `apiVersion`, `kind`, `metadata`, `spec` yapılarının Kubernetes standardına uygunluğu.
+2. **Katman 2 (Semantik Bütünlük):** Referans verilen `ConfigMap`, `Secret`, `Service`, `PersistentVolumeClaim` kaynaklarının kümede tanımlı olması.
+3. **Katman 3 (Görev Kriteri):** Replica sayısı, Resource Limit/Request (`cpu`, `memory`), Liveness/Readiness probe tanımları.
+4. **Katman 4 (Runtime Simülasyonu):** Pod'ların `Running` statüsüne geçişi, `Service` ve `Ingress` routing simülasyonu.

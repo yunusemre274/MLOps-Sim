@@ -30,7 +30,7 @@ describe('tokenize', () => {
     const tokens = tokenize('FROM python:3.11\nBLAH test');
     const unknown = tokens.find((t) => t.type === 'unknown');
     expect(unknown).toBeDefined();
-    expect(unknown.error).toContain('Bilinmeyen direktif');
+    expect(unknown.error).toContain('unknown instruction');
   });
 
   it('backslash continuation birleştirmeli', () => {

@@ -1,25 +1,36 @@
-# HANDOFF — Son Güncelleme: 2026-08-12
+# HANDOFF — Son Güncelleme: 2026-08-13
 
 ## Şu An Neredeyiz
-- **TÜM AŞAMALAR VE FAZLAR TAMAMLANDI! (Faz 0 — Faz 17) 🎉**
-- **Round 6 — Docker CLI Tam Komut Kapsaması ve Tek Handler Mimarisi tamamlandı. 101/101 test %100 geçti.**
+- **TÜM FAZLAR VE GELİŞTİRMELER TAMAMLANDI! (Faz 0 — Faz 19) 🎉**
+- **Round 6 — Docker CLI Tam Komut Kapsaması ve Tek Handler Mimarisi tamamlandı.**
+- **Round 7 — 4 Katmanlı Docker/Compose Doğrulama Motoru tamamlandı.**
+- **114/114 vitest testi %100 başarıyla geçmektedir.**
 
 ---
 
-## Round 6 — Docker CLI Tam Komut Kapsaması (Tamamlandı)
+## 🔍 Round 7 — Önce Teşhis (Diagnosis) Bulguları
+1. **Mevcut Durum Analizi:**
+   - `DockerfileParser.js` AST üretiyordu ancak `COPY` veya `ADD` direktiflerindeki kaynak dosyaların VFS build context'inde gerçekten var olup olmadığı denetlenmiyordu.
+   - Tanınmayan geçersiz base image (`FROM asdasdasd123`) veya rastgele içerik girildiğinde build context semantiği yeterince sıkı değildi.
+2. **Uygulanan 4 Katmanlı Çözüm:**
+   - **Katman 1 (Sözdizimi):** `FROM` ilk anlamlı direktif olmalı; tanınmayan direktifler `Dockerfile parse error line X: unknown instruction` hatası verir.
+   - **Katman 2 (Semantik / Referans Bütünlüğü):** `COPY <src>` dosyası VFS build context'inde (`contextDir`) yoksa `COPY failed: file not found in build context: <src>` ile build anında durdurulur. Base image registry'de yoksa `pull access denied` simüle edilir.
+   - **Katman 3 (Görev Kriteri):** `checkMission` fonksiyonu multi-stage, non-root USER, EXPOSE port vb. görev gereksinimlerini bağımsız puanlar.
+   - **Katman 4 (Runtime):** `docker run` ve `git push` sırasında container port doğrulaması yapılır.
 
-### 1. Tek Çekirdek Handler ve Çoklu Alias Mimarisi
-- `DockerSimulator.js` ve `CommandRouter.js` içerisinde her işlem için **TEK BİR İÇ HANDLER** tanımlandı.
-- Klasik komutlar (`docker run`, `docker ps`, `docker stop`, `docker rmi`, `docker images`) ile yönetim komut grupları (`docker container run`, `docker container ls`, `docker container stop`, `docker image rm`, `docker image ls`) birebir aynı iç handler fonksiyonuna yönlendirildi.
-- Kod tekrarı %0'a indirildi. `CLAUDE.md` ve `AGENTS.md` dosyalarına mimari kuralı işlendi.
+---
 
-### 2. Desteklenen Yeni Komut Grupları
-- **`docker container`:** `run`, `ls`, `stop`, `start`, `restart`, `rm`, `logs`, `exec`, `inspect`, `prune`, `top`, `rename`, `cp`.
-- **`docker image`:** `ls`, `rm`, `inspect`, `history`, `prune`, `pull`, `push`, `tag`.
-- **`docker volume`:** `create`, `ls`, `rm`, `inspect`, `prune`.
-- **`docker network`:** `create`, `ls`, `rm`, `inspect`, `connect`, `disconnect`, `prune`.
-- **`docker system`:** `df`, `prune`.
-- **Ekstra Yaygın Komutlar:** `cp` (VFS ile container arasında dosya kopyalama), `stats` (Monitoring kaynak hesaplamasını kullanır), `top` (process listesi), `pull/push/tag`.
+## 🧪 Gerçek Docker Davranışına Sadakat — Test Tablosu Sonuçları (`tests/Round7VerificationLayers.test.js`)
+
+| Girdi / Senaryo | Beklenen Sonuç | Test Sonucu |
+|---|---|---|
+| **Tamamen boş Dockerfile** | Hata: `first instruction must be FROM` | `PASSED ✅` |
+| **Sadece rastgele metin (`asdkjaskjd`)** | Sözdizimi hatası: `unknown instruction: asdkjaskjd` | `PASSED ✅` |
+| **`FROM python:3.11` + var olmayan `COPY nonexistent.txt .`** | Semantik hata: `COPY failed: file not found in build context` | `PASSED ✅` |
+| **Geçerli tek-katmanlı basit Dockerfile (`app.py` var)** | Build başarılı, `docker run` çalışır, port aktif | `PASSED ✅` |
+| **Görev "multi-stage" istiyor ama kullanıcı tek aşamalı yazmış** | Build başarılı AMA Check Mission "görev kriterleri karşılanmadı" der | `PASSED ✅` |
+| **Görev "non-root user" istiyor ama USER direktifi yok** | Build başarılı AMA Check Mission "USER eksik" olarak işaretler | `PASSED ✅` |
+| **Docker Compose 4-Katmanlı Test** | YAML syntax, depends_on sırası, port map | `PASSED ✅` |
 
 ---
 
@@ -35,5 +46,5 @@
 ---
 
 ## Son Durum İstatistikleri
-- **Testler:** `101/101` vitest testi geçmektedir (%100 başarı).
-- **Production Derleme:** `99` modül hatasız ve 60ms sürede Vite ile derlenmektedir.
+- **Testler:** `114/114` vitest testi geçmektedir (%100 başarı).
+- **Production Derleme:** `101` modül hatasız ve 54ms sürede Vite ile derlenmektedir.

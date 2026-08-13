@@ -73,7 +73,7 @@ export function tokenize(content) {
         directive: directive,
         args,
         line: lineNum,
-        error: `Bilinmeyen direktif: ${directive}`,
+        error: `Dockerfile parse error line ${lineNum}: unknown instruction: ${directive}`,
       });
     }
 
@@ -135,7 +135,7 @@ export function buildAST(tokens) {
     // FROM olmadan direktif — hata
     if (!currentStage) {
       ast.errors.push({
-        message: `FROM direktifi bekleniyor, ${token.directive} bulundu`,
+        message: `Dockerfile parse error: first instruction must be FROM (found ${token.directive} at line ${token.line})`,
         line: token.line,
       });
       continue;
@@ -160,7 +160,7 @@ export function buildAST(tokens) {
 
   // FROM yoksa hata
   if (ast.stages.length === 0) {
-    ast.errors.push({ message: 'Dockerfile\'da FROM direktifi bulunamadı', line: 1 });
+    ast.errors.push({ message: 'Dockerfile parse error: first instruction must be FROM', line: 1 });
   }
 
   return ast;

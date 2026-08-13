@@ -19,3 +19,7 @@ Projenin katı kuralları. Her kural numaralı, açıklamalı ve gerekçeli:
 9. **Zorluk seviyeleri arası tutarlılık bozulmaz.** Junior etiketli bir göreve Kubernetes gerektiren kriter eklenmez. README.md'deki Aşama tanımları referans kaynaktır. Gerekçe: Eğitim tasarımı tutarlılığı.
 
 10. **Bar formülleri tek bir yerde tanımlanır (gameBalance.config.js).** Birden fazla dosyaya dağıtılmaz. Denge ayarlamaları tek noktadan yapılabilir. Gerekçe: Bakım kolaylığı, playtesting verimliliği.
+
+11. **Hiçbir doğrulama/başarı sonucu, gerçek Docker/Compose/Kubernetes davranışını simüle etmeden "başarılı" dönemez.** Yeni bir görev türü veya doğrulama mantığı eklenirken, önce "gerçek Docker/Compose bu girdiyle ne yapardı" sorusu cevaplanır, doğrulama mantığı buna göre yazılır. Yüzeysel kontrol (dosya var mı, en az bir satır var mı gibi) asla "başarı" kriteri olarak kabul edilmez. Gerekçe: Projenin gerçekçi simülasyon ve eğitim değerini koruma.
+
+12. **Her Docker komutu kavramsal olarak tek bir handler'a sahip olmalıdır.** Sözdizimi varyasyonları (`docker X` / `docker <kaynak> X` / `docker container X`) bu handler'a yönlendirilen alias'lardır, asla ayrı implementasyon olarak kopyalanmaz. Gerekçe: Kod tekrarını önleme ve davranış tutarlılığı.
