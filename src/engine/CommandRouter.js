@@ -480,42 +480,35 @@ function handleGit(args, vfs, gitState) {
         ];
       }
 
-      const mission = missions.find((m) => m.id === targetMissionId);
       const runningContainers = dockerPs();
       const verifyRes = verifyMission(targetMissionId, vfs, runningContainers);
 
       if (verifyRes.passed) {
-        const money = mission?.reward?.money || 500;
-        const kp = mission?.reward?.careerPoints || 100;
-        const maint = mission?.reward?.monthlyMaintenance || 0;
-
-        // Store'da görevi tamamla
-        storeState.completeMission(targetMissionId, money, kp, maint);
+        // Görevi teslime hazır (ready_to_deliver) olarak işaretle
+        storeState.markMissionReadyToDeliver(targetMissionId);
 
         return [
-          `Enumerating objects: 5, done.`,
-          `Counting objects: 100% (5/5), done.`,
           `Writing objects: 100% (5/5), 450 bytes | 450.00 KiB/s, done.`,
           `Total 5 (delta 2), reused 0 (delta 0)`,
           `To origin/${gitState.branch}`,
           `   a1b2c3d..e4f5a6b  main -> main`,
           ``,
-          `\x1b[32m[CI/CD Pipeline] ✅ BUILD & DEPLOYMENT PASSED!\x1b[0m`,
-          `\x1b[32m[CI/CD Pipeline] Healthcheck: Port ${verifyRes.requiredPort} üzerinde çalışan '${verifyRes.containerName}' container'ı doğrulandı.\x1b[0m`,
-          `\x1b[32m[DevJobs] 🎉 Görev başarıyla tamamlandı! ₺${money} ve +${kp} KP hesabınıza aktarıldı.\x1b[0m`,
+          `remote: Triggering CI/CD Pipeline...`,
+          `remote: \x1b[32mPipeline PASSED ✅\x1b[0m`,
+          `remote: Port ${verifyRes.requiredPort} üzerinde çalışan '${verifyRes.containerName}' container'ı doğrulandı.`,
+          `remote: \x1b[33mProjeniz başarıyla derlendi. Lütfen İş Platformu üzerinden görevinizi teslim ediniz.\x1b[0m`,
         ];
       } else {
         const reqPort = verifyRes.requiredPort || 8080;
         return [
-          `Enumerating objects: 5, done.`,
-          `Counting objects: 100% (5/5), done.`,
           `Writing objects: 100% (5/5), 450 bytes | 450.00 KiB/s, done.`,
           `To origin/${gitState.branch}`,
           `   a1b2c3d..e4f5a6b  main -> main`,
           ``,
-          `\x1b[31m[CI/CD Pipeline] ❌ BUILD & DEPLOYMENT FAILED!\x1b[0m`,
-          `\x1b[31m[CI/CD Pipeline] ${verifyRes.message}\x1b[0m`,
-          `\x1b[33mLütfen 'docker run -p ${reqPort}:${reqPort} ...' komutu ile servisi ayağa kaldırıp tekrar 'git push' yapın.\x1b[0m`,
+          `remote: Triggering CI/CD Pipeline...`,
+          `remote: \x1b[31mPipeline FAILED ❌\x1b[0m`,
+          `remote: \x1b[31m${verifyRes.message}\x1b[0m`,
+          `remote: \x1b[33mLütfen 'docker run -p ${reqPort}:${reqPort} ...' komutu ile servisi ayağa kaldırıp tekrar 'git push' yapın.\x1b[0m`,
         ];
       }
     }

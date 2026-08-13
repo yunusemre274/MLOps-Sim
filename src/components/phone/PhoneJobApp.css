@@ -312,3 +312,60 @@
   color: var(--color-text-muted);
   border: 1px solid var(--color-border);
 }
+
+.pja-active-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.pja-git-box {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  font-family: var(--font-family-mono);
+}
+
+.pja-git-box__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.65rem;
+  color: #8b949e;
+  margin-bottom: 2px;
+}
+
+.pja-git-box__copy {
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-size: 9px;
+  cursor: pointer;
+}
+
+.pja-git-code {
+  display: block;
+  font-size: 0.68rem;
+  color: #58a6ff;
+  word-break: break-all;
+}
+
+.pja-deliver-btn {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: white;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+}
+
+.pja-deliver-btn:hover {
+  filter: brightness(1.1);
+}

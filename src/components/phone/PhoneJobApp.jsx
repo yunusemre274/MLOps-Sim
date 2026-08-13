@@ -27,7 +27,9 @@ export default function PhoneJobApp() {
   const careerPoints = useGameStore((s) => s.character.careerPoints);
   const activeMissions = useGameStore((s) => s.career.activeMissions);
   const completedMissions = useGameStore((s) => s.career.completedMissions);
+  const readyToDeliverMissions = useGameStore((s) => s.career.readyToDeliverMissions) || [];
   const acceptMission = useGameStore((s) => s.acceptMission);
+  const completeMission = useGameStore((s) => s.completeMission);
 
   const [activeTab, setActiveTab] = useState('jobs'); // 'jobs' | 'talents'
   const [toastMessage, setToastMessage] = useState(null);
@@ -50,10 +52,18 @@ export default function PhoneJobApp() {
       return;
     }
 
-    // Single Source of Truth store çağrısı
     acceptMission(mission.id);
-    const gitUrl = `https://github.com/${mission.company?.id || 'devjobs'}/${mission.id}.git`;
-    showToast(`📌 "${mission.title}" kabul edildi! Terminalde klonlayın: git clone ${gitUrl}`);
+    showToast(`📌 "${mission.title}" kabul edildi! Klonlama linki ilanın altında gösteriliyor.`);
+  };
+
+  const handleDeliver = (mission) => {
+    completeMission(
+      mission.id,
+      mission.reward.money,
+      mission.reward.careerPoints,
+      mission.reward.monthlyMaintenance
+    );
+    showToast(`🎉 "${mission.title}" başarıyla teslim edildi! ₺${mission.reward.money} ve +${mission.reward.careerPoints} KP hesabınıza aktarıldı.`);
   };
 
   const handleTalentsTabClick = () => {
@@ -185,8 +195,38 @@ export default function PhoneJobApp() {
                     ✅ Tamamlandı
                   </div>
                 ) : isActive ? (
-                  <div className="pja-status-badge pja-status-badge--active">
-                    🔄 Çalışılıyor (VFS Hazır)
+                  <div className="pja-active-container">
+                    <div className="pja-git-box">
+                      <div className="pja-git-box__header">
+                        <span>💻 Git Linki</span>
+                        <button
+                          className="pja-git-box__copy"
+                          onClick={() => {
+                            const gitCmd = `git clone git@devjobs.local:${mission.company.id || 'company'}/${mission.id}.git`;
+                            navigator.clipboard?.writeText(gitCmd);
+                            showToast('📋 Git komutu panoya kopyalandı!');
+                          }}
+                        >
+                          📋 Kopyala
+                        </button>
+                      </div>
+                      <code className="pja-git-code">
+                        git clone git@devjobs.local:{mission.company.id || 'company'}/{mission.id}.git
+                      </code>
+                    </div>
+
+                    {readyToDeliverMissions.includes(mission.id) ? (
+                      <button
+                        className="pja-deliver-btn"
+                        onClick={() => handleDeliver(mission)}
+                      >
+                        ✅ Görevi Teslim Et (+₺{mission.reward.money})
+                      </button>
+                    ) : (
+                      <div className="pja-status-badge pja-status-badge--active">
+                        🔄 Çalışılıyor (git push Bekleniyor)
+                      </div>
+                    )}
                   </div>
                 ) : isCompanyLocked ? (
                   <div className="pja-status-badge pja-status-badge--locked">

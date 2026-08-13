@@ -14,7 +14,7 @@ describe('Git Workflow & File Explorer CWD Path Bugfix Verification', () => {
     useGameStore.setState({
       character: { name: 'Oyuncu', rank: 'junior', careerPoints: 0, totalCompletedMissions: 0 },
       finance: { balance: 500, monthlyPassiveIncome: 0 },
-      career: { activeMissions: [], completedMissions: [] },
+      career: { activeMissions: [], readyToDeliverMissions: [], completedMissions: [] },
     });
   });
 
@@ -47,7 +47,7 @@ describe('Git Workflow & File Explorer CWD Path Bugfix Verification', () => {
     expect(catRes.success).toBe(true);
   });
 
-  it('3. Git Push & CI/CD Verification Testi: Port 8080 container yoksa HATA vermeli, varsa BAŞARILI olmalı', () => {
+  it('3. Git Push CI/CD Testi: git push sonrasında readyToDeliverMissions güncellenmeli, İş Platformu üzerinden teslim edilmeli', () => {
     const testMission = missions[0];
     useGameStore.getState().acceptMission(testMission.id);
 
@@ -56,17 +56,23 @@ describe('Git Workflow & File Explorer CWD Path Bugfix Verification', () => {
     gitState.initialized = true;
     gitState.commits = [{ hash: 'a1b2c3d', message: 'First commit' }];
 
-    // Container henüz çalışmıyor -> git push HATA vermeli
+    // Container henüz çalışmıyor -> git push FAILED vermeli
     const failPush = executeCommand('git push origin main', globalVFS, gitState);
-    expect(failPush.some((l) => l.includes('BUILD & DEPLOYMENT FAILED'))).toBe(true);
-    expect(useGameStore.getState().career.completedMissions.includes(testMission.id)).toBe(false);
+    expect(failPush.some((l) => l.includes('Pipeline FAILED'))).toBe(true);
+    expect(useGameStore.getState().career.readyToDeliverMissions.includes(testMission.id)).toBe(false);
 
     // Container 8080 portunda çalıştırılıyor
     dockerRun(['--name', 'my_service', '-p', '8080:8080', 'python:3.11-slim'], globalVFS);
 
-    // git push tekrar deneniyor -> BAŞARILI olmalı ve görevi tamamlamalı
+    // git push tekrar deneniyor -> Pipeline PASSED vermeli ve readyToDeliverMissions eklenmeli (terminalde para/XP verilmez)
     const successPush = executeCommand('git push origin main', globalVFS, gitState);
-    expect(successPush.some((l) => l.includes('BUILD & DEPLOYMENT PASSED'))).toBe(true);
+    expect(successPush.some((l) => l.includes('Pipeline PASSED'))).toBe(true);
+    expect(useGameStore.getState().career.readyToDeliverMissions.includes(testMission.id)).toBe(true);
+    expect(useGameStore.getState().career.completedMissions.includes(testMission.id)).toBe(false);
+
+    // İş Platformundan "Görevi Teslim Et" butonuna basıldığında (completeMission çağrısı)
+    useGameStore.getState().completeMission(testMission.id, testMission.reward.money, testMission.reward.careerPoints, testMission.reward.monthlyMaintenance);
     expect(useGameStore.getState().career.completedMissions.includes(testMission.id)).toBe(true);
+    expect(useGameStore.getState().career.readyToDeliverMissions.includes(testMission.id)).toBe(false);
   });
 });

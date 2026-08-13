@@ -24,7 +24,9 @@ export default function JobPlatformScene() {
   const careerPoints = useGameStore((s) => s.character.careerPoints);
   const completedMissions = useGameStore((s) => s.career.completedMissions);
   const activeMissions = useGameStore((s) => s.career.activeMissions);
+  const readyToDeliverMissions = useGameStore((s) => s.career.readyToDeliverMissions) || [];
   const acceptMission = useGameStore((s) => s.acceptMission);
+  const completeMission = useGameStore((s) => s.completeMission);
 
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [selectedMission, setSelectedMission] = useState(null);
@@ -34,7 +36,7 @@ export default function JobPlatformScene() {
 
   const showNotification = (msg) => {
     setNotification(msg);
-    setTimeout(() => setNotification(null), 3000);
+    setTimeout(() => setNotification(null), 3500);
   };
 
   const handleAccept = (mission) => {
@@ -47,8 +49,18 @@ export default function JobPlatformScene() {
       return;
     }
     acceptMission(mission.id);
-    const gitUrl = `https://github.com/${mission.companyId || 'devjobs'}/${mission.id}.git`;
-    showNotification(`📌 "${mission.title}" kabul edildi! Terminalde projeyi klonlayın: git clone ${gitUrl}`);
+    const gitUrl = `git@devjobs.local:${mission.companyId || 'company'}/${mission.id}.git`;
+    showNotification(`📌 "${mission.title}" kabul edildi! Aşağıdaki git linki ile terminalden klonlayın.`);
+  };
+
+  const handleDeliver = (mission) => {
+    completeMission(
+      mission.id,
+      mission.reward.money,
+      mission.reward.careerPoints,
+      mission.reward.monthlyMaintenance
+    );
+    showNotification(`🎉 "${mission.title}" görevi başarıyla teslim edildi! ₺${mission.reward.money} ve +${mission.reward.careerPoints} KP hesabınıza aktarıldı.`);
   };
 
   return (
@@ -112,12 +124,15 @@ export default function JobPlatformScene() {
                   if (!mission) return null;
                   const done = completedMissions.includes(mission.id);
                   const active = activeMissions.includes(mission.id);
+                  const ready = readyToDeliverMissions.includes(mission.id);
+
                   return (
                     <div key={mission.id} className={`jp-mission-card ${done ? 'jp-mission-card--done' : ''}`}>
                       <div className="jp-mission-card__header">
                         <h4>{mission.title}</h4>
                         {done && <span className="jp-badge jp-badge--done">✅ Tamamlandı</span>}
-                        {active && !done && <span className="jp-badge jp-badge--active">🔄 Aktif</span>}
+                        {ready && <span className="jp-badge jp-badge--ready">✨ Teslime Hazır (Pipeline PASSED)</span>}
+                        {active && !done && !ready && <span className="jp-badge jp-badge--active">🔄 Çalışılıyor (git push Bekleniyor)</span>}
                       </div>
                       <p className="jp-mission-card__desc">{mission.description}</p>
                       <div className="jp-mission-card__meta">
@@ -126,11 +141,44 @@ export default function JobPlatformScene() {
                         <span>📈 {mission.reward.careerPoints} KP</span>
                         <span>Aşama {mission.stage}</span>
                       </div>
+
+                      {/* Kopyalanabilir Git Linki (Aktif görevlerde gösterilir) */}
+                      {active && !done && (
+                        <div className="jp-git-box">
+                          <div className="jp-git-box__header">
+                            <span>💻 Klonlama Linki</span>
+                            <button
+                              className="jp-git-box__copy"
+                              onClick={() => {
+                                const gitUrl = `git clone git@devjobs.local:${selectedCompany.id}/${mission.id}.git`;
+                                navigator.clipboard?.writeText(gitUrl);
+                                showNotification('📋 Git komutu panoya kopyalandı!');
+                              }}
+                            >
+                              📋 Kopyala
+                            </button>
+                          </div>
+                          <code className="jp-git-box__code">
+                            git clone git@devjobs.local:{selectedCompany.id}/{mission.id}.git
+                          </code>
+                        </div>
+                      )}
+
                       <div className="jp-mission-card__actions">
                         <button onClick={() => setSelectedMission(mission)}>Detay</button>
                         {!done && !active && (
                           <button className="jp-btn--primary" onClick={() => handleAccept(mission)}>
-                            Başvur
+                            🚀 Başvur / Kabul Et
+                          </button>
+                        )}
+                        {ready && (
+                          <button className="jp-btn--deliver" onClick={() => handleDeliver(mission)}>
+                            ✅ Görevi Teslim Et (+₺{mission.reward.money})
+                          </button>
+                        )}
+                        {active && !done && !ready && (
+                          <button className="jp-btn--pending" disabled title="Terminalden git push yaparak CI/CD doğrulamasını geçmelisiniz">
+                            ⏳ Terminalde 'git push' Yapın
                           </button>
                         )}
                       </div>
@@ -147,6 +195,27 @@ export default function JobPlatformScene() {
               </button>
               <h3>{selectedMission.title}</h3>
               <p>{selectedMission.description}</p>
+
+              {activeMissions.includes(selectedMission.id) && !completedMissions.includes(selectedMission.id) && (
+                <div className="jp-git-box">
+                  <div className="jp-git-box__header">
+                    <span>💻 Klonlama Linki</span>
+                    <button
+                      className="jp-git-box__copy"
+                      onClick={() => {
+                        const gitUrl = `git clone git@devjobs.local:${selectedCompany.id}/${selectedMission.id}.git`;
+                        navigator.clipboard?.writeText(gitUrl);
+                        showNotification('📋 Git komutu panoya kopyalandı!');
+                      }}
+                    >
+                      📋 Kopyala
+                    </button>
+                  </div>
+                  <code className="jp-git-box__code">
+                    git clone git@devjobs.local:{selectedCompany.id}/{selectedMission.id}.git
+                  </code>
+                </div>
+              )}
 
               <div className="jp-detail-section">
                 <h4>📊 Bilgiler</h4>
@@ -180,6 +249,11 @@ export default function JobPlatformScene() {
               {!completedMissions.includes(selectedMission.id) && !activeMissions.includes(selectedMission.id) && (
                 <button className="jp-accept-btn" onClick={() => handleAccept(selectedMission)}>
                   🚀 Görevi Kabul Et
+                </button>
+              )}
+              {readyToDeliverMissions.includes(selectedMission.id) && (
+                <button className="jp-accept-btn jp-btn--deliver" onClick={() => handleDeliver(selectedMission)}>
+                  ✅ Görevi Teslim Et ve Ödülü Al (+₺{selectedMission.reward.money})
                 </button>
               )}
             </div>

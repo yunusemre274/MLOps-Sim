@@ -224,3 +224,62 @@
   width: 100%;
 }
 .jp-accept-btn:hover { filter: brightness(1.1); }
+
+/* Kopyalanabilir Git Linki Kutusu */
+.jp-git-box {
+  margin: var(--space-sm) 0;
+  padding: var(--space-xs) var(--space-sm);
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-mono);
+}
+.jp-git-box__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  font-size: var(--font-size-xs);
+  color: #8b949e;
+}
+.jp-git-box__copy {
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 10px;
+  cursor: pointer;
+}
+.jp-git-box__copy:hover {
+  background: #30363d;
+}
+.jp-git-box__code {
+  display: block;
+  font-size: 11px;
+  color: #58a6ff;
+  word-break: break-all;
+}
+
+.jp-badge--ready {
+  background: #0e4429;
+  color: #3fb950;
+  border: 1px solid #238636;
+}
+
+.jp-btn--deliver {
+  background: #238636 !important;
+  color: white !important;
+  border-color: #2ea043 !important;
+  font-weight: bold;
+}
+.jp-btn--deliver:hover {
+  background: #2ea043 !important;
+}
+
+.jp-btn--pending {
+  background: #21262d !important;
+  color: #8b949e !important;
+  border-color: #30363d !important;
+  cursor: not-allowed;
+}

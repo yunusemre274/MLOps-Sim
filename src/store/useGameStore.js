@@ -62,6 +62,7 @@ const initialState = {
   career: {
     currentEmployer: null,
     activeMissions: [],
+    readyToDeliverMissions: [],
     completedMissions: [],
     ownCompany: null,
     employees: [],
@@ -274,10 +275,23 @@ const useGameStore = create((set, get) => ({
       };
     }),
 
+  markMissionReadyToDeliver: (missionId) =>
+    set((state) => {
+      const ready = state.career.readyToDeliverMissions || [];
+      if (ready.includes(missionId)) return state;
+      return {
+        career: {
+          ...state.career,
+          readyToDeliverMissions: [...ready, missionId],
+        },
+      };
+    }),
+
   completeMission: (missionId, moneyReward, careerReward, monthlyMaintenance) =>
     set((state) => {
       const newPoints = state.character.careerPoints + careerReward;
       const newRank = calculateRank(newPoints);
+      const readyList = state.career.readyToDeliverMissions || [];
       return {
         character: {
           ...state.character,
@@ -288,6 +302,7 @@ const useGameStore = create((set, get) => ({
         career: {
           ...state.career,
           activeMissions: state.career.activeMissions.filter((id) => id !== missionId),
+          readyToDeliverMissions: readyList.filter((id) => id !== missionId),
           completedMissions: [...state.career.completedMissions, missionId],
         },
         finance: {
