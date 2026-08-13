@@ -21,7 +21,7 @@ const FOOD_ICONS = {
   water: '💧', energy_drink: '⚡',
 };
 
-export default function MarketScene({ isOnline = false }) {
+export default function MarketScene({ isOnline = false, onBack }) {
   const setScene = useGameStore((s) => s.setScene);
   const balance = useGameStore((s) => s.finance.balance);
   const [bought, setBought] = useState([]);
@@ -49,16 +49,21 @@ export default function MarketScene({ isOnline = false }) {
       useGameStore.setState({ currentTime: newTime });
     }
     useGameStore.getState().addEvent(`${isOnline ? 'Online' : ''} Market alışverişi yapıldı (${bought.length} ürün)`);
-    setScene(isOnline ? 'phone' : 'outdoor');
+
+    if (onBack) {
+      onBack();
+    } else {
+      setScene(isOnline ? 'phone' : 'outdoor');
+    }
   };
 
   return (
-    <div className="scene scene--market">
+    <div className={`scene scene--market ${isOnline ? 'scene--market-online' : ''}`}>
       <div className="market-header">
         <button className="location-back" onClick={handleLeave}>
-          ← {isOnline ? 'Telefona Dön' : 'Geri'}
+          ← {isOnline ? 'Rehbere Dön' : 'Geri'}
         </button>
-        <h2>{isOnline ? '📦 Online Market' : '🏪 Market'}</h2>
+        <h2>{isOnline ? '📦 GetirMLOps' : '🏪 Market'}</h2>
         <span className="market-balance">💰 ₺{Math.floor(balance)}</span>
       </div>
 

@@ -32,10 +32,6 @@ export default function PhoneScene() {
     (npc) => relationships[npc.id] && relationships[npc.id].level > 0
   );
 
-  if (activeTab === 'market') {
-    return <MarketScene isOnline />;
-  }
-
   return (
     <div className="scene scene--phone">
       <div className="phone-header">
@@ -60,7 +56,7 @@ export default function PhoneScene() {
         </button>
         <button
           className={`phone-tab ${activeTab === 'market' ? 'phone-tab--active' : ''}`}
-          onClick={() => setActiveTab('market')}
+          onClick={() => { setActiveTab('market'); setSelectedNPC(null); }}
         >
           📦 Market
         </button>
@@ -68,6 +64,8 @@ export default function PhoneScene() {
 
       {activeTab === 'jobs' ? (
         <PhoneJobApp />
+      ) : activeTab === 'market' ? (
+        <MarketScene isOnline onBack={() => setActiveTab('contacts')} />
       ) : selectedNPC ? (
         // NPC Profil detayı
         <div className="phone-profile">

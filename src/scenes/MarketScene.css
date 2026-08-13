@@ -8,6 +8,12 @@
   margin: 0 auto;
 }
 
+.scene--market.scene--market-online {
+  padding: 0;
+  max-width: 100%;
+  margin: 0;
+}
+
 .market-header {
   display: flex;
   align-items: center;
