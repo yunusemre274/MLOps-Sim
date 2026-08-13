@@ -13,6 +13,37 @@ import { globalVFS } from '../../engine/VirtualFileSystem';
 import TerminalTab from './TerminalTab';
 import './EditorTab.css';
 
+// Dosya uzantısından dil modu seçimi
+export const EXTENSION_TO_LANGUAGE = {
+  '.py': 'python',
+  '.js': 'javascript',
+  '.jsx': 'javascript',
+  '.ts': 'typescript',
+  '.tsx': 'typescript',
+  '.go': 'go',
+  '.json': 'json',
+  '.yml': 'yaml',
+  '.yaml': 'yaml',
+  '.md': 'markdown',
+  '.txt': 'plaintext',
+  '.env': 'shell',
+  '.sh': 'shell',
+  'Dockerfile': 'dockerfile',
+  '.gitignore': 'plaintext',
+};
+
+export function getFileLanguage(filename = '') {
+  if (filename === 'Dockerfile' || filename.startsWith('Dockerfile.') || filename.endsWith('.dockerfile')) {
+    return 'dockerfile';
+  }
+  const dotIdx = filename.lastIndexOf('.');
+  if (dotIdx !== -1) {
+    const ext = filename.substring(dotIdx);
+    if (EXTENSION_TO_LANGUAGE[ext]) return EXTENSION_TO_LANGUAGE[ext];
+  }
+  return 'plaintext';
+}
+
 // Dosya uzantısına göre ikon seçimi
 export function getFileIcon(filename = '') {
   if (filename.includes('Dockerfile')) return '🐳';
@@ -20,7 +51,7 @@ export function getFileIcon(filename = '') {
   if (filename.endsWith('.json')) return '🌐';
   if (filename.endsWith('.md')) return '📝';
   if (filename.endsWith('.go')) return '🐹';
-  if (filename.endsWith('.js') || filename.endsWith('.ts')) return '⚡';
+  if (filename.endsWith('.js') || filename.endsWith('.ts') || filename.endsWith('.jsx') || filename.endsWith('.tsx')) return '⚡';
   if (filename.endsWith('.env')) return '🔑';
   if (filename.endsWith('.gitignore')) return '🙈';
   if (filename.endsWith('.sh')) return '🐚';
@@ -42,6 +73,161 @@ EXPOSE 8080
 
 CMD ["python", "app.py"]
 `;
+
+// === TOKEN BAZLI SYNTAX HIGHLIGHTING MOTORU ===
+
+function renderHighlightedLine(line, lang) {
+  if (!line) return '\u00A0';
+  const trimmed = line.trimStart();
+
+  // Yorum satırları (tüm diller için)
+  if (trimmed.startsWith('#') || trimmed.startsWith('//')) {
+    return <span className="tok-comment">{line}</span>;
+  }
+
+  // 1. YAML / DOCKER-COMPOSE
+  if (lang === 'yaml') {
+    const indent = line.length - trimmed.length;
+    const indentStr = line.substring(0, indent);
+
+    // Liste elemanı (- "80:80" veya - db)
+    const listMatch = trimmed.match(/^-\s+(.*)$/);
+    if (listMatch) {
+      return (
+        <>
+          {indentStr}
+          <span className="tok-punct">- </span>
+          <span className={/["']/.test(listMatch[1]) ? 'tok-string' : 'tok-value'}>{listMatch[1]}</span>
+        </>
+      );
+    }
+
+    // Key: value eşleşmesi
+    const kvMatch = trimmed.match(/^([a-zA-Z0-9_\-\.]+):(?:\s*(.*))?$/);
+    if (kvMatch) {
+      const key = kvMatch[1];
+      const val = kvMatch[2];
+      const isTopLevel = indent === 0;
+      const isServiceName = indent === 2;
+
+      let keyClass = 'tok-property';
+      if (isTopLevel) keyClass = 'tok-toplevel';
+      else if (isServiceName) keyClass = 'tok-servicename';
+
+      let valNode = null;
+      if (val !== undefined && val !== '') {
+        if (/^["'].*["']$/.test(val)) valNode = <span className="tok-string"> {val}</span>;
+        else if (/^\d+$/.test(val)) valNode = <span className="tok-number"> {val}</span>;
+        else if (val === 'true' || val === 'false') valNode = <span className="tok-builtin"> {val}</span>;
+        else valNode = <span className="tok-value"> {val}</span>;
+      }
+
+      return (
+        <>
+          {indentStr}
+          <span className={keyClass}>{key}</span>
+          <span className="tok-punct">:</span>
+          {valNode}
+        </>
+      );
+    }
+  }
+
+  // 2. DOCKERFILE
+  if (lang === 'dockerfile') {
+    const dfMatch = line.match(/^(\s*)(FROM|RUN|COPY|ADD|WORKDIR|EXPOSE|CMD|ENTRYPOINT|ENV|ARG|USER|LABEL|HEALTHCHECK|VOLUME|SHELL|STOPSIGNAL|ONBUILD)(\b.*)$/i);
+    if (dfMatch) {
+      const [, sp, dir, rest] = dfMatch;
+      // AS alias veya flag parçalama
+      const parts = rest.split(/(\s+AS\s+\S+|--[a-zA-Z0-9_\-]+(?:=\S+)?|-[a-zA-Z0-9])/g);
+      return (
+        <>
+          {sp}
+          <span className="tok-directive">{dir.toUpperCase()}</span>
+          {parts.map((p, idx) => {
+            if (/^\s+AS\s+/i.test(p)) {
+              const aliasName = p.trim().split(/\s+/)[1];
+              return (
+                <span key={idx}>
+                  {' '}
+                  <span className="tok-keyword">AS</span> <span className="tok-servicename">{aliasName}</span>
+                </span>
+              );
+            }
+            if (/^(--[a-zA-Z0-9_\-]+|-[a-zA-Z0-9])/.test(p)) {
+              return <span key={idx} className="tok-flag">{p}</span>;
+            }
+            if (/["'].*["']/.test(p)) {
+              return <span key={idx} className="tok-string">{p}</span>;
+            }
+            return <span key={idx}>{p}</span>;
+          })}
+        </>
+      );
+    }
+  }
+
+  // 3. PYTHON
+  if (lang === 'python') {
+    if (trimmed.startsWith('@')) {
+      return <span className="tok-decorator">{line}</span>;
+    }
+    const pyRegex = /(\b(?:def|class|import|from|return|if|else|elif|for|while|try|except|finally|with|as|pass|yield|raise|async|await|lambda|in|is|not|and|or|assert)\b|\b(?:True|False|None|print|len|range|dict|list|str|int|float|bool|open)\b|"[^"]*"|'[^']*'|#[^\n]*)/g;
+    const tokens = line.split(pyRegex);
+    return (
+      <>
+        {tokens.map((tok, idx) => {
+          if (!tok) return null;
+          if (tok.startsWith('#')) return <span key={idx} className="tok-comment">{tok}</span>;
+          if (tok.startsWith('"') || tok.startsWith("'")) return <span key={idx} className="tok-string">{tok}</span>;
+          if (/^(def|class|import|from|return|if|else|elif|for|while|try|except|finally|with|as|pass|yield|raise|async|await|lambda|in|is|not|and|or|assert)$/.test(tok)) {
+            return <span key={idx} className="tok-keyword">{tok}</span>;
+          }
+          if (/^(True|False|None|print|len|range|dict|list|str|int|float|bool|open)$/.test(tok)) {
+            return <span key={idx} className="tok-builtin">{tok}</span>;
+          }
+          return <span key={idx}>{tok}</span>;
+        })}
+      </>
+    );
+  }
+
+  // 4. MARKDOWN
+  if (lang === 'markdown') {
+    if (trimmed.startsWith('# ')) return <span className="tok-h1">{line}</span>;
+    if (trimmed.startsWith('## ')) return <span className="tok-h2">{line}</span>;
+    if (trimmed.startsWith('### ')) return <span className="tok-h3">{line}</span>;
+    if (trimmed.startsWith('>')) return <span className="tok-quote">{line}</span>;
+    if (/^(\s*)([-*]|\d+\.)\s+/.test(line)) {
+      const match = line.match(/^(\s*)([-*]|\d+\.)\s+(.*)$/);
+      return (
+        <>
+          {match[1]}
+          <span className="tok-bullet">{match[2]} </span>
+          <span>{match[3]}</span>
+        </>
+      );
+    }
+  }
+
+  // 5. JSON
+  if (lang === 'json') {
+    const jsonMatch = line.match(/^(\s*)(".*?")(\s*:\s*)(.*)$/);
+    if (jsonMatch) {
+      return (
+        <>
+          {jsonMatch[1]}
+          <span className="tok-property">{jsonMatch[2]}</span>
+          <span className="tok-punct">{jsonMatch[3]}</span>
+          <span className={jsonMatch[4].startsWith('"') ? 'tok-string' : 'tok-number'}>{jsonMatch[4]}</span>
+        </>
+      );
+    }
+  }
+
+  // Varsayılan satır
+  return <span>{line}</span>;
+}
 
 export default function EditorTab({ initialFile }) {
   const [files, setFiles] = useState(() => {
@@ -139,32 +325,17 @@ export default function EditorTab({ initialFile }) {
   const lineCount = currentFile ? currentFile.content.split('\n').length : 1;
   const lineNumbers = Array.from({ length: lineCount }, (_, i) => i + 1);
 
-  // Gelişmiş Syntax Highlighting (9+ Dosya Türü)
+  const currentLang = currentFile ? getFileLanguage(currentFile.name) : 'plaintext';
+
+  // Gelişmiş Token Tabanlı Syntax Highlighting (YAML, Dockerfile, Python, Markdown, JSON, Go, JS, Shell)
   const getHighlightedContent = () => {
     if (!currentFile) return null;
-    const ext = currentFile.name;
 
-    return currentFile.content.split('\n').map((line, i) => {
-      const trimmed = line.trimStart();
-      let className = 'editor__line';
-
-      if (trimmed.startsWith('#') || trimmed.startsWith('//')) {
-        className += ' editor__line--comment';
-      } else if (ext.endsWith('.md')) {
-        if (trimmed.startsWith('#')) className += ' editor__line--keyword';
-        else if (trimmed.startsWith('>')) className += ' editor__line--comment';
-      } else if (ext.endsWith('.json')) {
-        if (/"[^"]+":/.test(trimmed)) className += ' editor__line--keyword';
-      } else if (/^(FROM|RUN|COPY|WORKDIR|EXPOSE|CMD|ENTRYPOINT|ENV|ARG|func|package|import|const|let|var|function|return|export|default)\s/i.test(trimmed)) {
-        className += ' editor__line--keyword';
-      }
-
-      return (
-        <div key={i} className={className}>
-          {line || '\u00A0'}
-        </div>
-      );
-    });
+    return currentFile.content.split('\n').map((line, i) => (
+      <div key={i} className="editor__line">
+        {renderHighlightedLine(line, currentLang)}
+      </div>
+    ));
   };
 
   return (
@@ -252,6 +423,7 @@ export default function EditorTab({ initialFile }) {
       {/* Durum çubuğu */}
       <div className="editor__statusbar">
         <span>{currentFile ? currentFile.name : ''}</span>
+        <span>Dil: {currentLang.toUpperCase()}</span>
         <span>Satır: {lineCount}</span>
         <span>UTF-8</span>
         <span className="editor__statusbar-term-link" onClick={() => setShowTerminal(!showTerminal)}>

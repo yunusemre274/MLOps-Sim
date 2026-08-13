@@ -318,6 +318,29 @@
 
 ---
 
+## Faz 20 — Görev İçeriği Doğruluğu, Klasör Navigasyonu ve Syntax Highlighting (Round 9)
+**Bu fazın çıkış kriteri:** Aşama 5+ görevlerde Dockerfile'ın hazır gelmemesi, her repo'da zengin README.md bulunması, masaüstü/gezgin klasör çift tıklama hatasının çözülmesi ve VS Code temalı renkli sözdizimi vurgulaması.
+
+- [x] **Görev Grubu 1 — İleri Seviye Görevlerde Dockerfile Hazır Gelmemeli & README.md Görev Tanımı:**
+  - [x] Aşama 1-4 (Junior → Mid): Statik kod + README.md (görev tanımı). Dockerfile sıfırdan yazılır.
+  - [x] Aşama 5+ (Mid-Senior): Sadece statik kod + README.md. Dockerfile veya Compose ASLA hazır verilmez.
+  - [x] `git clone` ile her repoya şirket senaryosu, kısıtlamalar, hedefler ve teslimat adımlarını içeren `README.md` otomatik oluşturulması.
+  - [x] Referans kriterlerin oyuncu VFS'inden izole edilip sadece AI/Engine katmanında tutulması.
+
+- [x] **Görev Grubu 2 — Klasör Çift Tıklama Navigasyon Düzeltmesi:**
+  - [x] Masaüstünde veya Dosya Gezgini içinde klasöre çift tıklandığında doğrudan o path ile açılması.
+  - [x] Dosya Gezgini zaten açıkken çift tıklandığında yeni pencere açılmadan var olan pencerenin öne gelip hedef klasöre anında odaklanması (`initialPath` senkronizasyonu).
+
+- [x] **Görev Grubu 3 — Kod Editöründe Çoklu Dil Syntax Highlighting:**
+  - [x] `EXTENSION_TO_LANGUAGE` eşleme tablosu (`.py`, `.js`, `.ts`, `.go`, `.json`, `.yml`, `.yaml`, `.md`, `.txt`, `.env`, `.sh`, `Dockerfile`, `.gitignore`).
+  - [x] `docker-compose.yml` için `services:`, servis adları, key'ler, string ve portları ayıran renkli tokenizasyon.
+  - [x] `Dockerfile` için direktifler (`FROM`, `RUN`, `COPY`, `CMD` vb.), flag'ler, string'ler ve alias'lar.
+  - [x] `Python` için anahtar kelimeler (`def`, `import`, `return`), built-in'ler (`print`, `dict`), decorator'lar ve yorumlar.
+  - [x] `Markdown` için başlık seviyeleri (`#`, `##`, `###`), listeler, blok alıntılar.
+  - [x] Editör durum çubuğunda anlık aktif dil modunun gösterilmesi (`Dil: DOCKERFILE`, `Dil: YAML`, `Dil: PYTHON` vb.).
+
+---
+
 ## 🔮 İleriye Dönük Faz — Kubernetes Simülasyonu & 4-Katmanlı Manifest Doğrulama (Tasarım Notu)
 *Kubernetes fazı başladığında uygulanacak 4-katmanlı doğrulama standardı:*
 1. **Katman 1 (YAML & Şema Sözdizimi):** `apiVersion`, `kind`, `metadata`, `spec` yapılarının Kubernetes standardına uygunluğu.

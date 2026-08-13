@@ -172,8 +172,27 @@
 }
 
 .editor__line { min-height: 1.6em; }
-.editor__line--comment { color: #6c7086; font-style: italic; }
-.editor__line--keyword { color: #89b4fa; }
+
+/* VS Code Dark / Catppuccin Syntax Highlighting Tokens */
+.tok-comment { color: #6c7086; font-style: italic; }
+.tok-keyword { color: #cba6f7; font-weight: 600; }
+.tok-directive { color: #89b4fa; font-weight: 700; }
+.tok-toplevel { color: #cba6f7; font-weight: 700; }
+.tok-servicename { color: #89dceb; font-weight: 600; }
+.tok-property { color: #89b4fa; }
+.tok-string { color: #a6e3a1; }
+.tok-number { color: #fab387; }
+.tok-builtin { color: #fab387; font-weight: 500; }
+.tok-flag { color: #f9e2af; }
+.tok-decorator { color: #f9e2af; font-style: italic; }
+.tok-value { color: #cdd6f4; }
+.tok-punct { color: #9399b2; }
+.tok-h1 { color: #cba6f7; font-weight: 700; }
+.tok-h2 { color: #89b4fa; font-weight: 600; }
+.tok-h3 { color: #94e2d5; font-weight: 600; }
+.tok-quote { color: #9399b2; font-style: italic; }
+.tok-bullet { color: #fab387; font-weight: 600; }
+.tok-code { color: #f9e2af; background: #313244; padding: 1px 4px; border-radius: 3px; }
 
 .editor__textarea {
   width: 100%;
