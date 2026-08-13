@@ -50,6 +50,7 @@ import { parseCompose, generateComposeUpLogs, generateComposeDownLogs } from './
 import { windowManager } from './WindowManager.js';
 import useGameStore from '../store/useGameStore.js';
 import missions from '../data/missions.json';
+import companies from '../data/companies.json';
 import { verifyMission } from './MissionEngine.js';
 
 // Global komut geçmişi ve ortam değişkenleri
@@ -390,14 +391,58 @@ function handleGit(args, vfs, gitState) {
       vfs.mkdir(repoDirName, true);
       vfs.mkdir(`${repoDirName}/.git`, true);
 
-      if (targetMission && targetMission.repoFiles) {
-        for (const [filename, content] of Object.entries(targetMission.repoFiles)) {
-          if (filename.includes('/')) {
-            const subDir = `${repoDirName}/${filename.split('/').slice(0, -1).join('/')}`;
-            vfs.mkdir(subDir, true);
+      if (targetMission) {
+        const companyObj = companies.find((c) => c.id === targetMission.companyId);
+        const companyName = companyObj ? companyObj.name : 'DevJobs Partner';
+        const isAdvanced = (targetMission.stage || 1) >= 5;
+
+        // Repo dosyalarını yaz (Zorluk seviyesi kuralları)
+        if (targetMission.repoFiles) {
+          for (const [filename, content] of Object.entries(targetMission.repoFiles)) {
+            // Aşama 5+: Asla hazır Dockerfile veya compose dosyası yazılmaz!
+            if (isAdvanced && (filename.toLowerCase().includes('dockerfile') || filename.toLowerCase().includes('compose'))) {
+              continue;
+            }
+            if (filename.includes('/')) {
+              const subDir = `${repoDirName}/${filename.split('/').slice(0, -1).join('/')}`;
+              vfs.mkdir(subDir, true);
+            }
+            vfs.writeFile(`${repoDirName}/${filename}`, content);
           }
-          vfs.writeFile(`${repoDirName}/${filename}`, content);
         }
+
+        // Görev Tanımı README.md Oluştur (Her aşama için zorunlu)
+        const hintsText = targetMission.hints && targetMission.hints.length > 0
+          ? targetMission.hints.map((h) => `- ${h}`).join('\n')
+          : '- Projenin Dockerfile / Compose yapılandırmasını eksiksiz tamamlayın.';
+
+        const readmeContent = `# ${targetMission.title}
+
+**Şirket:** ${companyName}
+**Zorluk Seviyesi:** Aşama ${targetMission.stage || 1} (${targetMission.difficulty || 1} Yıldız)
+**Ödül:** ₺${targetMission.reward?.money || 0} | +${targetMission.reward?.careerPoints || 0} XP (Aylık Bakım: ₺${targetMission.reward?.monthlyMaintenance || 0})
+
+---
+
+## 📋 Görev Tanımı ve Senaryo
+${targetMission.description}
+
+## 🎯 Teknik Kısıtlamalar ve Hedefler
+${hintsText}
+
+## 🚀 Nasıl Başlanır ve Teslim Edilir?
+1. Proje dosyalarını inceleyin ve uygun \`Dockerfile\` / \`docker-compose.yml\` yapılandırmasını oluşturun.
+2. Terminalde \`docker build\` veya \`docker compose up\` ile container'ı çalıştırıp test edin.
+3. Değişiklikleri Git ile commitleyip remote depoya gönderin:
+\`\`\`bash
+git add .
+git commit -m "feat: complete containerization"
+git push origin main
+\`\`\`
+4. CI/CD testleri başarıyla tamamlandığında **İş Platformu (DevJobs)** veya telefonunuzdaki **DevJobs Mobil** uygulamasından **"Görevi Teslim Et"** butonuna basarak ödülünüzü alın.
+`;
+
+        vfs.writeFile(`${repoDirName}/README.md`, readmeContent);
       } else {
         vfs.touch(`${repoDirName}/README.md`);
         vfs.writeFile(`${repoDirName}/README.md`, `# ${repoDirName}\nMLOps repository cloned successfully.\n`);
