@@ -20,23 +20,6 @@ export default function FileExplorerTab({ onOpenFile }) {
   // Gezinti konumu state'i: '/home/user', '/home/user/projects', '/home/user/desktop', '/home/user/documents'
   const [currentPath, setCurrentPath] = useState('/home/user');
 
-  // Mission sync yan etkisini useEffect içine al (render sırasında side-effect çalıştırma!)
-  useEffect(() => {
-    if (activeMissions.length > 0) {
-      activeMissions.forEach((m) => vfs.syncMission(m));
-    } else {
-      vfs.syncMission({
-        id: 'sample_project',
-        title: 'Örnek MLOps Projesi',
-        repoFiles: {
-          'Dockerfile': '# Örnek Dockerfile\nFROM python:3.11-slim\nWORKDIR /app\nCOPY . .\nCMD ["python", "app.py"]\n',
-          'app.py': 'print("Hello Windows XP!")\n',
-          'requirements.txt': 'fastapi==0.104.1\n',
-        },
-      });
-    }
-  }, [activeMissionIds.length]);
-
   const dirRes = vfs.ls(currentPath);
   const entries = dirRes.success ? dirRes.entries : [];
 
@@ -60,6 +43,22 @@ export default function FileExplorerTab({ onOpenFile }) {
     setCurrentPath('/' + parts.join('/'));
   };
 
+  const handleCreateFile = () => {
+    const fileName = prompt('Oluşturulacak dosya adı (Örn: app.py):');
+    if (!fileName || !fileName.trim()) return;
+    const fullPath = `${currentPath}/${fileName.trim()}`.replace(/\/+/g, '/');
+    const res = vfs.touch(fullPath);
+    if (!res.success) alert(res.error || 'Dosya oluşturulamadı');
+  };
+
+  const handleCreateFolder = () => {
+    const folderName = prompt('Oluşturulacak klasör adı (Örn: src):');
+    if (!folderName || !folderName.trim()) return;
+    const fullPath = `${currentPath}/${folderName.trim()}`.replace(/\/+/g, '/');
+    const res = vfs.mkdir(fullPath, true);
+    if (!res.success) alert(res.error || 'Klasör oluşturulamadı');
+  };
+
   return (
     <div className="xp-explorer">
       {/* XP Araç Çubuğu & Adres Çubuğu */}
@@ -72,6 +71,12 @@ export default function FileExplorerTab({ onOpenFile }) {
             title="Yukarı Klasör"
           >
             ⬅ Yukarı
+          </button>
+          <button className="xp-explorer__nav-btn" onClick={handleCreateFile} title="Bulunulan Dizin İçinde Yeni Dosya">
+            ➕ Yeni Dosya
+          </button>
+          <button className="xp-explorer__nav-btn" onClick={handleCreateFolder} title="Bulunulan Dizin İçinde Yeni Klasör">
+            📁 Yeni Klasör
           </button>
         </div>
         <div className="xp-explorer__address-bar">

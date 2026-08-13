@@ -210,3 +210,47 @@ export function submitMission(missionId, checkResult) {
     ratio,
   };
 }
+
+/**
+ * git push ile tetiklenen doğrulama motoru.
+ *
+ * Kabul Kriteri:
+ * 1. Görevin gerektirdiği portu bulur (expectedCriteria.exposedPort veya default 8080).
+ * 2. DockerSimulator running container listesinde 'running' statüsünde ve o porta bağlı bir container arar.
+ * 3. Varsa başarı döner, yoksa hata mesajı döner.
+ */
+export function verifyMission(missionId, vfs, runningContainers = []) {
+  const mission = typeof missionId === 'object' ? missionId : getMission(missionId);
+  if (!mission) {
+    return {
+      passed: false,
+      requiredPort: 8080,
+      message: 'HATA: Görev bilgisi sistemde bulunamadı.',
+    };
+  }
+
+  const requiredPort = mission.expectedCriteria?.exposedPort || mission.requiredPort || 8080;
+
+  // Running container kontrolü
+  const activeContainer = runningContainers.find((c) => {
+    if (c.status !== 'running') return false;
+    const portStr = String(c.port || c.ports || '');
+    return portStr.includes(String(requiredPort));
+  });
+
+  if (!activeContainer) {
+    return {
+      passed: false,
+      requiredPort,
+      message: `HATA: Port ${requiredPort} üzerinde 'running' statüsünde çalışan bir container bulunamadı.`,
+    };
+  }
+
+  return {
+    passed: true,
+    requiredPort,
+    containerName: activeContainer.name || activeContainer.id,
+    message: `Port ${requiredPort} üzerinde '${activeContainer.name || activeContainer.id}' container'ı aktif ve çalışıyor.`,
+  };
+}
+

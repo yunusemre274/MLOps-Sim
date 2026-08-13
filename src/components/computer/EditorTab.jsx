@@ -115,8 +115,10 @@ export default function EditorTab({ initialFile }) {
   const handleNewFile = () => {
     if (!newFileName.trim()) return;
     const name = newFileName.trim();
-    const newObj = { name, path: `/home/user/${name}`, content: '', savedContent: '' };
-    globalVFS.touch(`/home/user/${name}`);
+    const activeDir = currentFile?.path ? currentFile.path.split('/').slice(0, -1).join('/') : globalVFS.pwd();
+    const fullPath = `${activeDir}/${name}`.replace(/\/+/g, '/');
+    const newObj = { name, path: fullPath, content: '', savedContent: '' };
+    globalVFS.touch(fullPath);
 
     setFiles((prev) => [...prev, newObj]);
     setActiveFile(files.length);

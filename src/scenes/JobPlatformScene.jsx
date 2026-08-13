@@ -47,7 +47,8 @@ export default function JobPlatformScene() {
       return;
     }
     acceptMission(mission.id);
-    showNotification(`✅ "${mission.title}" görevi kabul edildi! Terminale geç ve çalışmaya başla.`);
+    const gitUrl = `https://github.com/${mission.companyId || 'devjobs'}/${mission.id}.git`;
+    showNotification(`📌 "${mission.title}" kabul edildi! Terminalde projeyi klonlayın: git clone ${gitUrl}`);
   };
 
   return (

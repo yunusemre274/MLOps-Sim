@@ -48,6 +48,9 @@ import {
 } from './DockerSimulator.js';
 import { parseCompose, generateComposeUpLogs, generateComposeDownLogs } from './ComposeParser.js';
 import { windowManager } from './WindowManager.js';
+import useGameStore from '../store/useGameStore.js';
+import missions from '../data/missions.json';
+import { verifyMission } from './MissionEngine.js';
 
 // Global komut geçmişi ve ortam değişkenleri
 const commandHistory = [];
@@ -354,21 +357,73 @@ function handleGit(args, vfs, gitState) {
       gitState.initialized = true;
       vfs.mkdir('.git', true);
       return ['Initialized empty Git repository in ' + vfs.pwd() + '/.git/'];
+
     case 'clone': {
-      const url = args[1] || 'https://github.com/mlops/project.git';
-      const repoName = url.split('/').pop().replace('.git', '') || 'mlops-project';
+      const rawUrl = args[1] || '';
+      if (!rawUrl) {
+        return ['fatal: You must specify a repository to clone.'];
+      }
+
+      const storeState = useGameStore.getState();
+      const activeMissionIds = storeState.career.activeMissions || [];
+      const completedMissionIds = storeState.career.completedMissions || [];
+
+      // URL'den repo adını veya görev ID'sini ayıkla
+      const urlRepoName = rawUrl.split('/').pop().replace('.git', '') || 'mlops-project';
+
+      // Store'daki aktif görevlerden veya tüm görevlerden eşleşeni bul
+      let targetMission = missions.find(
+        (m) => m.id === urlRepoName ||
+               rawUrl.includes(m.id) ||
+               (m.companyId && rawUrl.includes(m.companyId)) ||
+               activeMissionIds.includes(m.id)
+      );
+
+      if (!targetMission && activeMissionIds.length > 0) {
+        targetMission = missions.find((m) => activeMissionIds.includes(m.id));
+      }
+
+      const repoDirName = targetMission ? targetMission.id : urlRepoName;
+      const targetPath = `${vfs.pwd()}/${repoDirName}`.replace(/\/+/g, '/');
+
+      // VFS üzerinde klasörleri oluştur ve dosyaları yaz
+      vfs.mkdir(repoDirName, true);
+      vfs.mkdir(`${repoDirName}/.git`, true);
+
+      if (targetMission && targetMission.repoFiles) {
+        for (const [filename, content] of Object.entries(targetMission.repoFiles)) {
+          if (filename.includes('/')) {
+            const subDir = `${repoDirName}/${filename.split('/').slice(0, -1).join('/')}`;
+            vfs.mkdir(subDir, true);
+          }
+          vfs.writeFile(`${repoDirName}/${filename}`, content);
+        }
+      } else {
+        vfs.touch(`${repoDirName}/README.md`);
+        vfs.writeFile(`${repoDirName}/README.md`, `# ${repoDirName}\nMLOps repository cloned successfully.\n`);
+      }
+
+      // Git state güncelle
       gitState.initialized = true;
-      vfs.mkdir(repoName, true);
-      vfs.mkdir(`${repoName}/.git`, true);
-      vfs.touch(`${repoName}/README.md`);
-      vfs.writeFile(`${repoName}/README.md`, `# ${repoName}\nMLOps repository cloned successfully.\n`);
+      gitState.repoPath = targetPath;
+      gitState.staged = [];
+      gitState.commits = [{ hash: 'a1b2c3d', message: 'Initial commit', author: 'origin' }];
+
+      // Store'da activeMissions içinde değilse ekle
+      if (targetMission && !activeMissionIds.includes(targetMission.id) && !completedMissionIds.includes(targetMission.id)) {
+        storeState.acceptMission(targetMission.id);
+      }
+
       return [
-        `Cloning into '${repoName}'...`,
-        'remote: Enumerating objects: 12, done.',
-        'remote: Total 12 (delta 2), reused 10 (delta 1)',
-        'Unpacking objects: 100% (12/12), done.',
+        `Cloning into '${repoDirName}'...`,
+        'remote: Enumerating objects: 8, done.',
+        'remote: Counting objects: 100% (8/8), done.',
+        'remote: Compressing objects: 100% (6/6), done.',
+        'Receiving objects: 100% (8/8), 1.45 KiB | 1.45 MiB/s, done.',
+        'Resolving deltas: 100% (2/2), done.',
       ];
     }
+
     case 'status':
       if (!gitState.initialized) return ['fatal: not a git repository'];
       return [
@@ -377,6 +432,7 @@ function handleGit(args, vfs, gitState) {
           ? `Changes to be committed:\n  ${gitState.staged.map((f) => `staged: ${f}`).join('\n  ')}`
           : 'nothing to commit, working tree clean',
       ];
+
     case 'add': {
       if (!gitState.initialized) return ['fatal: not a git repository'];
       const file = args[1];
@@ -389,6 +445,7 @@ function handleGit(args, vfs, gitState) {
       }
       return [];
     }
+
     case 'commit': {
       if (!gitState.initialized) return ['fatal: not a git repository'];
       if (gitState.staged.length === 0) return ['nothing to commit'];
@@ -400,19 +457,82 @@ function handleGit(args, vfs, gitState) {
       gitState.staged = [];
       return [`[${gitState.branch} ${hash}] ${message}`, ` ${count} file(s) changed`];
     }
-    case 'push':
+
+    case 'push': {
       if (!gitState.initialized) return ['fatal: not a git repository'];
-      return [`Enumerating objects: ${gitState.commits.length}, done.`, `To origin/${gitState.branch}`, '   a1b2c3d..f4e5d6c  main -> main'];
+
+      const storeState = useGameStore.getState();
+      const activeMissionIds = storeState.career.activeMissions || [];
+      const pwd = vfs.pwd();
+
+      // Bulunulan dizinden veya aktif görevlerden uygun görevi bul
+      let targetMissionId = activeMissionIds.find((id) => pwd.includes(id));
+      if (!targetMissionId && activeMissionIds.length > 0) {
+        targetMissionId = activeMissionIds[0];
+      }
+
+      if (!targetMissionId) {
+        return [
+          `Enumerating objects: ${gitState.commits.length || 1}, done.`,
+          `To origin/${gitState.branch}`,
+          '   a1b2c3d..f4e5d6c  main -> main',
+          'Everything up-to-date',
+        ];
+      }
+
+      const mission = missions.find((m) => m.id === targetMissionId);
+      const runningContainers = dockerPs();
+      const verifyRes = verifyMission(targetMissionId, vfs, runningContainers);
+
+      if (verifyRes.passed) {
+        const money = mission?.reward?.money || 500;
+        const kp = mission?.reward?.careerPoints || 100;
+        const maint = mission?.reward?.monthlyMaintenance || 0;
+
+        // Store'da görevi tamamla
+        storeState.completeMission(targetMissionId, money, kp, maint);
+
+        return [
+          `Enumerating objects: 5, done.`,
+          `Counting objects: 100% (5/5), done.`,
+          `Writing objects: 100% (5/5), 450 bytes | 450.00 KiB/s, done.`,
+          `Total 5 (delta 2), reused 0 (delta 0)`,
+          `To origin/${gitState.branch}`,
+          `   a1b2c3d..e4f5a6b  main -> main`,
+          ``,
+          `\x1b[32m[CI/CD Pipeline] ✅ BUILD & DEPLOYMENT PASSED!\x1b[0m`,
+          `\x1b[32m[CI/CD Pipeline] Healthcheck: Port ${verifyRes.requiredPort} üzerinde çalışan '${verifyRes.containerName}' container'ı doğrulandı.\x1b[0m`,
+          `\x1b[32m[DevJobs] 🎉 Görev başarıyla tamamlandı! ₺${money} ve +${kp} KP hesabınıza aktarıldı.\x1b[0m`,
+        ];
+      } else {
+        const reqPort = verifyRes.requiredPort || 8080;
+        return [
+          `Enumerating objects: 5, done.`,
+          `Counting objects: 100% (5/5), done.`,
+          `Writing objects: 100% (5/5), 450 bytes | 450.00 KiB/s, done.`,
+          `To origin/${gitState.branch}`,
+          `   a1b2c3d..e4f5a6b  main -> main`,
+          ``,
+          `\x1b[31m[CI/CD Pipeline] ❌ BUILD & DEPLOYMENT FAILED!\x1b[0m`,
+          `\x1b[31m[CI/CD Pipeline] ${verifyRes.message}\x1b[0m`,
+          `\x1b[33mLütfen 'docker run -p ${reqPort}:${reqPort} ...' komutu ile servisi ayağa kaldırıp tekrar 'git push' yapın.\x1b[0m`,
+        ];
+      }
+    }
+
     case 'pull':
       if (!gitState.initialized) return ['fatal: not a git repository'];
       return ['Already up to date.'];
+
     case 'log':
       if (!gitState.initialized) return ['fatal: not a git repository'];
       if (gitState.commits.length === 0) return ['No commits yet'];
       return gitState.commits.slice().reverse().map((c) => `\x1b[33m${c.hash}\x1b[0m ${c.message} (${c.author})`);
+
     case 'branch':
       if (!gitState.initialized) return ['fatal: not a git repository'];
       return [`* ${gitState.branch}`];
+
     default:
       return [`git: '${subcommand}' is not a git command.`];
   }

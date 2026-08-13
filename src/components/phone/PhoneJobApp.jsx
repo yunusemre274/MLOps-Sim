@@ -50,9 +50,10 @@ export default function PhoneJobApp() {
       return;
     }
 
-    // Single Source of Truth store çağrısı (VFS syncMission içerir)
+    // Single Source of Truth store çağrısı
     acceptMission(mission.id);
-    showToast(`✅ "${mission.title}" görevi kabul edildi! Proje dosyaları VFS'e yazıldı.`);
+    const gitUrl = `https://github.com/${mission.company?.id || 'devjobs'}/${mission.id}.git`;
+    showToast(`📌 "${mission.title}" kabul edildi! Terminalde klonlayın: git clone ${gitUrl}`);
   };
 
   const handleTalentsTabClick = () => {
