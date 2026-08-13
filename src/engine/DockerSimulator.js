@@ -17,12 +17,175 @@ const KNOWN_IMAGES = new Set([
   'openjdk', 'ruby', 'php', 'busybox', 'scratch',
 ]);
 
+// === GÖREV 1: BASE IMAGE YETENEK MODELİ ===
+export const BASE_IMAGE_CAPABILITIES = {
+  'python:3.11': {
+    binaries: ['python', 'python3', 'pip', 'pip3', 'sh', 'bash', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'pip',
+    hasApt: true,
+    osFamily: 'debian',
+  },
+  'python:3.11-slim': {
+    binaries: ['python', 'python3', 'pip', 'pip3', 'sh', 'bash', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'pip',
+    hasApt: true,
+    osFamily: 'debian',
+  },
+  'python:3.10': {
+    binaries: ['python', 'python3', 'pip', 'pip3', 'sh', 'bash', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'pip',
+    hasApt: true,
+    osFamily: 'debian',
+  },
+  'python:3.10-slim': {
+    binaries: ['python', 'python3', 'pip', 'pip3', 'sh', 'bash', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'pip',
+    hasApt: true,
+    osFamily: 'debian',
+  },
+  'python:alpine': {
+    binaries: ['python', 'python3', 'pip', 'pip3', 'sh', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'pip',
+    hasApt: false,
+    osFamily: 'alpine',
+  },
+  'node:20': {
+    binaries: ['node', 'npm', 'npx', 'yarn', 'sh', 'bash', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'npm',
+    hasApt: true,
+    osFamily: 'debian',
+  },
+  'node:20-alpine': {
+    binaries: ['node', 'npm', 'npx', 'yarn', 'sh', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'npm',
+    hasApt: false,
+    osFamily: 'alpine',
+  },
+  'node:18': {
+    binaries: ['node', 'npm', 'npx', 'yarn', 'sh', 'bash', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'npm',
+    hasApt: true,
+    osFamily: 'debian',
+  },
+  'node:18-alpine': {
+    binaries: ['node', 'npm', 'npx', 'yarn', 'sh', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'npm',
+    hasApt: false,
+    osFamily: 'alpine',
+  },
+  'golang:1.22': {
+    binaries: ['go', 'sh', 'bash', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'go mod',
+    hasApt: true,
+    osFamily: 'debian',
+  },
+  'golang:1.21': {
+    binaries: ['go', 'sh', 'bash', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'go mod',
+    hasApt: true,
+    osFamily: 'debian',
+  },
+  'golang:alpine': {
+    binaries: ['go', 'sh', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'go mod',
+    hasApt: false,
+    osFamily: 'alpine',
+  },
+  'nginx:alpine': {
+    binaries: ['nginx', 'sh', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: null,
+    hasApt: false,
+    osFamily: 'alpine',
+  },
+  'nginx:latest': {
+    binaries: ['nginx', 'sh', 'bash', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: null,
+    hasApt: true,
+    osFamily: 'debian',
+  },
+  'alpine:latest': {
+    binaries: ['apk', 'sh', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'apk',
+    hasApt: false,
+    osFamily: 'alpine',
+  },
+  'alpine': {
+    binaries: ['apk', 'sh', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'apk',
+    hasApt: false,
+    osFamily: 'alpine',
+  },
+  'ubuntu:latest': {
+    binaries: ['apt-get', 'apt', 'dpkg', 'sh', 'bash', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'apt-get',
+    hasApt: true,
+    osFamily: 'debian',
+  },
+  'ubuntu': {
+    binaries: ['apt-get', 'apt', 'dpkg', 'sh', 'bash', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'apt-get',
+    hasApt: true,
+    osFamily: 'debian',
+  },
+  'debian:latest': {
+    binaries: ['apt-get', 'apt', 'dpkg', 'sh', 'bash', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'apt-get',
+    hasApt: true,
+    osFamily: 'debian',
+  },
+  'debian:bullseye-slim': {
+    binaries: ['apt-get', 'apt', 'dpkg', 'sh', 'bash', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: 'apt-get',
+    hasApt: true,
+    osFamily: 'debian',
+  },
+  'redis:alpine': {
+    binaries: ['redis-server', 'redis-cli', 'sh', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: null,
+    hasApt: false,
+    osFamily: 'alpine',
+  },
+  'postgres:15': {
+    binaries: ['postgres', 'psql', 'sh', 'bash', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: null,
+    hasApt: true,
+    osFamily: 'debian',
+  },
+};
+
+export function getBaseImageCapabilities(baseImage, tag = 'latest') {
+  const fullKey = `${baseImage}:${tag}`;
+  if (BASE_IMAGE_CAPABILITIES[fullKey]) {
+    return {
+      binaries: [...BASE_IMAGE_CAPABILITIES[fullKey].binaries],
+      packageManager: BASE_IMAGE_CAPABILITIES[fullKey].packageManager,
+      hasApt: BASE_IMAGE_CAPABILITIES[fullKey].hasApt,
+      osFamily: BASE_IMAGE_CAPABILITIES[fullKey].osFamily,
+    };
+  }
+  if (BASE_IMAGE_CAPABILITIES[baseImage]) {
+    return {
+      binaries: [...BASE_IMAGE_CAPABILITIES[baseImage].binaries],
+      packageManager: BASE_IMAGE_CAPABILITIES[baseImage].packageManager,
+      hasApt: BASE_IMAGE_CAPABILITIES[baseImage].hasApt,
+      osFamily: BASE_IMAGE_CAPABILITIES[baseImage].osFamily,
+    };
+  }
+  return {
+    binaries: ['sh', 'cat', 'ls', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod'],
+    packageManager: null,
+    hasApt: true,
+    osFamily: 'debian',
+  };
+}
+
 /**
  * Dockerfile AST'sinden gerçekçi build log satırları üretir.
  *
- * 4 Katmanlı Doğrulama:
+ * 4 Katmanlı Doğrulama + Round 8 Base Image Yetenek ve Komut Doğrulaması:
  * Katman 1: Sözdizimi hataları (ast.errors)
- * Katman 2: Semantik kontroller (Base image geçerliliği, VFS build context'inde COPY/ADD dosya kontrolü, stage isimleri)
+ * Katman 2: Semantik kontroller (Base image, VFS build context dosya kontrolü, stage isimleri)
+ * Katman 2.5 (Round 8): Base image yetenek modeli & komut sözdizimi doğrulaması
  */
 export function generateBuildLogs(ast, vfs = null, contextDir = '/home/user', targetTag = 'app:latest') {
   const logs = [];
@@ -42,6 +205,8 @@ export function generateBuildLogs(ast, vfs = null, contextDir = '/home/user', ta
   logs.push('');
 
   const previousStageNames = new Set();
+  const stageCapabilities = {};
+  let currentCaps = null;
 
   for (let si = 0; si < ast.stages.length; si++) {
     const stage = ast.stages[si];
@@ -65,9 +230,13 @@ export function generateBuildLogs(ast, vfs = null, contextDir = '/home/user', ta
     logs.push(` ---> ${randomHex(6)}`);
     logs.push('');
 
+    // Çok aşamalı build: Her FROM aşaması kendi yetenek setine sahiptir!
+    currentCaps = getBaseImageCapabilities(stage.baseImage, stage.tag);
     if (stage.name) {
       previousStageNames.add(stage.name);
+      stageCapabilities[stage.name] = currentCaps;
     }
+    stageCapabilities[`stage_${si}`] = currentCaps;
 
     for (const instr of stage.instructions) {
       stepCount++;
@@ -82,6 +251,15 @@ export function generateBuildLogs(ast, vfs = null, contextDir = '/home/user', ta
             logs.push(`\x1b[31mERROR\x1b[0m: invalid from flag: stage ${fromStage} does not exist`);
             errors.push(`invalid from flag: stage ${fromStage} does not exist`);
             return { logs, success: false, errors, imageId: null };
+          }
+          // Multi-stage COPY: Eğer bir executable taşınıyorsa hedef stage binaries listesine ekle
+          if (sources && sources.length > 0) {
+            for (const s of sources) {
+              const baseName = s.split('/').pop();
+              if (baseName && !baseName.includes('.')) {
+                currentCaps.binaries.push(baseName);
+              }
+            }
           }
         } else if (sources && sources.length > 0) {
           for (const src of sources) {
@@ -103,7 +281,16 @@ export function generateBuildLogs(ast, vfs = null, contextDir = '/home/user', ta
           logs.push(` ---> Running in ${randomHex(6)}`);
           if (instr.parsed.commands) {
             for (const cmd of instr.parsed.commands) {
-              logs.push(...simulateRunCommand(cmd));
+              const runSim = validateAndSimulateRunCommand(cmd, currentCaps, vfs, contextDir);
+              if (!runSim.success) {
+                for (const line of runSim.logs) {
+                  logs.push(`\x1b[31m${line}\x1b[0m`);
+                }
+                logs.push(`\x1b[31mERROR\x1b[0m: The command '/bin/sh -c ${cmd}' returned a non-zero code: 127`);
+                errors.push(runSim.error);
+                return { logs, success: false, errors, imageId: null };
+              }
+              logs.push(...runSim.logs);
             }
           }
           logs.push(`Removing intermediate container ${randomHex(6)}`);
@@ -145,6 +332,7 @@ export function generateBuildLogs(ast, vfs = null, contextDir = '/home/user', ta
     size: '125MB',
     created: 'Just now',
     ast,
+    capabilities: currentCaps,
   };
   if (repo !== targetTag) {
     images[repo] = images[targetTag];
@@ -153,42 +341,256 @@ export function generateBuildLogs(ast, vfs = null, contextDir = '/home/user', ta
   return { logs, success: true, errors: [], imageId };
 }
 
-function simulateRunCommand(cmd) {
-  const lines = [];
-  const trimmed = cmd.trim();
+// === GÖREV 2: YAYGIN KOMUT SÖZDİZİMİ DOĞRULAYICISI ===
 
-  if (trimmed.includes('pip install')) {
-    const packages = trimmed.replace(/pip3?\s+install\s+(-[^\s]+\s+)*/g, '').trim().split(/\s+/);
-    for (const pkg of packages) {
-      if (pkg.startsWith('-')) continue;
-      lines.push(`Collecting ${pkg}`);
-      lines.push(`  Downloading ${pkg}-1.0.0-py3-none-any.whl (42 kB)`);
-    }
-    lines.push('Installing collected packages: ' + packages.filter(p => !p.startsWith('-')).join(', '));
-    lines.push('Successfully installed ' + packages.filter(p => !p.startsWith('-')).map(p => `${p}-1.0.0`).join(' '));
-  } else if (trimmed.includes('apt-get install') || trimmed.includes('apt install')) {
-    lines.push('Reading package lists...');
-    lines.push('Building dependency tree...');
-    lines.push('The following NEW packages will be installed:');
-    lines.push('0 upgraded, 1 newly installed, 0 to remove.');
-    lines.push('Setting up packages...');
-  } else if (trimmed.includes('apk add')) {
-    lines.push('fetch https://dl-cdn.alpinelinux.org/alpine/v3.18/main/');
-    lines.push('OK: 15 MiB in 30 packages');
-  } else if (trimmed.includes('npm install') || trimmed.includes('npm ci')) {
-    lines.push('npm warn deprecated some-package@1.0.0');
-    lines.push('added 142 packages in 8s');
-  } else {
-    lines.push(`+ ${trimmed}`);
+export function validateAndSimulateRunCommand(cmd, currentCaps, vfs = null, contextDir = '/home/user') {
+  const trimmed = cmd.trim();
+  const lines = [];
+
+  // İlk binary kelimesini bul (çevresel değişkenleri atla: FOO=BAR cmd)
+  const tokens = trimmed.split(/\s+/);
+  let binaryIdx = 0;
+  while (binaryIdx < tokens.length && tokens[binaryIdx].includes('=')) {
+    binaryIdx++;
   }
-  return lines;
+  if (tokens[binaryIdx] === 'sudo' || tokens[binaryIdx] === 'exec') {
+    binaryIdx++;
+  }
+  const binary = tokens[binaryIdx] || '';
+
+  // 1. Base Image Yetenek Kontrolü (GÖREV 1)
+  if (binary === 'apt-get' || binary === 'apt') {
+    if (!currentCaps.hasApt) {
+      return {
+        success: false,
+        logs: ['/bin/sh: 1: apt-get: not found'],
+        error: 'apt-get: not found (Base image does not support apt)',
+      };
+    }
+  } else if (binary === 'apk') {
+    if (currentCaps.osFamily !== 'alpine') {
+      return {
+        success: false,
+        logs: ['/bin/sh: 1: apk: not found'],
+        error: 'apk: not found (Base image is not alpine)',
+      };
+    }
+  } else if (binary && !currentCaps.binaries.includes(binary)) {
+    return {
+      success: false,
+      logs: [`/bin/sh: 1: ${binary}: not found`],
+      error: `${binary}: not found in base image`,
+    };
+  }
+
+  // 2. Özel Komut Sözdizimi Doğrulaması (GÖREV 2)
+
+  // PIP / PIP3
+  if (binary === 'pip' || binary === 'pip3') {
+    if (tokens.includes('install')) {
+      const installArgs = tokens.slice(tokens.indexOf('install') + 1);
+      const hasRFlag = installArgs.includes('-r') || installArgs.includes('--requirement');
+
+      // pip install requirements.txt (-r bayrağı unutulmuş)
+      const txtArg = installArgs.find((a) => (a.endsWith('.txt') || a.endsWith('.pip')) && !a.startsWith('-'));
+      if (txtArg && !hasRFlag) {
+        return {
+          success: false,
+          logs: [
+            `Collecting ${txtArg}`,
+            `  ERROR: Could not find a version that satisfies the requirement ${txtArg} (from versions: none)`,
+            `ERROR: No matching distribution found for ${txtArg}`,
+          ],
+          error: `pip install error: No matching distribution found for ${txtArg} (missing -r flag)`,
+        };
+      }
+
+      // pip install -r <file>
+      if (hasRFlag) {
+        const rIdx = installArgs.findIndex((a) => a === '-r' || a === '--requirement');
+        const reqFile = installArgs[rIdx + 1] || 'requirements.txt';
+
+        if (vfs) {
+          const reqPath = `${contextDir}/${reqFile}`.replace(/\/+/g, '/');
+          const fileRes = vfs.cat(reqPath);
+          if (!fileRes.success) {
+            return {
+              success: false,
+              logs: [
+                `ERROR: Could not open requirements file: [Errno 2] No such file or directory: '${reqFile}'`,
+              ],
+              error: `Could not open requirements file: ${reqFile}`,
+            };
+          }
+
+          // requirements.txt içeriğini satır satır simüle et
+          const packages = fileRes.content
+            .split('\n')
+            .map((l) => l.trim())
+            .filter((l) => l && !l.startsWith('#'))
+            .map((l) => l.split(/[=<>~]/)[0].trim());
+
+          for (const pkg of packages) {
+            lines.push(`Collecting ${pkg}`);
+            lines.push(`  Downloading ${pkg}-1.0.0-py3-none-any.whl (42 kB)`);
+            currentCaps.binaries.push(pkg);
+          }
+          if (packages.length > 0) {
+            lines.push('Installing collected packages: ' + packages.join(', '));
+            lines.push('Successfully installed ' + packages.map((p) => `${p}-1.0.0`).join(' '));
+          } else {
+            lines.push('Successfully installed requirements');
+          }
+          return { success: true, logs: lines };
+        }
+      }
+
+      // Standart paket kurulumu (pip install flask fastapi vb.)
+      const packages = installArgs.filter((p) => !p.startsWith('-'));
+      for (const pkg of packages) {
+        lines.push(`Collecting ${pkg}`);
+        lines.push(`  Downloading ${pkg}-1.0.0-py3-none-any.whl (42 kB)`);
+        currentCaps.binaries.push(pkg);
+      }
+      if (packages.length > 0) {
+        lines.push('Installing collected packages: ' + packages.join(', '));
+        lines.push('Successfully installed ' + packages.map((p) => `${p}-1.0.0`).join(' '));
+      }
+      return { success: true, logs: lines };
+    }
+  }
+
+  // NPM
+  if (binary === 'npm') {
+    if (tokens.includes('install') || tokens.includes('i') || tokens.includes('ci')) {
+      const isCi = tokens.includes('ci');
+      const npmArgs = tokens.slice(tokens.indexOf(isCi ? 'ci' : (tokens.includes('install') ? 'install' : 'i')) + 1);
+      const specificPackages = npmArgs.filter((a) => !a.startsWith('-'));
+
+      if (specificPackages.length === 0 && vfs) {
+        const pkgJsonPath = `${contextDir}/package.json`.replace(/\/+/g, '/');
+        const pkgRes = vfs.cat(pkgJsonPath);
+        if (!pkgRes.success) {
+          return {
+            success: false,
+            logs: [
+              'npm ERR! code ENOENT',
+              'npm ERR! syscall open',
+              'npm ERR! path /app/package.json',
+              'npm ERR! errno -2',
+              "npm ERR! enoent ENOENT: no such file or directory, open '/app/package.json'",
+            ],
+            error: 'npm install failed: package.json not found in build context',
+          };
+        }
+
+        if (isCi) {
+          const lockPath = `${contextDir}/package-lock.json`.replace(/\/+/g, '/');
+          if (!vfs.cat(lockPath).success) {
+            return {
+              success: false,
+              logs: [
+                'npm ERR! The npm ci command can only install with an existing package-lock.json',
+              ],
+              error: 'npm ci failed: package-lock.json not found',
+            };
+          }
+        }
+      }
+
+      lines.push('npm warn deprecated some-package@1.0.0');
+      lines.push('added 142 packages in 8s');
+      return { success: true, logs: lines };
+    }
+  }
+
+  // GO
+  if (binary === 'go') {
+    if (tokens.includes('build') || (tokens.includes('mod') && tokens.includes('download'))) {
+      if (vfs) {
+        const goModPath = `${contextDir}/go.mod`.replace(/\/+/g, '/');
+        if (!vfs.cat(goModPath).success) {
+          return {
+            success: false,
+            logs: [
+              "go: go.mod file not found in current directory or any parent directory; see 'go help modules'",
+            ],
+            error: 'go: go.mod file not found',
+          };
+        }
+      }
+      // -o bayrağı ile executable oluşturulduysa
+      const oIdx = tokens.indexOf('-o');
+      if (oIdx !== -1 && tokens[oIdx + 1]) {
+        currentCaps.binaries.push(tokens[oIdx + 1]);
+      }
+      lines.push('+ go build finished successfully');
+      return { success: true, logs: lines };
+    }
+  }
+
+  // APT-GET / APT
+  if (binary === 'apt-get' || binary === 'apt') {
+    if (tokens.includes('update')) {
+      lines.push('Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]');
+      lines.push('Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]');
+      lines.push('Fetched 206 kB in 1s (210 kB/s)');
+      lines.push('Reading package lists... Done');
+    }
+    if (tokens.includes('install')) {
+      lines.push('Reading package lists...');
+      lines.push('Building dependency tree...');
+      lines.push('The following NEW packages will be installed:');
+      const pkgs = tokens.slice(tokens.indexOf('install') + 1).filter((p) => !p.startsWith('-'));
+      for (const p of pkgs) {
+        currentCaps.binaries.push(p);
+      }
+      lines.push('0 upgraded, ' + pkgs.length + ' newly installed, 0 to remove.');
+      lines.push('Setting up packages...');
+    }
+    return { success: true, logs: lines.length > 0 ? lines : ['+ ' + trimmed] };
+  }
+
+  // APK
+  if (binary === 'apk') {
+    if (tokens.includes('add')) {
+      lines.push('fetch https://dl-cdn.alpinelinux.org/alpine/v3.18/main/');
+      const pkgs = tokens.slice(tokens.indexOf('add') + 1).filter((p) => !p.startsWith('-'));
+      for (const p of pkgs) {
+        currentCaps.binaries.push(p);
+        if (p.startsWith('py3-')) {
+          currentCaps.binaries.push(p.replace('py3-', ''));
+        }
+      }
+      lines.push(`OK: 15 MiB in ${pkgs.length + 10} packages`);
+    }
+    return { success: true, logs: lines.length > 0 ? lines : ['+ ' + trimmed] };
+  }
+
+  // Genel komut
+  lines.push(`+ ${trimmed}`);
+  return { success: true, logs: lines };
 }
 
 // State Saklayıcılar
 let containers = {};
 let images = {
-  'app:latest': { id: 'a1b2c3d4e5f6', repository: 'app', tag: 'latest', size: '125MB', created: '2 hours ago' },
-  'python:3.11-slim': { id: 'f6e5d4c3b2a1', repository: 'python', tag: '3.11-slim', size: '150MB', created: '3 days ago' },
+  'app:latest': {
+    id: 'a1b2c3d4e5f6',
+    repository: 'app',
+    tag: 'latest',
+    size: '125MB',
+    created: '2 hours ago',
+    capabilities: BASE_IMAGE_CAPABILITIES['python:3.11-slim'],
+  },
+  'python:3.11-slim': {
+    id: 'f6e5d4c3b2a1',
+    repository: 'python',
+    tag: '3.11-slim',
+    size: '150MB',
+    created: '3 days ago',
+    capabilities: BASE_IMAGE_CAPABILITIES['python:3.11-slim'],
+  },
 };
 let networks = {
   'bridge': { id: 'net_bridge', name: 'bridge', driver: 'bridge', scope: 'local', subnet: '172.17.0.0/16' },
@@ -198,12 +600,62 @@ let volumes = {
 };
 let containerIdCounter = 1;
 
-// === CONTAINER HANDLERS ===
+// === CONTAINER HANDLERS (GÖREV 3 RUNTIME DOĞRULAMA İLE) ===
 
-export function dockerRun(imageName, options = {}) {
+export function dockerRun(imageNameOrArgs, options = {}) {
+  let imageName = imageNameOrArgs;
+  let opts = { ...options };
+
+  if (Array.isArray(imageNameOrArgs)) {
+    const args = imageNameOrArgs;
+    imageName = args.find((a) => !a.startsWith('-')) || 'app:latest';
+    const portIdx = args.indexOf('-p');
+    let port = 8080;
+    if (portIdx !== -1 && args[portIdx + 1]) {
+      const portMap = args[portIdx + 1].split(':');
+      port = parseInt(portMap[0]) || 8080;
+    }
+    const nameIdx = args.indexOf('--name');
+    const name = nameIdx !== -1 ? args[nameIdx + 1] : undefined;
+    opts = { port, name, ...opts };
+  }
+
+  if (typeof imageName !== 'string') {
+    imageName = 'app:latest';
+  }
+
+  const imgObj = images[imageName] || images[`${imageName}:latest`];
+  let caps = imgObj?.capabilities;
+  if (!caps) {
+    const parts = imageName.split(':');
+    caps = getBaseImageCapabilities(parts[0], parts[1] || 'latest');
+  }
+
+  // GÖREV 3: Runtime CMD/ENTRYPOINT Executable Doğrulaması
+  if (imgObj?.ast) {
+    const lastStage = imgObj.ast.stages[imgObj.ast.stages.length - 1];
+    const cmdInstr = lastStage?.instructions.find((i) => i.directive === 'CMD' || i.directive === 'ENTRYPOINT');
+    if (cmdInstr) {
+      let executable = null;
+      if (cmdInstr.parsed.values && cmdInstr.parsed.values.length > 0) {
+        executable = cmdInstr.parsed.values[0];
+      } else if (typeof cmdInstr.args === 'string') {
+        executable = cmdInstr.args.replace(/[\[\]"',]/g, ' ').trim().split(/\s+/)[0];
+      }
+
+      if (executable && !executable.startsWith('./') && !executable.startsWith('/') && !caps.binaries.includes(executable)) {
+        return {
+          success: false,
+          containerId: null,
+          message: `docker: Error response from daemon: OCI runtime create failed: container_linux.go: exec: "${executable}": executable file not found in $PATH: unknown.`,
+        };
+      }
+    }
+  }
+
   const id = `c${containerIdCounter++}_${randomHex(6)}`;
-  const port = options.port || 8080;
-  const name = options.name || id;
+  const port = opts.port || 8080;
+  const name = opts.name || id;
 
   containers[id] = {
     id,

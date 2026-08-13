@@ -4,7 +4,21 @@
 - **TÜM FAZLAR VE GELİŞTİRMELER TAMAMLANDI! (Faz 0 — Faz 19) 🎉**
 - **Round 6 — Docker CLI Tam Komut Kapsaması ve Tek Handler Mimarisi tamamlandı.**
 - **Round 7 — 4 Katmanlı Docker/Compose Doğrulama Motoru tamamlandı.**
-- **114/114 vitest testi %100 başarıyla geçmektedir.**
+- **Round 8 — Base Image Yetenek Modeli, Komut Sözdizimi ve Runtime Executable Doğrulaması tamamlandı.**
+- **121/121 vitest testi %100 başarıyla geçmektedir.**
+
+---
+
+## 🎯 Round 8 — Base Image Yetenek Modeli ve Komut Doğrulama Sonuçları (`tests/Round8CapabilitiesAndSyntax.test.js`)
+
+| Senaryo / Vaka | Dockerfile / Komut | Beklenen Davranış | Sonuç |
+|---|---|---|---|
+| **1. Orijinal Ekran Görüntüsü Senaryosu** | `FROM nginx:alpine` + `RUN pip install requirements.txt` | Step 4'te durmalı, `/bin/sh: 1: pip: not found` vermeli, Step 5 (CMD)'ye geçmemeli | `PASSED ✅` |
+| **2. Doğru Image + Doğru Komut** | `FROM python:3.11-slim` + `RUN pip install -r requirements.txt` | Build tamamen başarılı olmalı, paketleri yüklemeli | `PASSED ✅` |
+| **3. Eksik Bayrak (`-r` unutulmuş)** | `FROM python:3.11-slim` + `RUN pip install requirements.txt` | `No matching distribution found for requirements.txt` hatası vermeli | `PASSED ✅` |
+| **4. Alpine Üzerinde `apt-get` Çağrısı** | `FROM alpine:latest` + `RUN apt-get update` | `apt-get: not found` hatası vermeli (Alpine `apk` kullanır) | `PASSED ✅` |
+| **5. Multi-Stage İzolasyon** | Builder `golang:1.22`, Final `alpine:latest` + `RUN go version` | Final aşamada `go: not found` hatası vermeli | `PASSED ✅` |
+| **6. Runtime Executable Kontrolü** | `FROM node:20-alpine` + `CMD ["python", "app.py"]` | `docker run` aşamasında OCI runtime create failed hatası vermeli | `PASSED ✅` |
 
 ---
 
@@ -46,5 +60,5 @@
 ---
 
 ## Son Durum İstatistikleri
-- **Testler:** `114/114` vitest testi geçmektedir (%100 başarı).
-- **Production Derleme:** `101` modül hatasız ve 54ms sürede Vite ile derlenmektedir.
+- **Testler:** `121/121` vitest testi geçmektedir (%100 başarı).
+- **Production Derleme:** `101` modül hatasız ve 55ms sürede Vite ile derlenmektedir.

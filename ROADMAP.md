@@ -305,6 +305,12 @@
   - [x] Katman 3 (Görev Kriteri Doğrulama): `checkMission` ile multi-stage, non-root user, EXPOSE port kuralları
   - [x] Katman 4 (Runtime Doğrulama): `docker run` ve `git push` sırasında çalışan container & port kontrolü
 
+- [x] **Round 8 — Base Image Yetenek Modeli ve Komut Sözdizimi Doğrulaması:**
+  - [x] Base Image Capability Model (`BASE_IMAGE_CAPABILITIES` ile `binaries`, `hasApt`, `osFamily` tanımları)
+  - [x] Çok aşamalı (multi-stage) build aşamalar arası yetenek izolasyonu
+  - [x] Paket yöneticisi komut sözdizimi doğrulayıcısı (`pip install -r`, `npm install`, `npm ci`, `go build`)
+  - [x] Runtime CMD/ENTRYPOINT executable doğrulaması (OCI runtime create failed simülasyonu)
+
 - [x] **DevJobs & Git Entegrasyonu:**
   - [x] `git clone <url>` ile bulunulan VFS dizinine repo dosyalarının yazılması
   - [x] `git push` ile remote CI/CD pipeline'ın tetiklenmesi ve `ready_to_deliver` durumu
