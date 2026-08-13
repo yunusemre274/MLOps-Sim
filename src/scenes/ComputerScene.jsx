@@ -161,7 +161,13 @@ export default function ComputerScene() {
         },
       });
     } else if (iconObj.type === 'dir') {
-      handleOpenApp('explorer');
+      const folderPath =
+        iconObj.name === 'Projelerim' || iconObj.name === 'projects'
+          ? '/home/user/projects'
+          : iconObj.name === 'Belgelerim' || iconObj.name === 'documents'
+          ? '/home/user/documents'
+          : `/home/user/desktop/${iconObj.name}`;
+      handleOpenApp('explorer', { initialPath: folderPath });
     }
   };
 
@@ -173,6 +179,7 @@ export default function ComputerScene() {
       case 'explorer':
         return (
           <FileExplorerTab
+            initialPath={win.extraProps?.initialPath || '/home/user'}
             onOpenFile={(file) => handleOpenApp('editor', { initialFile: file })}
           />
         );

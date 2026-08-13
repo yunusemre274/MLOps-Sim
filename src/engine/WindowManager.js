@@ -45,6 +45,9 @@ export class WindowManagerEngine {
         if (options.initialFile) {
           existing.extraProps = { ...existing.extraProps, initialFile: options.initialFile };
         }
+        if (options.initialPath) {
+          existing.extraProps = { ...existing.extraProps, initialPath: options.initialPath };
+        }
         this._notify();
         return existing.id;
       }
@@ -73,7 +76,11 @@ export class WindowManagerEngine {
       zIndex: newZ,
       isMinimized: false,
       isMaximized: false,
-      extraProps: options.initialFile ? { initialFile: options.initialFile } : (options.extraProps || {}),
+      extraProps: {
+        ...(options.initialFile ? { initialFile: options.initialFile } : {}),
+        ...(options.initialPath ? { initialPath: options.initialPath } : {}),
+        ...(options.extraProps || {}),
+      },
     };
 
     this.openWindows.push(newWindow);

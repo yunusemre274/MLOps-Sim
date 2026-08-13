@@ -51,6 +51,34 @@ export default class VirtualFileSystem {
     this.cwd = '/home/user';
   }
 
+  reset() {
+    this.root = {
+      _type: 'dir',
+      children: {
+        home: {
+          _type: 'dir',
+          children: {
+            user: {
+              _type: 'dir',
+              children: {
+                desktop: {
+                  _type: 'dir',
+                  children: { ...DEFAULT_DESKTOP_APPS },
+                },
+                projects: { _type: 'dir', children: {} },
+                documents: { _type: 'dir', children: {} },
+                '.bashrc': { _type: 'file', content: '# bash config\nexport PS1="$ "\n', date: 'Jan 12 08:00' },
+              },
+            },
+          },
+        },
+        tmp: { _type: 'dir', children: {} },
+      },
+    };
+    this.cwd = '/home/user';
+    this._notify();
+  }
+
   // === Subscription API ===
   subscribe(listener) {
     this.listeners.add(listener);

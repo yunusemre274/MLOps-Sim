@@ -12,13 +12,19 @@ import missions from '../../data/missions.json';
 import { getFileIcon } from './EditorTab';
 import './FileExplorerTab.css';
 
-export default function FileExplorerTab({ onOpenFile }) {
+export default function FileExplorerTab({ onOpenFile, initialPath = '/home/user' }) {
   const vfs = useVFS();
   const activeMissionIds = useGameStore((s) => s.career.activeMissions) || [];
   const activeMissions = missions.filter((m) => activeMissionIds.includes(m.id));
 
   // Gezinti konumu state'i: '/home/user', '/home/user/projects', '/home/user/desktop', '/home/user/documents'
-  const [currentPath, setCurrentPath] = useState('/home/user');
+  const [currentPath, setCurrentPath] = useState(initialPath || '/home/user');
+
+  useEffect(() => {
+    if (initialPath) {
+      setCurrentPath(initialPath);
+    }
+  }, [initialPath]);
 
   const dirRes = vfs.ls(currentPath);
   const entries = dirRes.success ? dirRes.entries : [];
