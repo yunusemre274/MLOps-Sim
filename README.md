@@ -130,6 +130,30 @@ Oyuncunun tipik bir günü aşağıdaki döngüyü takip eder:
 
 ---
 
+### 2.1 Telefon Arayüzü (iOS Tarzı — Liquid Glass)
+
+Telefon arayüzü, masaüstü Pencere Yöneticisi'nden bağımsız, tam ekran ve modern bir **iOS 26 Liquid Glass** deneyimi olarak tasarlanmıştır.
+
+#### Temel Özellikler ve Mimari:
+1. **Tasarım Dili (Liquid Glass):** Yarı saydam/buzlu cam (blur/translucency) paneller, dinamik derinlik gölgeleri, yuvarlatılmış köşeli uygulama ikonları, Dynamic Island ve alt Home barı.
+2. **Hava Durumu Widget'ı:** Oyun takvimi ve saatine bağlı olarak güncellenen, tahmin ve sıcaklık aralığı gösteren cam widget.
+3. **10 Uygulama Ekosistemi:**
+   - **LinkedIn:** NPC akışı (feed), beğeni/yorum etkileşimleri ve oyuncu kariyer profili.
+   - **WhatsApp:** NPC ilişki sistemiyle entegre sohbetler, hızlı yanıt seçim ağaçları (choice tree) ve +ilişki puanı kazanımı.
+   - **Telefon (Arama):** Rehberden NPC arama simülasyonu, "Aranıyor..." animasyonu ve sesli diyalog metinleri.
+   - **Mesajlar (SMS):** Kurye teslimatları, banka hareketleri ve iş başvuruları için tek yönlü sistem mesaj kanalı.
+   - **Online Market (GetirMLOps):** Evden hızlı yiyecek/içecek siparişi (fiyat artışlı), buzdolabı stoku güncellemesi, otomatik SMS ve bildirim merkezi entegrasyonu.
+   - **Spotify:** Dekoratif müzik çalar ikonu (bilinçli kapsam sınırlandırması).
+   - **Gmail:** Resmi şirket teklifleri, mülakat davetleri ve teknoloji bültenleri.
+   - **DevJobs Mobile:** Masaüstü İş Platformu ile birebir aynı `useGameStore` durumunu paylaşan mobil kariyer portalı.
+   - **DevBank:** Bakiye, aylık pasif gelir/sabit giderler ve detaylı işlem geçmişi (gelirler/giderler).
+   - **Ayarlar:** Gerçek karartma katmanı oluşturan işlevsel parlaklık slider'ı ve bağlantı anahtarları.
+4. **Kontrol Paneli (Control Center):** Sağ üst köşeden açılan; işlevsel parlaklık slider'ı, ses, el feneri ve bağlantı anahtarları barındıran cam panel.
+5. **Bildirim Merkezi (Notification Center):** Sol üst köşeden açılan; tüm uygulamalardan gelen bildirimlerin kronolojik listesi ve doğrudan ilgili uygulamaya yönlendiren tıklama sistemi.
+6. **Merkezi Veri Tutarlılığı ("Tekrar Etme, Bağla"):** Para, işler, envanter, NPC ilişkileri ve bildirimler `useGameStore` üzerinden tek kaynak olarak yönetilir.
+
+---
+
 ## 3. Ekran / Sahne Envanteri
 
 ### 3.1 Ana Ekran (Ev İçi)

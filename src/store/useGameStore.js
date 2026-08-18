@@ -48,10 +48,74 @@ const initialState = {
       employeeSalaries: 0,
     },
     incomeHistory: [],
+    transactions: [
+      { id: 'tx_init', title: 'Başlangıç Bakiyesi', amount: 500, type: 'income', category: 'transfer', time: '08:00', day: 1 },
+    ],
+  },
+
+  // Telefon Ayarları & Ekosistemi
+  phoneSettings: {
+    brightness: 100, // 20 - 100 arası (gerçek koyuluk overlay'i)
+    wifi: true,
+    bluetooth: true,
+    airplaneMode: false,
+    volume: 80,
+    flashlight: false,
+  },
+
+  // Merkezi Bildirim Sistemi
+  notifications: [
+    {
+      id: 'notif_welcome',
+      app: 'jobs',
+      title: 'DevJobs Kariyer',
+      body: 'Hoş geldiniz! Yeni MLOps iş ilanları listelendi.',
+      time: '08:00',
+      day: 1,
+      read: false,
+      icon: '💼',
+      onTapApp: 'jobs',
+    },
+  ],
+
+  // Mesajlar (SMS) — Sistem Bildirimleri
+  smsMessages: [
+    { id: 'sms_1', from: 'DevBank', text: 'Hesabınıza ₺500 başlangıç bakiyesi aktarıldı. İyi çalışmalar!', time: '08:00', day: 1, category: 'bank' },
+  ],
+
+  // Gmail E-postaları
+  emails: [
+    {
+      id: 'email_welcome',
+      sender: 'TechStart Co. HR <hr@techstart.co>',
+      subject: 'MLOps Simülasyon Platformuna Hoş Geldiniz!',
+      preview: 'Kariyerinizde başarılar dileriz. İş Platformu üzerinden açık pozisyonları inceleyebilirsiniz...',
+      body: 'Merhaba,\n\nMLOps platformuna hoş geldiniz! Docker, Compose ve CI/CD becerilerinizi sergileyeceğiniz görevler sizi bekliyor.\n\nİyi çalışmalar,\nTechStart İK Ekibi',
+      time: '08:00',
+      day: 1,
+      read: false,
+      starred: false,
+    },
+  ],
+
+  // Hava Durumu (Simüle & Gün bazlı)
+  weather: {
+    temp: 24,
+    condition: 'sunny',
+    label: 'Güneşli',
+    icon: '☀️',
+    high: 27,
+    low: 18,
+    city: 'Neo-İstanbul',
   },
 
   // NPC ilişkileri — NPC verisiyle eşleşecek
-  relationships: {},
+  relationships: {
+    ayse: { level: 25, status: 'acquaintance', isPartner: false, flags: {}, lastInteraction: null },
+    mehmet: { level: 30, status: 'friend', isPartner: false, flags: {}, lastInteraction: null },
+    zeynep: { level: 15, status: 'acquaintance', isPartner: false, flags: {}, lastInteraction: null },
+    burak: { level: 20, status: 'acquaintance', isPartner: false, flags: {}, lastInteraction: null },
+  },
 
   // Partner ilişki sistemi
   partner: null, // { npcId, startDay, mood: 'happy'|'angry'|'broken_up' }
@@ -204,28 +268,153 @@ const useGameStore = create((set, get) => ({
       return updates;
     }),
 
-  // === Finansal işlemler ===
-  addMoney: (amount) =>
+  // === Finansal işlemler & İşlem Geçmişi ===
+  addTransaction: (tx) =>
     set((state) => ({
       finance: {
         ...state.finance,
-        balance: state.finance.balance + amount,
+        transactions: [
+          {
+            id: `tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+            time: state.currentTime,
+            day: state.dayCount,
+            ...tx,
+          },
+          ...(state.finance.transactions || []),
+        ],
       },
     })),
 
-  spendMoney: (amount) =>
+  addMoney: (amount, title = 'Hesaba Giriş', category = 'transfer') =>
+    set((state) => {
+      const newBalance = state.finance.balance + amount;
+      const newTx = {
+        id: `tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        title,
+        amount,
+        type: 'income',
+        category,
+        time: state.currentTime,
+        day: state.dayCount,
+      };
+      return {
+        finance: {
+          ...state.finance,
+          balance: newBalance,
+          transactions: [newTx, ...(state.finance.transactions || [])],
+        },
+      };
+    }),
+
+  spendMoney: (amount, title = 'Harcama', category = 'expense') =>
     set((state) => {
       if (state.finance.balance < amount) {
         console.warn('[useGameStore] Yetersiz bakiye');
         return state;
       }
+      const newBalance = state.finance.balance - amount;
+      const newTx = {
+        id: `tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        title,
+        amount,
+        type: 'expense',
+        category,
+        time: state.currentTime,
+        day: state.dayCount,
+      };
       return {
         finance: {
           ...state.finance,
-          balance: state.finance.balance - amount,
+          balance: newBalance,
+          transactions: [newTx, ...(state.finance.transactions || [])],
         },
       };
     }),
+
+  // === Telefon Ekosistemi & Bildirimler (Faz 14) ===
+  pushNotification: ({ app = 'system', title, body, icon = '🔔', onTapApp = null, onTapPayload = null }) =>
+    set((state) => {
+      const newNotif = {
+        id: `notif_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        app,
+        title,
+        body,
+        icon,
+        time: state.currentTime,
+        day: state.dayCount,
+        read: false,
+        onTapApp: onTapApp || app,
+        onTapPayload,
+      };
+      return {
+        notifications: [newNotif, ...(state.notifications || [])],
+      };
+    }),
+
+  clearNotifications: () => set({ notifications: [] }),
+
+  removeNotification: (notifId) =>
+    set((state) => ({
+      notifications: (state.notifications || []).filter((n) => n.id !== notifId),
+    })),
+
+  markNotificationRead: (notifId) =>
+    set((state) => ({
+      notifications: (state.notifications || []).map((n) =>
+        n.id === notifId ? { ...n, read: true } : n
+      ),
+    })),
+
+  // === Telefon Ayarları ===
+  setPhoneBrightness: (brightness) =>
+    set((state) => ({
+      phoneSettings: {
+        ...state.phoneSettings,
+        brightness: Math.max(20, Math.min(100, brightness)),
+      },
+    })),
+
+  togglePhoneSetting: (key) =>
+    set((state) => ({
+      phoneSettings: {
+        ...state.phoneSettings,
+        [key]: !state.phoneSettings[key],
+      },
+    })),
+
+  // === SMS & E-Posta Gönderimi ===
+  sendSms: ({ from = 'Sistem', text, category = 'system' }) =>
+    set((state) => ({
+      smsMessages: [
+        {
+          id: `sms_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          from,
+          text,
+          time: state.currentTime,
+          day: state.dayCount,
+          category,
+        },
+        ...(state.smsMessages || []),
+      ],
+    })),
+
+  sendEmail: ({ sender, subject, preview, body }) =>
+    set((state) => ({
+      emails: [
+        {
+          id: `email_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          sender,
+          subject,
+          preview: preview || body.slice(0, 50) + '...',
+          body,
+          time: state.currentTime,
+          day: state.dayCount,
+          read: false,
+          starred: false,
+        },
+        ...(state.emails || []),
+      ],
+    })),
 
   // === NPC ilişki yönetimi ===
   updateRelationship: (npcId, delta) =>
@@ -269,11 +458,39 @@ const useGameStore = create((set, get) => ({
   acceptMission: (missionId) =>
     set((state) => {
       if (state.career.activeMissions.includes(missionId)) return state;
+      const missionObj = missions.find((m) => m.id === missionId);
+      const missionTitle = missionObj ? missionObj.title : missionId;
+
+      // SMS bildirimi oluştur
+      const newSms = {
+        id: `sms_${Date.now()}`,
+        from: 'DevJobs',
+        text: `"${missionTitle}" görevi kabul edildi. Terminalden git clone ile başlayabilirsiniz.`,
+        time: state.currentTime,
+        day: state.dayCount,
+        category: 'jobs',
+      };
+
+      // Bildirim merkezine ekle
+      const newNotif = {
+        id: `notif_${Date.now()}`,
+        app: 'jobs',
+        title: 'DevJobs Görev Alındı',
+        body: `"${missionTitle}" projesi aktif görevlerinize eklendi.`,
+        time: state.currentTime,
+        day: state.dayCount,
+        read: false,
+        icon: '💼',
+        onTapApp: 'jobs',
+      };
+
       return {
         career: {
           ...state.career,
           activeMissions: [...state.career.activeMissions, missionId],
         },
+        smsMessages: [newSms, ...(state.smsMessages || [])],
+        notifications: [newNotif, ...(state.notifications || [])],
       };
     }),
 
@@ -294,6 +511,40 @@ const useGameStore = create((set, get) => ({
       const newPoints = state.character.careerPoints + careerReward;
       const newRank = calculateRank(newPoints);
       const readyList = state.career.readyToDeliverMissions || [];
+      const missionObj = missions.find((m) => m.id === missionId);
+      const missionTitle = missionObj ? missionObj.title : missionId;
+
+      const newTx = {
+        id: `tx_${Date.now()}`,
+        title: `Görev Ödülü: ${missionTitle}`,
+        amount: moneyReward,
+        type: 'income',
+        category: 'mission',
+        time: state.currentTime,
+        day: state.dayCount,
+      };
+
+      const newSms = {
+        id: `sms_${Date.now()}`,
+        from: 'DevBank',
+        text: `Hesabınıza "${missionTitle}" teslimatı için ₺${moneyReward} yatırıldı.`,
+        time: state.currentTime,
+        day: state.dayCount,
+        category: 'bank',
+      };
+
+      const newNotif = {
+        id: `notif_${Date.now()}`,
+        app: 'jobs',
+        title: '🎉 Görev Teslim Edildi!',
+        body: `"${missionTitle}" teslim edildi. +₺${moneyReward}, +${careerReward} KP.`,
+        time: state.currentTime,
+        day: state.dayCount,
+        read: false,
+        icon: '💰',
+        onTapApp: 'bank',
+      };
+
       return {
         character: {
           ...state.character,
@@ -311,7 +562,10 @@ const useGameStore = create((set, get) => ({
           ...state.finance,
           balance: state.finance.balance + moneyReward,
           monthlyPassiveIncome: state.finance.monthlyPassiveIncome + (monthlyMaintenance || 0),
+          transactions: [newTx, ...(state.finance.transactions || [])],
         },
+        smsMessages: [newSms, ...(state.smsMessages || [])],
+        notifications: [newNotif, ...(state.notifications || [])],
       };
     }),
 
