@@ -1,12 +1,50 @@
-# HANDOFF — Son Güncelleme: 2026-08-13
+# HANDOFF — Son Güncelleme: 2026-08-18
 
 ## Şu An Neredeyiz
-- **TÜM FAZLAR VE GELİŞTİRMELER TAMAMLANDI! (Faz 0 — Faz 20) 🎉**
-- **Round 6 — Docker CLI Tam Komut Kapsaması ve Tek Handler Mimarisi tamamlandı.**
-- **Round 7 — 4 Katmanlı Docker/Compose Doğrulama Motoru tamamlandı.**
-- **Round 8 — Base Image Yetenek Modeli, Komut Sözdizimi ve Runtime Executable Doğrulaması tamamlandı.**
+- **TÜM FAZLAR VE GELİŞTİRMELER TAMAMLANDI! (Faz 0 — Faz 21) 🎉**
+- **Round 10 — Runtime Derinleştirme ve Git Sistemi Düzeltmeleri tamamlandı.**
+- **Faz 13 — Mağaza ve Yaşam Tarzı (Lifestyle) Sistemi tamamlandı.**
 - **Round 9 — Görev İçeriği Doğruluğu, Klasör Navigasyonu ve Çoklu Dil Syntax Highlighting tamamlandı.**
-- **127/127 vitest testi %100 başarıyla geçmektedir.**
+- **Round 8 — Base Image Yetenek Modeli, Komut Sözdizimi ve Runtime Executable Doğrulaması tamamlandı.**
+- **Round 7 — 4 Katmanlı Docker/Compose Doğrulama Motoru tamamlandı.**
+- **Round 6 — Docker CLI Tam Komut Kapsaması ve Tek Handler Mimarisi tamamlandı.**
+- **142/142 vitest testi %100 başarıyla geçmektedir.**
+
+---
+
+## 🌟 Round 10 & Faz 13 Doğrulama Sonuçları
+
+### 1. Görev Grubu 1 — Kod İçeriği Analiz Katmanı (Katman 2.5) & Runtime Doğrulaması (`tests/Round10RuntimeFramework.test.js`)
+| Senaryo / Vaka | Dockerfile / Kod | Beklenen Davranış | Sonuç |
+|---|---|---|---|
+| **FastAPI + Salt `python app.py`** | `from fastapi import FastAPI...` (self-booting blok yok) | Container exit 0 yapar, `isListening = false` olarak işaretlenir | `PASSED ✅` |
+| **FastAPI + `uvicorn.run(...)`** | `if __name__ == "__main__": uvicorn.run(...)` | Container portu dinler, `isListening = true` | `PASSED ✅` |
+| **FastAPI + CMD uvicorn** | `CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]` | Container portu dinler, `isListening = true` | `PASSED ✅` |
+| **Tarayıcı / curl Erişimi** | `isListening === false` olan container | `ERR_CONNECTION_REFUSED` / `curl: (7) Connection refused` döner | `PASSED ✅` |
+| **CI/CD Görev Doğrulaması** | `git push` sırasında dinlemeyen container | `verifyMission` başarısız olur ve detaylı uvicorn rehberi verir | `PASSED ✅` |
+
+### 2. Görev Grubu 2 — Dinamik `git clone` URL Ayrıştırma ve Görev Eşlemesi (`tests/Round10GitDynamicCloneAndSync.test.js`)
+| Senaryo / Vaka | Klonlanan URL | Beklenen Davranış | Sonuç |
+|---|---|---|---|
+| **Görev 1 Repo Klonu** | `git clone .../ts_mission_1.git` | `ts_mission_1` dizinine klonlanır, görevin kendi dosyaları oluşturulur | `PASSED ✅` |
+| **Görev 2 Repo Klonu** | `git clone .../ts_mission_2.git` | `ts_mission_2` dizinine klonlanır, asla görev 1 varsayılmaz | `PASSED ✅` |
+| **Bağımsız Projeler** | Farklı repolar yan yana klonlandığında | Her repo kendi bağımsız VFS klasörünü ve `.git` yapısını korur | `PASSED ✅` |
+
+### 3. Görev Grubu 3 — VFS Tabanlı Git Durumu ve Terminaller Arası Senkronizasyon (`tests/Round10GitDynamicCloneAndSync.test.js`)
+| Senaryo / Vaka | İşlem / Komut | Beklenen Davranış | Sonuç |
+|---|---|---|---|
+| **Dizin Tabanlı `.git` Tespiti** | Alt klasörde `git status` | `findGitRepoRoot` ile üst dizin taranır ve repo kökü bulunur | `PASSED ✅` |
+| **Git Olmayan Dizin** | `.git` bulunmayan dizinde `git status` | `fatal: not a git repository (or any of the parent directories)` döner | `PASSED ✅` |
+| **Çift Terminal Senkronizasyonu** | Terminal 1'de `git init`/`add` → Terminal 2'de `git status`/`commit` | Shared VFS `.git/gitstate.json` sayesinde sıfır gecikmeli ortak durum | `PASSED ✅` |
+
+### 4. Görev Grubu 4 — Mağaza ve Yaşam Tarzı Sistemi (`tests/Faz13StoreAndLifestyle.test.js`)
+| Senaryo / Vaka | Aksiyon | Beklenen Davranış | Sonuç |
+|---|---|---|---|
+| **4 Kategori Kataloğu** | Giyim, Kozmetik, Ev Eşyası, Sanat | Her kategoride fiyat, açıklama ve lifestyle bonusu olan ürünler bulunur | `PASSED ✅` |
+| **Satın Alma & Gardırop** | Bakiye ile Tech Hoodie satın alma | Bakiye düşer, Yaşam Tarzı artar, giysi gardıroba ve envantere eklenir | `PASSED ✅` |
+| **Yetersiz Bakiye** | Yetersiz bakiye ile pahalı sanat eseri alma | Satın alma reddedilir, hata mesajı verilir | `PASSED ✅` |
+| **Zamanla Bar Azalması** | 60 oyun dakikası geçişi | Yaşam tarzı barı saat başına ~0.6 puan doğal olarak azalır | `PASSED ✅` |
+| **Sosyal / NPC Çarpanı** | Yaşam tarzı >= 70 vs <= 30 | Karşılaşma şansı ve ilişki kazanımına +%20 bonus / -%15 malus yansır | `PASSED ✅` |
 
 ---
 

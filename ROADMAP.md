@@ -341,9 +341,51 @@
 
 ---
 
+## Faz 21 — Runtime Derinleştirme ve Git Sistemi Düzeltmeleri (Round 10)
+**Bu fazın çıkış kriteri:** FastAPI/Flask gibi ASGI/WSGI servislerinin dosya içeriğine duyarlı runtime simülasyonu (Katman 2.5), dinamik pip install paket yetenekleri, dinamik git clone URL eşlemesi ve VFS tabanlı merkezi Git senkronizasyonu.
+
+- [x] **Görev Grubu 1 — Kod İçeriği Analiz Katmanı (Katman 2.5) & Runtime Doğrulaması:**
+  - [x] `analyzeFrameworkAndEntrypoint` ile FastAPI, Flask, Django tespiti ve self-booting (`if __name__ == '__main__': uvicorn.run(...)` / `app.run()`) denetimi.
+  - [x] FastAPI dosyası düz `python app.py` ile çalıştırıldığında process'in exit 0 yapıp port dinlememesi (`isListening = false`) simülasyonu.
+  - [x] `pip install -r requirements.txt` veya `pip install uvicorn` satırlarının `RUN` direktifiyle container binary yeteneklerine dinamik olarak eklenmesi.
+  - [x] Tarayıcıda (`BrowserTab.jsx`) `isListening === false` durumunda detaylı çözüm ipuçları içeren `ERR_CONNECTION_REFUSED` ekranı.
+  - [x] `curl` ve `wget` komutlarının container `isListening` durumunu kontrol ederek `Connection refused` dönmesi.
+  - [x] `verifyMission` ve CI/CD pipeline'ının portun gerçekten bir web sunucusu tarafından dinlendiğini (`isListening !== false`) teyit etmesi.
+
+- [x] **Görev Grubu 2 — Dinamik `git clone` URL Ayrıştırma ve Görev Eşlemesi:**
+  - [x] `git clone <url>` komutunun URL sonundaki repo adını (.git temizleyerek) dinamik olarak ayıklaması.
+  - [x] Sadece ilgili görevin dosyalarını VFS'te kendi özel klasörüne (`ts_mission_1`, `ts_mission_2` vb.) indirmesi.
+  - [x] Hardcoded `activeMissionIds[0]` varsayımının tamamen kaldırılması.
+
+- [x] **Görev Grubu 3 — VFS Tabanlı Git Durumu ve Terminaller Arası Tam Senkronizasyon:**
+  - [x] Git repo geçerliliğinin in-memory değişkenler yerine doğrudan VFS'teki `.git` klasörü hiyerarşisi üzerinden (`findGitRepoRoot`) denetlenmesi.
+  - [x] Staged dosyalar, commit geçmişi ve branch durumunun `.git/gitstate.json` üzerinde VFS'e persist edilmesi.
+  - [x] Masaüstü Terminali ve VS Code Entegre Terminalinin aynı VFS'i paylaşarak sıfır gecikmeyle yüzde yüz senkronize çalışması.
+
+---
+
+## Faz 13 — Mağaza ve Yaşam Tarzı (Lifestyle) Sistemi
+**Bu fazın çıkış kriteri:** Dışarı menüsüne Mağaza (`store`) sahnesinin eklenmesi, 4 kategoride ürün satışı, Yaşam Tarzı barının zamanla azalması ve NPC sosyal ilişkilerine çarpan etkisi sağlaması.
+
+- [x] **Mağaza Sahnesi (`StoreScene.jsx` & `StoreScene.css`):**
+  - [x] 4 Kategori sekmesi: Giyim & Gardırop (👔), Kozmetik & Bakım (🧴), Ev Eşyası & Dekorasyon (🛋️), Sanat Eserleri (🖼️).
+  - [x] Ürün kartları: İkon, başlık, Yaşam Tarzı katkısı (`+X Yaşam Tarzı`), açıklama, sahip olunan adet ve satın alma butonu.
+  - [x] Yetersiz bakiye kontrolü ve şık satın alma geri bildirim alert'leri.
+- [x] **Yaşam Tarzı (Lifestyle) Barı:**
+  - [x] `useGameStore` içinde `bars.lifestyle: { current: 50, max: 100 }` tanımlanması.
+  - [x] `BarEngine.js` içinde `DECAY_RATES.lifestyle: 0.01` ile saat başına ~0.6 puan doğal eskime/azalma mekaniği.
+  - [x] `StatusBarsPanel.jsx` ve `StatusBar.jsx` üzerinde mor/pembe degrade dolgulu `✨ Yaşam Tarzı` göstergesi.
+- [x] **Sosyal ve NPC İlişki Etkisi:**
+  - [x] Yaşam tarzı >= 70 olduğunda NPC karşılaşma şansı ve ilişki kazanım hızına +%20 bonus (`LIFESTYLE_EFFECT.highMultiplier`).
+  - [x] Yaşam tarzı <= 30 olduğunda -%15 malus (`LIFESTYLE_EFFECT.lowMultiplier`).
+  - [x] Satın alınan giyim eşyalarının otomatik olarak gardıroba (`inventory.wardrobe`) eklenmesi.
+
+---
+
 ## 🔮 İleriye Dönük Faz — Kubernetes Simülasyonu & 4-Katmanlı Manifest Doğrulama (Tasarım Notu)
 *Kubernetes fazı başladığında uygulanacak 4-katmanlı doğrulama standardı:*
 1. **Katman 1 (YAML & Şema Sözdizimi):** `apiVersion`, `kind`, `metadata`, `spec` yapılarının Kubernetes standardına uygunluğu.
 2. **Katman 2 (Semantik Bütünlük):** Referans verilen `ConfigMap`, `Secret`, `Service`, `PersistentVolumeClaim` kaynaklarının kümede tanımlı olması.
 3. **Katman 3 (Görev Kriteri):** Replica sayısı, Resource Limit/Request (`cpu`, `memory`), Liveness/Readiness probe tanımları.
 4. **Katman 4 (Runtime Simülasyonu):** Pod'ların `Running` statüsüne geçişi, `Service` ve `Ingress` routing simülasyonu.
+
