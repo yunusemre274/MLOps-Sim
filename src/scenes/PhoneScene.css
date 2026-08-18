@@ -1,121 +1,366 @@
 /**
- * PhoneScene.css — Telefon sahnesi stilleri
+ * PhoneScene.css — iOS 26 Liquid Glass Telefon Stilleri
  */
 
-.scene--phone {
-  padding: var(--space-lg);
-  max-width: 480px;
-  margin: 0 auto;
-}
-
-.phone-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-lg);
-  margin-bottom: var(--space-md);
-}
-
-.phone-tabs {
-  display: flex;
-  gap: var(--space-xs);
-  margin-bottom: var(--space-lg);
-}
-
-.phone-tab {
-  flex: 1;
-  padding: var(--space-sm);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-  transition: all var(--transition-fast);
-}
-
-.phone-tab--active {
-  background: var(--color-accent);
-  color: white;
-  border-color: var(--color-accent);
-}
-
-/* Rehber */
-.phone-contacts {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-.phone-contact {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  transition: all var(--transition-fast);
-  text-align: left;
-  color: var(--color-text-primary);
-}
-
-.phone-contact:hover {
-  background: var(--color-surface-hover);
-  border-color: var(--color-accent);
-}
-
-.phone-contact__avatar { font-size: 1.5rem; }
-.phone-contact__info { flex: 1; display: flex; flex-direction: column; }
-.phone-contact__name { font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm); }
-.phone-contact__status { font-size: var(--font-size-xs); color: var(--color-text-muted); }
-.phone-contact__level {
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-xs);
-  color: var(--color-accent);
-  font-weight: var(--font-weight-bold);
-}
-
-/* Boş durum */
-.phone-empty {
-  text-align: center;
-  padding: var(--space-xl) 0;
-  color: var(--color-text-muted);
-}
-.phone-empty span { font-size: 2.5rem; display: block; margin-bottom: var(--space-md); }
-.phone-hint { font-size: var(--font-size-sm); margin-top: var(--space-xs); }
-
-/* Profil */
-.phone-profile { display: flex; flex-direction: column; gap: var(--space-md); }
-.phone-profile__back {
-  align-self: flex-start;
-  padding: var(--space-xs) var(--space-sm);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  background: none;
-}
-.phone-profile__header {
-  text-align: center;
+.phone-scene-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-xs);
+  justify-content: center;
+  min-height: 100vh;
+  background: radial-gradient(circle at center, #1e1e2f 0%, #0d0e15 100%);
+  padding: 16px 20px;
+  box-sizing: border-box;
 }
-.phone-profile__avatar { font-size: 3rem; }
-.phone-profile__profession {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-}
-.phone-profile__stats {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-.phone-profile__stat {
+
+.phone-external-header {
+  width: 100%;
+  max-width: 420px;
   display: flex;
   justify-content: space-between;
-  padding: var(--space-xs) var(--space-sm);
-  background: var(--color-surface);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
+  align-items: center;
+  margin-bottom: 12px;
 }
-.phone-profile__stat span:first-child { color: var(--color-text-muted); }
-.phone-profile__stat span:last-child { font-weight: var(--font-weight-semibold); }
+
+.phone-back-to-room {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: all 0.2s;
+}
+
+.phone-back-to-room:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.phone-device-tag {
+  font-size: 11px;
+  color: #8e8e93;
+  font-weight: 500;
+}
+
+/* Telefon Donanım Kasası (iPhone 16 Pro Çerçeve) */
+.phone-hardware-frame {
+  width: 375px;
+  height: 740px;
+  background: #000000;
+  border-radius: 50px;
+  border: 10px solid #2c2c2e;
+  box-shadow: 
+    0 0 0 2px #48484a,
+    0 24px 64px rgba(0, 0, 0, 0.8),
+    inset 0 0 12px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  background-image: 
+    radial-gradient(at 10% 20%, rgba(120, 119, 198, 0.3) 0px, transparent 50%),
+    radial-gradient(at 90% 80%, rgba(56, 189, 248, 0.25) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(99, 102, 241, 0.2) 0px, transparent 50%),
+    linear-gradient(180deg, #181824 0%, #0f1019 100%);
+}
+
+/* İşlevsel Parlaklık Karartma Katmanı */
+.phone-brightness-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000000;
+  pointer-events: none;
+  z-index: 150;
+  transition: opacity 0.1s ease-out;
+}
+
+/* Dynamic Island & Notch */
+.phone-notch {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.phone-dynamic-island {
+  width: 110px;
+  height: 28px;
+  background: #000000;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.phone-camera-lens {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #111a2e;
+  border: 1px solid #1e293b;
+}
+
+.phone-sensor {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0f172a;
+}
+
+/* Durum Çubuğu */
+.phone-status-bar {
+  height: 44px;
+  padding: 12px 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  z-index: 90;
+  flex-shrink: 0;
+}
+
+.phone-status-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.phone-status-left:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.phone-clock {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  letter-spacing: -0.2px;
+}
+
+.phone-notif-dot {
+  color: #ff3b30;
+  font-size: 10px;
+  animation: pNotifPulse 1.2s infinite;
+}
+
+@keyframes pNotifPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.phone-status-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.phone-status-right:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.phone-signal {
+  font-weight: 700;
+  font-size: 10px;
+}
+
+/* Toast */
+.phone-global-toast {
+  position: absolute;
+  top: 52px;
+  left: 18px;
+  right: 18px;
+  background: rgba(30, 30, 40, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 180;
+  text-align: center;
+  animation: pToastSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pToastSlide {
+  from { transform: translateY(-16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Ekran İçeriği */
+.phone-screen-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Uygulama Konteyneri */
+.phone-app-container {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ana Ekran */
+.phone-home-screen {
+  flex: 1;
+  padding: 12px 18px 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: auto;
+}
+
+/* Uygulama Izgarası (App Grid) */
+.phone-app-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px 12px;
+  padding: 8px 4px 16px;
+}
+
+.phone-app-icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.phone-app-icon-item:hover {
+  transform: scale(1.08);
+}
+
+.phone-app-icon-item:active {
+  transform: scale(0.95);
+}
+
+.phone-app-icon-box {
+  width: 54px;
+  height: 54px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 4px 14px rgba(0, 0, 0, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.phone-app-icon-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%);
+  border-radius: 15px 15px 0 0;
+}
+
+.phone-app-icon-box--dock {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+}
+
+.phone-app-icon-symbol {
+  font-size: 26px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+}
+
+.phone-app-icon-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  max-width: 60px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sabit Dock (Alt Çekmece) */
+.phone-dock {
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  border-radius: 28px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 4px;
+}
+
+.phone-dock-icon-item {
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.phone-dock-icon-item:hover {
+  transform: scale(1.1);
+}
+
+.phone-dock-icon-item:active {
+  transform: scale(0.95);
+}
+
+/* Alt Home Indicator Çizgisi */
+.phone-home-bar-area {
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  z-index: 160;
+}
+
+.phone-home-indicator {
+  width: 120px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  transition: width 0.2s, background 0.2s;
+}
+
+.phone-home-bar-area:hover .phone-home-indicator {
+  background: #ffffff;
+  width: 140px;
+}
