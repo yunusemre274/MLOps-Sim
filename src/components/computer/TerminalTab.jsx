@@ -10,10 +10,16 @@ import { globalVFS } from '../../engine/VirtualFileSystem';
 import { executeCommand } from '../../engine/CommandRouter';
 import './TerminalTab.css';
 
-export default function TerminalTab() {
+export default function TerminalTab({ initialPath = null }) {
   const vfs = globalVFS;
   const inputRef = useRef(null);
   const outputRef = useRef(null);
+
+  useEffect(() => {
+    if (initialPath) {
+      vfs.cd(initialPath);
+    }
+  }, [initialPath]);
 
   const [history, setHistory] = useState([
     { type: 'system', text: 'MLOps-Sim Terminal v1.0' },

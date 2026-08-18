@@ -10,15 +10,23 @@ import useGameStore from '../../store/useGameStore';
 import useVFS from '../../hooks/useVFS';
 import missions from '../../data/missions.json';
 import { getFileIcon } from './EditorTab';
+import PropertiesModal from './PropertiesModal';
 import './FileExplorerTab.css';
 
-export default function FileExplorerTab({ onOpenFile, initialPath = '/home/user' }) {
+export default function FileExplorerTab({
+  onOpenFile,
+  onOpenTerminal,
+  onOpenIDE,
+  initialPath = '/home/user',
+}) {
   const vfs = useVFS();
   const activeMissionIds = useGameStore((s) => s.career.activeMissions) || [];
   const activeMissions = missions.filter((m) => activeMissionIds.includes(m.id));
 
-  // Gezinti konumu state'i: '/home/user', '/home/user/projects', '/home/user/desktop', '/home/user/documents'
+  // Gezinti konumu state'i
   const [currentPath, setCurrentPath] = useState(initialPath || '/home/user');
+  const [contextMenu, setContextMenu] = useState(null);
+  const [propertiesPath, setPropertiesPath] = useState(null);
 
   useEffect(() => {
     if (initialPath) {
@@ -55,6 +63,7 @@ export default function FileExplorerTab({ onOpenFile, initialPath = '/home/user'
     const fullPath = `${currentPath}/${fileName.trim()}`.replace(/\/+/g, '/');
     const res = vfs.touch(fullPath);
     if (!res.success) alert(res.error || 'Dosya oluşturulamadı');
+    setContextMenu(null);
   };
 
   const handleCreateFolder = () => {
@@ -63,10 +72,43 @@ export default function FileExplorerTab({ onOpenFile, initialPath = '/home/user'
     const fullPath = `${currentPath}/${folderName.trim()}`.replace(/\/+/g, '/');
     const res = vfs.mkdir(fullPath, true);
     if (!res.success) alert(res.error || 'Klasör oluşturulamadı');
+    setContextMenu(null);
+  };
+
+  const handleItemContextMenu = (e, item) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const fullPath = `${currentPath}/${item.name}`.replace(/\/+/g, '/');
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      type: item.type,
+      item,
+      path: fullPath,
+    });
+  };
+
+  const handleBackgroundContextMenu = (e) => {
+    e.preventDefault();
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      type: 'background',
+      path: currentPath,
+    });
+  };
+
+  const handleDeleteItem = (targetPath, isDir = false) => {
+    vfs.rm(targetPath, isDir);
+    setContextMenu(null);
   };
 
   return (
-    <div className="xp-explorer">
+    <div
+      className="xp-explorer"
+      onClick={() => setContextMenu(null)}
+      onContextMenu={handleBackgroundContextMenu}
+    >
       {/* XP Araç Çubuğu & Adres Çubuğu */}
       <div className="xp-explorer__toolbar">
         <div className="xp-explorer__nav-btns">
@@ -128,7 +170,8 @@ export default function FileExplorerTab({ onOpenFile, initialPath = '/home/user'
                   <div
                     key={item.name}
                     className="xp-explorer__item"
-                    onDoubleClick={() => handleItemDoubleClick(item)}
+                    onDoubleClick={(e) => { e.stopPropagation(); handleItemDoubleClick(item); }}
+                    onContextMenu={(e) => handleItemContextMenu(e, item)}
                     title={item.type === 'dir' ? 'Çift tıklayarak gir' : 'Çift tıklayarak editörde aç'}
                   >
                     <span className="xp-explorer__item-icon">{icon}</span>
@@ -140,6 +183,49 @@ export default function FileExplorerTab({ onOpenFile, initialPath = '/home/user'
           )}
         </div>
       </div>
+
+      {/* Explorer Sağ Tık Menüsü */}
+      {contextMenu && (
+        <div
+          className="xp-context-menu"
+          style={{ position: 'fixed', left: contextMenu.x, top: contextMenu.y, zIndex: 9999 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {contextMenu.type === 'dir' ? (
+            <>
+              <div className="xp-context-menu__item" onClick={() => { setCurrentPath(contextMenu.path); setContextMenu(null); }}>▶ Aç</div>
+              <div className="xp-context-menu__item" onClick={() => { onOpenTerminal && onOpenTerminal(contextMenu.path); setContextMenu(null); }}>💻 Terminal ile Aç</div>
+              <div className="xp-context-menu__item" onClick={() => { onOpenIDE && onOpenIDE(contextMenu.path); setContextMenu(null); }}>📝 IDE ile Aç</div>
+              <div className="xp-context-menu__divider" />
+              <div className="xp-context-menu__item" onClick={() => handleDeleteItem(contextMenu.path, true)}>🗑️ Sil</div>
+              <div className="xp-context-menu__divider" />
+              <div className="xp-context-menu__item" onClick={() => { setPropertiesPath(contextMenu.path); setContextMenu(null); }}>⚙️ Özellikler</div>
+            </>
+          ) : contextMenu.type === 'file' ? (
+            <>
+              <div className="xp-context-menu__item" onClick={() => { handleItemDoubleClick(contextMenu.item); setContextMenu(null); }}>▶ Aç</div>
+              <div className="xp-context-menu__divider" />
+              <div className="xp-context-menu__item" onClick={() => handleDeleteItem(contextMenu.path, false)}>🗑️ Sil</div>
+              <div className="xp-context-menu__divider" />
+              <div className="xp-context-menu__item" onClick={() => { setPropertiesPath(contextMenu.path); setContextMenu(null); }}>⚙️ Özellikler</div>
+            </>
+          ) : (
+            <>
+              <div className="xp-context-menu__item" onClick={() => setContextMenu(null)}>↻ Yenile</div>
+              <div className="xp-context-menu__divider" />
+              <div className="xp-context-menu__item" onClick={handleCreateFolder}>📁 Yeni Klasör</div>
+              <div className="xp-context-menu__item" onClick={handleCreateFile}>📝 Yeni Dosya</div>
+              <div className="xp-context-menu__divider" />
+              <div className="xp-context-menu__item" onClick={() => { setPropertiesPath(contextMenu.path); setContextMenu(null); }}>⚙️ Özellikler</div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Özellikler (Properties) Modalı */}
+      {propertiesPath && (
+        <PropertiesModal targetPath={propertiesPath} onClose={() => setPropertiesPath(null)} />
+      )}
     </div>
   );
 }

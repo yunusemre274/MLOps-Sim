@@ -23,6 +23,7 @@ import BrowserTab from '../components/computer/BrowserTab';
 import TutorialHub from '../components/computer/TutorialHub';
 import FileExplorerTab from '../components/computer/FileExplorerTab';
 import MonitoringTab from '../components/computer/MonitoringTab';
+import PropertiesModal from '../components/computer/PropertiesModal';
 
 import './ComputerScene.css';
 
@@ -37,7 +38,7 @@ export default function ComputerScene() {
 
   const [selectedIcon, setSelectedIcon] = useState(null);
   const [contextMenu, setContextMenu] = useState(null);
-  const [showPropertiesModal, setShowPropertiesModal] = useState(false);
+  const [propertiesPath, setPropertiesPath] = useState(null);
 
   const draggingIconRef = useRef(null);
 
@@ -175,16 +176,23 @@ export default function ComputerScene() {
   const renderAppContent = (win) => {
     switch (win.appId) {
       case 'terminal':
-        return <TerminalTab />;
+        return <TerminalTab initialPath={win.extraProps?.initialPath} />;
       case 'explorer':
         return (
           <FileExplorerTab
             initialPath={win.extraProps?.initialPath || '/home/user'}
             onOpenFile={(file) => handleOpenApp('editor', { initialFile: file })}
+            onOpenTerminal={(path) => handleOpenApp('terminal', { initialPath: path })}
+            onOpenIDE={(path) => handleOpenApp('editor', { initialPath: path })}
           />
         );
       case 'editor':
-        return <EditorTab initialFile={win.extraProps?.initialFile} />;
+        return (
+          <EditorTab
+            initialFile={win.extraProps?.initialFile}
+            initialPath={win.extraProps?.initialPath}
+          />
+        );
       case 'browser_chrome':
         return <BrowserTab browserName="Chrome" />;
       case 'browser_edge':
@@ -204,6 +212,16 @@ export default function ComputerScene() {
       default:
         return <div style={{ padding: 24 }}>Uygulama yükleniyor...</div>;
     }
+  };
+
+  const getTargetIconPath = (iconObj) => {
+    if (!iconObj) return '/home/user/desktop';
+    if (iconObj.type === 'dir') {
+      if (iconObj.name === 'Projelerim' || iconObj.name === 'projects') return '/home/user/projects';
+      if (iconObj.name === 'Belgelerim' || iconObj.name === 'documents') return '/home/user/documents';
+      return `/home/user/desktop/${iconObj.name}`;
+    }
+    return `/home/user/desktop/${iconObj.name}`;
   };
 
   return (
@@ -265,28 +283,33 @@ export default function ComputerScene() {
                 <div className="xp-context-menu__item" onClick={handleCreateNewFolder}>📁 Yeni Klasör</div>
                 <div className="xp-context-menu__item" onClick={handleCreateNewFile}>📝 Yeni Metin Belgesi</div>
                 <div className="xp-context-menu__divider" />
-                <div className="xp-context-menu__item" onClick={() => { setShowPropertiesModal(true); setContextMenu(null); }}>⚙️ Özellikler</div>
+                <div className="xp-context-menu__item" onClick={() => { setPropertiesPath('/home/user/desktop'); setContextMenu(null); }}>⚙️ Özellikler</div>
+              </>
+            ) : contextMenu.iconObj?.type === 'dir' ? (
+              <>
+                <div className="xp-context-menu__item" onClick={() => { handleIconDoubleClick(contextMenu.iconObj); setContextMenu(null); }}>▶ Aç</div>
+                <div className="xp-context-menu__item" onClick={() => { handleOpenApp('terminal', { initialPath: getTargetIconPath(contextMenu.iconObj) }); setContextMenu(null); }}>💻 Terminal ile Aç</div>
+                <div className="xp-context-menu__item" onClick={() => { handleOpenApp('editor', { initialPath: getTargetIconPath(contextMenu.iconObj) }); setContextMenu(null); }}>📝 IDE ile Aç</div>
+                <div className="xp-context-menu__divider" />
+                <div className="xp-context-menu__item" onClick={() => handleDeleteIcon(contextMenu.iconObj)}>🗑️ Sil</div>
+                <div className="xp-context-menu__divider" />
+                <div className="xp-context-menu__item" onClick={() => { setPropertiesPath(getTargetIconPath(contextMenu.iconObj)); setContextMenu(null); }}>⚙️ Özellikler</div>
               </>
             ) : (
               <>
                 <div className="xp-context-menu__item" onClick={() => { handleIconDoubleClick(contextMenu.iconObj); setContextMenu(null); }}>▶ Aç</div>
+                <div className="xp-context-menu__divider" />
                 <div className="xp-context-menu__item" onClick={() => handleDeleteIcon(contextMenu.iconObj)}>🗑️ Sil</div>
+                <div className="xp-context-menu__divider" />
+                <div className="xp-context-menu__item" onClick={() => { setPropertiesPath(getTargetIconPath(contextMenu.iconObj)); setContextMenu(null); }}>⚙️ Özellikler</div>
               </>
             )}
           </div>
         )}
 
         {/* Özellikler Modalı */}
-        {showPropertiesModal && (
-          <div className="xp-properties-modal">
-            <div className="xp-properties-modal__content">
-              <h3>⚙️ Masaüstü Özellikleri</h3>
-              <p>İşletim Sistemi: Windows XP MLOps Edition</p>
-              <p>Açık Pencere Sayısı: {windows.length}</p>
-              <p>Pencere Yöneticisi: Bağımsız (WindowManagerEngine)</p>
-              <button onClick={() => setShowPropertiesModal(false)}>Kapat</button>
-            </div>
-          </div>
+        {propertiesPath && (
+          <PropertiesModal targetPath={propertiesPath} onClose={() => setPropertiesPath(null)} />
         )}
       </div>
 

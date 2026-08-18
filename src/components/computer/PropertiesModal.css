@@ -1,0 +1,179 @@
+/* PropertiesModal.css — Windows XP Tarzı Özellikler Dialog Stilleri */
+
+.xp-props-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  backdrop-filter: blur(2px);
+}
+
+.xp-props-window {
+  width: 360px;
+  background: #ece9d8;
+  border: 2px solid #0055ea;
+  border-radius: 6px 6px 0 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 1px 1px 0 #fff;
+  font-family: 'Tahoma', 'Segoe UI', sans-serif;
+  font-size: 11px;
+  color: #000;
+  user-select: none;
+  overflow: hidden;
+}
+
+.xp-props-header {
+  background: linear-gradient(180deg, #0a246a 0%, #a6caf0 8%, #0055ea 15%, #0055ea 85%, #002288 100%);
+  color: #fff;
+  font-weight: bold;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-shadow: 1px 1px #001144;
+  height: 26px;
+}
+
+.xp-props-close {
+  background: #e81123;
+  color: white;
+  border: 1px solid #fff;
+  border-radius: 3px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.xp-props-close:hover {
+  background: #f1707a;
+}
+
+.xp-props-tabs {
+  display: flex;
+  padding: 8px 12px 0 12px;
+  gap: 2px;
+  border-bottom: 1px solid #919b9c;
+}
+
+.xp-props-tab {
+  padding: 4px 12px;
+  background: #f7f5ef;
+  border: 1px solid #919b9c;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+}
+
+.xp-props-tab--active {
+  background: #ece9d8;
+  font-weight: bold;
+  position: relative;
+  top: 1px;
+  border-bottom: 1px solid #ece9d8;
+}
+
+.xp-props-body {
+  padding: 12px 16px;
+}
+
+.xp-props-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.xp-props-big-icon {
+  font-size: 32px;
+}
+
+.xp-props-name-input {
+  flex: 1;
+  background: #fff;
+  border: 1px solid #7f9db9;
+  padding: 3px 6px;
+  font-size: 12px;
+  color: #111;
+  border-radius: 2px;
+}
+
+.xp-props-divider {
+  height: 1px;
+  background: #d0d0d0;
+  border-bottom: 1px solid #fff;
+  margin: 10px 0;
+}
+
+.xp-props-grid {
+  display: grid;
+  grid-template-columns: 85px 1fr;
+  gap: 6px 8px;
+  align-items: baseline;
+  line-height: 1.4;
+}
+
+.xp-props-label {
+  color: #444;
+  font-weight: 500;
+}
+
+.xp-props-val {
+  color: #111;
+  word-break: break-all;
+}
+
+.xp-props-path {
+  font-family: monospace;
+  font-size: 10px;
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+.xp-props-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.xp-props-btn {
+  min-width: 65px;
+  padding: 4px 10px;
+  background: #ece9d8;
+  border: 1px solid #003c74;
+  border-radius: 3px;
+  font-size: 11px;
+  cursor: pointer;
+  box-shadow: inset 1px 1px 0 #fff;
+}
+
+.xp-props-btn--primary {
+  border: 2px solid #0055ea;
+  font-weight: bold;
+}
+
+.xp-props-btn:hover {
+  background: #f5f3ec;
+}
+
+.xp-props-btn:active {
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.xp-props-error {
+  color: #c00;
+  padding: 12px 0;
+  text-align: center;
+}

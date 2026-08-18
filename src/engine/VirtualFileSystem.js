@@ -332,6 +332,88 @@ export default class VirtualFileSystem {
     }
   }
 
+  /**
+   * Bir dosya veya klasörün özelliklerini (Properties) hesaplar (Round 11 / GÖREV GRUBU 3).
+   */
+  getStats(path) {
+    const targetParts = this._resolvePath(path || this.cwd);
+    const { node, found } = this._getNode(path || this.cwd);
+    if (!found || !node) {
+      return { success: false, error: 'Böyle bir dosya veya dizin bulunamadı.' };
+    }
+
+    const fullPath = '/' + targetParts.join('/');
+    const name = targetParts.length === 0 ? '/' : targetParts[targetParts.length - 1];
+
+    if (node._type === 'file') {
+      const contentStr = typeof node.content === 'string' ? node.content : '';
+      const sizeBytes = contentStr.length || (node.size || 0);
+      return {
+        success: true,
+        name: node.name || name,
+        path: fullPath,
+        type: 'file',
+        sizeBytes,
+        sizeFormatted: formatFileSize(sizeBytes),
+        fileCount: 1,
+        dirCount: 0,
+        owner: 'user',
+        date: node.date || 'Bugün',
+      };
+    }
+
+    if (node._type === 'dir') {
+      let totalBytes = 0;
+      let fileCount = 0;
+      let dirCount = 0;
+
+      const traverse = (dirNode) => {
+        if (!dirNode || !dirNode.children) return;
+        for (const childNode of Object.values(dirNode.children)) {
+          if (childNode._type === 'file') {
+            fileCount++;
+            const cStr = typeof childNode.content === 'string' ? childNode.content : '';
+            totalBytes += cStr.length || (childNode.size || 512);
+          } else if (childNode._type === 'dir') {
+            dirCount++;
+            traverse(childNode);
+          } else if (childNode._type === 'app') {
+            fileCount++;
+            totalBytes += 1024;
+          }
+        }
+      };
+
+      traverse(node);
+
+      return {
+        success: true,
+        name: node.name || name,
+        path: fullPath,
+        type: 'dir',
+        sizeBytes: totalBytes,
+        sizeFormatted: formatFileSize(totalBytes),
+        fileCount,
+        dirCount,
+        owner: 'user',
+        date: node.date || 'Bugün',
+      };
+    }
+
+    return {
+      success: true,
+      name: node.label || node.name || name,
+      path: fullPath,
+      type: node._type || 'app',
+      sizeBytes: 1024,
+      sizeFormatted: formatFileSize(1024),
+      fileCount: 1,
+      dirCount: 0,
+      owner: 'user',
+      date: 'Bugün',
+    };
+  }
+
   tree(path, prefix = '') {
     const { node, found } = this._getNode(path || this.cwd);
     if (!found || node._type !== 'dir') return [];
@@ -348,5 +430,13 @@ export default class VirtualFileSystem {
   }
 }
 
+export function formatFileSize(bytes = 0) {
+  if (bytes >= 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  if (bytes >= 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${bytes} bayt`;
+}
+
 // Single Source of Truth VFS Singleton
 export const globalVFS = new VirtualFileSystem();
+export { VirtualFileSystem };
