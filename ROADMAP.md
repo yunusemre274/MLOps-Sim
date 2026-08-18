@@ -382,6 +382,31 @@
 
 ---
 
+## Faz 22 — İmaj Boyutu Doğrulaması, IDE Yazım Kolaylıkları ve Klasör Özellikleri (Round 11)
+**Bu fazın çıkış kriteri:** Gerçekçi Docker build imaj boyutu hesaplama motorunun ve görev doğrulama katmanının (Katman 3) çalışması, kod editöründe otomatik kapanan parantez/tırnak & type-over desteği, Windows XP masaüstü ve dosya gezgininde Özellikler (Properties) ve Terminal/IDE ile Aç bağlam menüsü entegrasyonu.
+
+- [x] **Görev Grubu 1 — İmaj Boyutu Optimizasyon Doğrulaması (Katman 3):**
+  - [x] `BASE_IMAGE_SIZES` ve `calculateSimulatedImageSize` ile taban imaj (python:3.11 950MB, python:3.11-slim 150MB, node:20 1.1GB, alpine 7.5MB vb.), RUN paketleri (build-essential +280MB, pip data science +220-750MB, fastapi +35MB) ve COPY katmanlarının gerçekçi boyut hesaplaması.
+  - [x] Multi-stage build yapısında yalnızca nihai (final) stage katmanlarının nihai imaj boyutuna eklenmesi.
+  - [x] `checkMission` fonksiyonunda `criteria.maxImageSizeMB` denetimi ve limit aşıldığında eğitici pedagojik AI geri bildirimi.
+  - [x] `missions.json` (Aşama 2+ görevleri) ve `git clone` README.md şablonuna somut teknik imaj boyutu hedefleri eklenmesi.
+  - [x] `docker images` ve `docker image ls` komutlarında gerçek hesaplanan `SIZE` sütununun listelenmesi.
+
+- [x] **Görev Grubu 2 — IDE Yazım Kolaylıkları (Otomatik Kapanan Tırnak/Parantez):**
+  - [x] `processEditorKeyPress` motoru ile `(`, `[`, `{`, `"`, `'`, `` ` `` tuşlarına basıldığında otomatik çift oluşturma ve imleci ortaya yerleştirme.
+  - [x] Kod veya metin seçiliyken parantez/tırnak basıldığında seçili metni sarma (`autoSurround`).
+  - [x] Önceden kapanmış tırnak veya parantez önünde tekrar kapanış karakteri yazıldığında yinelenen karakter eklemeyip bir sağa atlama (`type_over`).
+  - [x] Çift karakter Backspace ile boş `()`, `[]`, `{}`, `""`, `''` çiftini tek tuşla silme.
+  - [x] Tab tuşuna basıldığında 2 boşluk girinti (indentation) ve imleç senkronizasyonu.
+
+- [x] **Görev Grubu 3 — Klasör Özellikleri (Properties) + Terminal/IDE ile Aç:**
+  - [x] `VirtualFileSystem.getStats(path)` ile VFS'teki dosya ve klasörlerin recursive toplam boyutu, dosya sayısı, alt klasör sayısı ve son değişiklik tarihinin hesaplanması.
+  - [x] Windows XP tarzı `PropertiesModal.jsx` & `.css` pencere bileşeni.
+  - [x] Masaüstü ve Dosya Gezgini (File Explorer) sağ tık menüsüne `▶ Aç`, `💻 Terminal ile Aç`, `📝 IDE ile Aç`, `🗑️ Sil` ve `⚙️ Özellikler` aksiyonlarının eklenmesi.
+  - [x] "Terminal ile Aç" ve "IDE ile Aç" seçildiğinde pencere yöneticisi ve VFS'in `initialPath` dizininde reaktif olarak açılması.
+
+---
+
 ## 🔮 İleriye Dönük Faz — Kubernetes Simülasyonu & 4-Katmanlı Manifest Doğrulama (Tasarım Notu)
 *Kubernetes fazı başladığında uygulanacak 4-katmanlı doğrulama standardı:*
 1. **Katman 1 (YAML & Şema Sözdizimi):** `apiVersion`, `kind`, `metadata`, `spec` yapılarının Kubernetes standardına uygunluğu.

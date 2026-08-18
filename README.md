@@ -1023,6 +1023,33 @@ Görev içeriklerinin üretimi **hibrit bir yaklaşım** kullanır. Bu yaklaşı
 }
 ```
 
+### 8.6 Kod Editörü Yazım Kolaylıkları (IDE QoL)
+
+Kod Editörü bileşeni (`EditorTab.jsx`), geliştirici deneyimini modern IDE seviyesine taşıyan reaktif yazım kolaylıklarına sahiptir:
+
+- **Otomatik Kapanan Parantez ve Tırnaklar:** `(`, `[`, `{`, `"`, `'`, `` ` `` tuşlarına basıldığında otomatik olarak çift oluşturulur ve imleç karakterlerin tam arasına yerleşir.
+- **Otomatik Metin Sarma (autoSurround):** Editörde herhangi bir kod bloğu veya metin seçiliyken tırnak veya parantez tuşuna basıldığında, seçili metin silinmez; otomatik olarak o tırnak/parantez çiftiyle sarılır (`(selectedCode)` veya `[selectedCode]`).
+- **Type-Over Mekanizması:** İmleç zaten kapanmış bir parantez veya tırnağın önündeyse ve kullanıcı aynı kapanış karakterini yazarsa, yinelenen karakter eklenmez; imleç bir karakter sağa atlar.
+- **Çift Karakter Backspace Silme:** İmleç boş bir `()`, `[]`, `{}`, `""`, `''` veya ```` `` ```` çiftinin ortasındayken Backspace tuşuna basıldığında her iki karakter tek hamlede silinir.
+- **Akıllı Girinti (Tab Indentation):** Tab tuşuna basıldığında 2 boşlukluk kod girintisi eklenir ve imleç pozisyonu senkronize edilir.
+
+### 8.7 Masaüstü, Dosya Gezgini ve Klasör Özellikleri (Properties)
+
+Masaüstü ve Dosya Gezgini (File Explorer) bileşenleri, Windows XP tarzı bağlam menüsü (Context Menu) ve özellikler penceresiyle donatılmıştır:
+
+- **Sağ Tık Bağlam Menüsü:**
+  - **Klasörler İçin:** `▶ Aç`, `💻 Terminal ile Aç`, `📝 IDE ile Aç`, `🗑️ Sil`, `⚙️ Özellikler`.
+  - **Dosyalar İçin:** `▶ Aç`, `🗑️ Sil`, `⚙️ Özellikler`.
+  - **Masaüstü/Boş Alan İçin:** `↻ Yenile`, `📁 Yeni Klasör`, `📝 Yeni Metin Belgesi`, `⚙️ Özellikler`.
+- **Özellikler (Properties) Modalı:** VFS ağacından dinamik ve recursive olarak:
+  - **Dosya/Klasör Türü:** `Dosya Klasörü`, `Python Dosyası`, `Docker İmaj Tanım Dosyası` vb.
+  - **Konum (Path):** Tam VFS mutlak yolu (`/home/user/...`).
+  - **Boyut (Size):** Okunabilir ve bayt cinsinden recursive toplam boyut (`45.2 KB (46.280 bayt)`).
+  - **İçerik:** Klasör içindeki toplam dosya ve alt klasör sayısı (`X dosya, Y klasör`).
+  - **Sahiplik:** Kullanıcı izinleri (`user`).
+  - **Değiştirilme Tarihi:** Son düzenleme zaman damgası.
+- **Terminal ve IDE ile Klasör Açma:** "💻 Terminal ile Aç" seçildiğinde Terminal doğrudan o klasörün `currentPath` değerinde açılır (`vfs.cd(path)`). "📝 IDE ile Aç" seçildiğinde editör ve entegre terminal ilgili dizin bağlamında başlatılır.
+
 ---
 
 ## 9. Docker / Terminal Simülasyon Mimarisi
@@ -1354,6 +1381,53 @@ Oyun içi bilgisayarda erişilebilir, önceden hazırlanmış eğitim dosyaları
 | `github_actions.md` | Workflow YAML yapısı, trigger, job, step |
 | `cicd_concepts.md` | CI/CD felsefesi, pipeline tasarımı, best practice |
 | `security_best_practices.md` | Non-root user, secret yönetimi, image scanning |
+
+### 9.8 Sahte İmaj Boyutu Hesaplama ve Optimizasyon Doğrulama Motoru (Katman 3)
+
+Docker simülatörü, endüstri standardı imaj boyutu optimizasyonu ve multi-stage build prensiplerini öğretmek için gerçekçi bir boyut hesaplama motoruna sahiptir:
+
+#### Taban İmaj Boyutları Tablosu:
+| Taban İmaj (Base Image) | Taban Boyut |
+|-------------------------|-------------|
+| `python:3.11` / `python:latest` | ~950MB |
+| `python:3.11-slim` / `python:3.10-slim` | ~150MB |
+| `python:3.11-alpine` | ~55MB |
+| `node:20` / `node:latest` | ~1.10GB (1100MB) |
+| `node:20-slim` | ~200MB |
+| `node:20-alpine` | ~180MB |
+| `golang:1.22` | ~850MB |
+| `golang:alpine` | ~300MB |
+| `ubuntu:latest` / `22.04` | ~78MB |
+| `debian:bookworm` | ~110MB |
+| `debian:bookworm-slim` | ~80MB |
+| `alpine:latest` | ~7.5MB |
+| `nginx:alpine` | ~40MB |
+| `nginx:latest` | ~190MB |
+| `postgres:alpine` | ~90MB |
+| `postgres:15` | ~450MB |
+
+#### Katman ve Multi-Stage Hesaplama Kuralları:
+- **RUN Komutları:**
+  - `apt-get install gcc build-essential ...`: +280MB
+  - `apt-get install git curl wget ...`: +35MB
+  - `pip install torch / tensorflow`: +750MB
+  - `pip install numpy pandas scikit-learn`: +220MB-240MB
+  - `pip install fastapi uvicorn`: +35MB
+  - `npm install / npm ci`: +85MB
+  - `go build`: +25MB
+- **COPY / ADD Komutları:**
+  - `COPY . .` (.dockerignore varsa): +45MB
+  - `COPY . .` (.dockerignore yoksa): +110MB
+  - Seçici dosya kopyalama (`COPY app.py .`): +2MB
+- **Multi-Stage Build Prensibi:** Yalnızca **son (final) stage** içerisindeki taban imaj ve katmanlar nihai imaj boyutuna dahil edilir. Builder aşamasındaki derleme araçları (`gcc`, `make`, `python3-dev`) nihai imajı şişirmez.
+
+#### Check Mission Boyut Doğrulaması ve AI Geri Bildirimi:
+Görev kriterlerinde `expectedCriteria.maxImageSizeMB` tanımlandığında, oyuncunun oluşturduğu imaj boyutu değerlendirilir:
+- Limit aşıldığında görev reddedilir (`passed: false`) ve somut ipuçları üretilir:
+  - *"Multi-stage build kullanılmadığı için derleyici araçları final image'da kalmış, bu ~300MB gereksiz yer kaplıyor."*
+  - *"python:3.11 yerine python:3.11-slim veya alpine kullanılsaydı ~800MB tasarruf sağlanırdı."*
+  - *".dockerignore kullanılmadığı veya seçici COPY yapılmadığı için gereksiz dosyalar image'a dahil olmuş."*
+- `docker images` ve `docker image ls` komutları terminalde hesaplanan bu boyutu gerçekçi `SIZE` sütununda (`154MB`, `1.25GB`) listeler.
 
 ---
 
