@@ -229,7 +229,89 @@ function renderHighlightedLine(line, lang) {
   return <span>{line}</span>;
 }
 
-export default function EditorTab({ initialFile }) {
+// === GÖREV 2: IDE YAZIM KOLAYLIKLARI (Round 11) ===
+export function processEditorKeyPress(content = '', start = 0, end = 0, key = '') {
+  const PAIRS = {
+    '(': ')',
+    '[': ']',
+    '{': '}',
+    '"': '"',
+    "'": "'",
+    '`': '`',
+  };
+  const CLOSING_CHARS = new Set([')', ']', '}', '"', "'", '`']);
+
+  // 1. Otomatik Kapanan Parantez ve Tırnaklar (autoClosingBrackets, autoClosingQuotes, autoSurround)
+  if (PAIRS[key]) {
+    const openChar = key;
+    const closeChar = PAIRS[openChar];
+
+    // Type-over: Eğer imleç zaten aynı tırnak/parantez önündeyse ve tekrar o tuşa basıldıysa
+    if (start === end && content[start] === openChar && (openChar === '"' || openChar === "'" || openChar === '`')) {
+      return {
+        handled: true,
+        type: 'type_over',
+        newContent: content,
+        newStart: start + 1,
+        newEnd: start + 1,
+      };
+    }
+
+    const selectedText = content.slice(start, end);
+    const newContent = content.slice(0, start) + openChar + selectedText + closeChar + content.slice(end);
+    const newCursor = start === end ? start + 1 : start + 1;
+    return {
+      handled: true,
+      type: 'insert_pair',
+      newContent,
+      newStart: newCursor,
+      newEnd: start === end ? newCursor : end + 1,
+    };
+  }
+
+  // 2. Type-Over (Zaten kapanmış parantezin önünde kapanış tuşuna basıldığında atla)
+  if (CLOSING_CHARS.has(key) && start === end && content[start] === key) {
+    return {
+      handled: true,
+      type: 'type_over',
+      newContent: content,
+      newStart: start + 1,
+      newEnd: start + 1,
+    };
+  }
+
+  // 3. Çift Karakter Backspace (Boş () / [] / {} / "" / '' silme)
+  if (key === 'Backspace' && start === end && start > 0) {
+    const prevChar = content[start - 1];
+    const nextChar = content[start];
+    if (PAIRS[prevChar] && PAIRS[prevChar] === nextChar) {
+      const newContent = content.slice(0, start - 1) + content.slice(start + 1);
+      return {
+        handled: true,
+        type: 'delete_pair',
+        newContent,
+        newStart: start - 1,
+        newEnd: start - 1,
+      };
+    }
+  }
+
+  // 4. Tab Tuşu ile Girinti (2 boşluk)
+  if (key === 'Tab') {
+    const newContent = content.slice(0, start) + '  ' + content.slice(end);
+    return {
+      handled: true,
+      type: 'tab_indent',
+      newContent,
+      newStart: start + 2,
+      newEnd: start + 2,
+    };
+  }
+
+  return { handled: false, newContent: content, newStart: start, newEnd: end };
+}
+
+export default function EditorTab({ initialFile, initialPath = null }) {
   const [files, setFiles] = useState(() => {
     if (initialFile && initialFile.name) {
       return [{
@@ -338,6 +420,39 @@ export default function EditorTab({ initialFile }) {
     ));
   };
 
+  const handleKeyDown = (e) => {
+    const textarea = textareaRef.current;
+    if (!textarea || !currentFile) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const content = currentFile.content;
+
+    const res = processEditorKeyPress(content, start, end, e.key);
+    if (res.handled) {
+      e.preventDefault();
+      if (res.newContent !== content) {
+        setFiles((prev) => {
+          const updated = [...prev];
+          updated[activeFile] = { ...updated[activeFile], content: res.newContent };
+          return updated;
+        });
+      }
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.setSelectionRange(res.newStart, res.newEnd);
+        }
+      }, 0);
+      return;
+    }
+
+    // Ctrl+S / Cmd+S ile Kaydet
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      handleSave();
+    }
+  };
+
   return (
     <div className="editor">
       {/* Dosya sekmeleri */}
@@ -400,6 +515,7 @@ export default function EditorTab({ initialFile }) {
               className="editor__textarea"
               value={currentFile ? currentFile.content : ''}
               onChange={handleContentChange}
+              onKeyDown={handleKeyDown}
               spellCheck={false}
               autoComplete="off"
             />
@@ -414,7 +530,7 @@ export default function EditorTab({ initialFile }) {
               <button onClick={() => setShowTerminal(false)}>✕ Kapama</button>
             </div>
             <div className="editor__terminal-body">
-              <TerminalTab />
+              <TerminalTab initialPath={initialPath} />
             </div>
           </div>
         )}
