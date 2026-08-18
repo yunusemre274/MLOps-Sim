@@ -333,6 +333,8 @@ export function generateBuildLogs(ast, vfs = null, contextDir = '/home/user', ta
     created: 'Just now',
     ast,
     capabilities: currentCaps,
+    contextDir,
+    vfs,
   };
   if (repo !== targetTag) {
     images[repo] = images[targetTag];
@@ -433,7 +435,12 @@ export function validateAndSimulateRunCommand(cmd, currentCaps, vfs = null, cont
           for (const pkg of packages) {
             lines.push(`Collecting ${pkg}`);
             lines.push(`  Downloading ${pkg}-1.0.0-py3-none-any.whl (42 kB)`);
-            currentCaps.binaries.push(pkg);
+            const cleanPkg = pkg.split(/[\[<>=~]/)[0].trim().toLowerCase();
+            currentCaps.binaries.push(cleanPkg);
+            if (cleanPkg === 'uvicorn') currentCaps.binaries.push('uvicorn');
+            if (cleanPkg === 'gunicorn') currentCaps.binaries.push('gunicorn');
+            if (cleanPkg === 'flask') currentCaps.binaries.push('flask');
+            if (cleanPkg === 'fastapi') currentCaps.binaries.push('fastapi');
           }
           if (packages.length > 0) {
             lines.push('Installing collected packages: ' + packages.join(', '));
@@ -450,7 +457,12 @@ export function validateAndSimulateRunCommand(cmd, currentCaps, vfs = null, cont
       for (const pkg of packages) {
         lines.push(`Collecting ${pkg}`);
         lines.push(`  Downloading ${pkg}-1.0.0-py3-none-any.whl (42 kB)`);
-        currentCaps.binaries.push(pkg);
+        const cleanPkg = pkg.split(/[\[<>=~]/)[0].trim().toLowerCase();
+        currentCaps.binaries.push(cleanPkg);
+        if (cleanPkg === 'uvicorn') currentCaps.binaries.push('uvicorn');
+        if (cleanPkg === 'gunicorn') currentCaps.binaries.push('gunicorn');
+        if (cleanPkg === 'flask') currentCaps.binaries.push('flask');
+        if (cleanPkg === 'fastapi') currentCaps.binaries.push('fastapi');
       }
       if (packages.length > 0) {
         lines.push('Installing collected packages: ' + packages.join(', '));
@@ -600,11 +612,62 @@ let volumes = {
 };
 let containerIdCounter = 1;
 
-// === CONTAINER HANDLERS (GÖREV 3 RUNTIME DOĞRULAMA İLE) ===
+// === KATMAN 2.5: UYGULAMA ÇERÇEVESİ FARKINDALIĞI (FRAMEWORK AWARENESS) ===
+
+export function analyzeFrameworkAndEntrypoint(vfsOrContent, contextDir = '/', entrypointFile = '', cmdArgs = []) {
+  let fileContent = '';
+  if (typeof vfsOrContent === 'string') {
+    fileContent = vfsOrContent;
+  } else if (vfsOrContent && entrypointFile) {
+    const candidates = [
+      `${contextDir}/${entrypointFile}`.replace(/\/+/g, '/'),
+      `/app/${entrypointFile}`.replace(/\/+/g, '/'),
+      entrypointFile.startsWith('/') ? entrypointFile : `${vfsOrContent.pwd ? vfsOrContent.pwd() : '/home/user'}/${entrypointFile}`.replace(/\/+/g, '/'),
+    ];
+    for (const c of candidates) {
+      const res = vfsOrContent.cat(c);
+      if (res.success) {
+        fileContent = res.content;
+        break;
+      }
+    }
+  }
+
+  // 1. Framework Tespiti
+  let framework = 'plain';
+  if (/from\s+fastapi\s+import|import\s+fastapi/i.test(fileContent)) {
+    framework = 'fastapi';
+  } else if (/from\s+flask\s+import|import\s+flask/i.test(fileContent)) {
+    framework = 'flask';
+  } else if (/import\s+django|from\s+django/i.test(fileContent)) {
+    framework = 'django';
+  }
+
+  // 2. Başlatma Bloğu (Self-booting) Kontrolü
+  let isSelfBooting = false;
+  if (framework === 'fastapi') {
+    const hasMainBlock = /if\s+__name__\s*==\s*['"]__main__['"]\s*:/i.test(fileContent);
+    const hasUvicornRun = /uvicorn\.run\s*\(|uvicorn\.Server\s*\(/i.test(fileContent);
+    isSelfBooting = hasMainBlock && hasUvicornRun;
+  } else if (framework === 'flask') {
+    const hasMainBlock = /if\s+__name__\s*==\s*['"]__main__['"]\s*:/i.test(fileContent);
+    const hasAppRun = /\.run\s*\(/i.test(fileContent);
+    isSelfBooting = hasMainBlock && hasAppRun;
+  }
+
+  return {
+    framework,
+    isSelfBooting,
+    fileContent,
+  };
+}
+
+// === CONTAINER HANDLERS (GÖREV 3 RUNTIME DOĞRULAMA & KATMAN 2.5 İLE) ===
 
 export function dockerRun(imageNameOrArgs, options = {}) {
   let imageName = imageNameOrArgs;
   let opts = { ...options };
+  let vfs = opts.vfs || null;
 
   if (Array.isArray(imageNameOrArgs)) {
     const args = imageNameOrArgs;
@@ -630,25 +693,105 @@ export function dockerRun(imageNameOrArgs, options = {}) {
     const parts = imageName.split(':');
     caps = getBaseImageCapabilities(parts[0], parts[1] || 'latest');
   }
+  if (!vfs && imgObj?.vfs) {
+    vfs = imgObj.vfs;
+  }
+  const contextDir = imgObj?.contextDir || '/home/user';
 
-  // GÖREV 3: Runtime CMD/ENTRYPOINT Executable Doğrulaması
+  let executable = null;
+  let cmdArgs = [];
+  let isListening = true;
+  let simulatedLogs = [];
+
+  // GÖREV 3: Runtime CMD/ENTRYPOINT Executable ve Framework Doğrulaması
   if (imgObj?.ast) {
     const lastStage = imgObj.ast.stages[imgObj.ast.stages.length - 1];
     const cmdInstr = lastStage?.instructions.find((i) => i.directive === 'CMD' || i.directive === 'ENTRYPOINT');
     if (cmdInstr) {
-      let executable = null;
       if (cmdInstr.parsed.values && cmdInstr.parsed.values.length > 0) {
         executable = cmdInstr.parsed.values[0];
+        cmdArgs = cmdInstr.parsed.values;
       } else if (typeof cmdInstr.args === 'string') {
-        executable = cmdInstr.args.replace(/[\[\]"',]/g, ' ').trim().split(/\s+/)[0];
+        cmdArgs = cmdInstr.args.replace(/[\[\]"',]/g, ' ').trim().split(/\s+/).filter(Boolean);
+        executable = cmdArgs[0];
       }
 
+      // 1. Binary varlık kontrolü (Round 8)
       if (executable && !executable.startsWith('./') && !executable.startsWith('/') && !caps.binaries.includes(executable)) {
         return {
           success: false,
           containerId: null,
           message: `docker: Error response from daemon: OCI runtime create failed: container_linux.go: exec: "${executable}": executable file not found in $PATH: unknown.`,
         };
+      }
+
+      // 2. Katman 2.5: Framework & Entrypoint Analizi
+      let targetFile = 'app.py';
+      const fileArg = cmdArgs.find((a) => a.endsWith('.py') || a.endsWith('.js') || a.endsWith('.ts') || a.endsWith('.go'));
+      if (fileArg) {
+        targetFile = fileArg;
+      } else if (executable === 'uvicorn') {
+        const appMod = cmdArgs[1] || 'app:app';
+        const modName = appMod.split(':')[0] || 'app';
+        targetFile = `${modName}.py`;
+      }
+
+      const analysis = analyzeFrameworkAndEntrypoint(vfs, contextDir, targetFile, cmdArgs);
+      const isPythonRun = executable === 'python' || executable === 'python3';
+      const isUvicornRun = executable === 'uvicorn';
+      const isFlaskRun = executable === 'flask';
+
+      if (analysis.framework === 'fastapi') {
+        if (isPythonRun) {
+          if (analysis.isSelfBooting) {
+            isListening = true;
+            simulatedLogs = [
+              `[${new Date().toISOString()}] INFO:     Started server process [1]`,
+              `[${new Date().toISOString()}] INFO:     Waiting for application startup.`,
+              `[${new Date().toISOString()}] INFO:     Application startup complete.`,
+              `[${new Date().toISOString()}] INFO:     Uvicorn running on http://0.0.0.0:${opts.port || 8080} (Press CTRL+C to quit)`,
+            ];
+          } else {
+            // Salt app = FastAPI() tanımlı ama uvicorn.run başlatma bloğu yok
+            isListening = false;
+            simulatedLogs = [
+              `[${new Date().toISOString()}] python ${targetFile} executed.`,
+              `[${new Date().toISOString()}] Process exited with code 0 (no ASGI web server was started).`,
+              `[${new Date().toISOString()}] Warning: No process listening on port ${opts.port || 8080}.`,
+            ];
+          }
+        } else if (isUvicornRun) {
+          isListening = true;
+          simulatedLogs = [
+            `[${new Date().toISOString()}] INFO:     Started server process [1]`,
+            `[${new Date().toISOString()}] INFO:     Waiting for application startup.`,
+            `[${new Date().toISOString()}] INFO:     Application startup complete.`,
+            `[${new Date().toISOString()}] INFO:     Uvicorn running on http://0.0.0.0:${opts.port || 8080} (Press CTRL+C to quit)`,
+          ];
+        }
+      } else if (analysis.framework === 'flask') {
+        if (isPythonRun) {
+          if (analysis.isSelfBooting) {
+            isListening = true;
+            simulatedLogs = [
+              `[${new Date().toISOString()}]  * Serving Flask app '${targetFile}'`,
+              `[${new Date().toISOString()}]  * Running on http://0.0.0.0:${opts.port || 8080}`,
+            ];
+          } else {
+            isListening = false;
+            simulatedLogs = [
+              `[${new Date().toISOString()}] python ${targetFile} executed.`,
+              `[${new Date().toISOString()}] Process exited with code 0 (no WSGI web server was started).`,
+              `[${new Date().toISOString()}] Warning: No process listening on port ${opts.port || 8080}.`,
+            ];
+          }
+        } else if (isFlaskRun) {
+          isListening = true;
+          simulatedLogs = [
+            `[${new Date().toISOString()}]  * Serving Flask app '${targetFile}'`,
+            `[${new Date().toISOString()}]  * Running on http://0.0.0.0:${opts.port || 8080}`,
+          ];
+        }
       }
     }
   }
@@ -657,12 +800,21 @@ export function dockerRun(imageNameOrArgs, options = {}) {
   const port = opts.port || 8080;
   const name = opts.name || id;
 
+  if (simulatedLogs.length === 0) {
+    simulatedLogs = [
+      `[${new Date().toISOString()}] Starting ${imageName}...`,
+      `[${new Date().toISOString()}] Server listening on port ${port}`,
+      `[${new Date().toISOString()}] Application started successfully.`,
+    ];
+  }
+
   containers[id] = {
     id,
     name,
     image: imageName,
     status: 'running',
     port,
+    isListening,
     env: options.env || {},
     network: options.network || 'bridge',
     volume: options.volume || null,
@@ -670,11 +822,7 @@ export function dockerRun(imageNameOrArgs, options = {}) {
       'app.py': 'print("Docker Container Running")',
       'config.json': '{"env": "production"}',
     },
-    logs: [
-      `[${new Date().toISOString()}] Starting ${imageName}...`,
-      `[${new Date().toISOString()}] Server listening on port ${port}`,
-      `[${new Date().toISOString()}] Application started successfully.`,
-    ],
+    logs: simulatedLogs,
     createdAt: new Date().toISOString(),
   };
 
@@ -683,6 +831,7 @@ export function dockerRun(imageNameOrArgs, options = {}) {
     containerId: id,
     message: `Container ${name} (${id.substring(0, 12)}) started on port ${port}`,
     port,
+    isListening,
   };
 }
 

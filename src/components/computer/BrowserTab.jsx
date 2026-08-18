@@ -18,10 +18,11 @@ export default function BrowserTab({ browserName = 'Chrome' }) {
     setNavigated(true);
   };
 
-  // Çalışan container'ları kontrol et
+  // Çalışan container'ları kontrol et (Katman 2.5: isListening kontrolü)
   const runningContainers = dockerPs();
   const port = parseInt(url.split(':').pop()) || 8080;
-  const matchingContainer = runningContainers.find((c) => c.port === port);
+  const matchingContainer = runningContainers.find((c) => c.port === port && c.isListening !== false);
+  const nonListeningContainer = runningContainers.find((c) => c.port === port && c.isListening === false);
 
   return (
     <div className="browser">
@@ -60,7 +61,7 @@ export default function BrowserTab({ browserName = 'Chrome' }) {
               </div>
               <div className="browser__app-body">
                 <p>Status: <span style={{color: '#a6e3a1'}}>● Healthy</span></p>
-                <p>Uptime: {Math.floor((Date.now() - matchingContainer.createdAt) / 1000)}s</p>
+                <p>Uptime: {Math.floor((Date.now() - new Date(matchingContainer.createdAt).getTime()) / 1000)}s</p>
                 <p>Image: {matchingContainer.image}</p>
               </div>
             </div>
@@ -68,13 +69,23 @@ export default function BrowserTab({ browserName = 'Chrome' }) {
         ) : (
           <div className="browser__error">
             <div className="browser__error-icon">❌</div>
-            <h2>Bağlantı Reddedildi</h2>
+            <h2>Bağlantı Reddedildi (ERR_CONNECTION_REFUSED)</h2>
             <p>{url} adresine ulaşılamıyor.</p>
             <div className="browser__error-hint">
               <p>Olası çözümler:</p>
               <ul>
-                <li>Terminalde <code>docker build .</code> çalıştırın</li>
-                <li>Ardından <code>docker run -p {port}:{port} app</code> çalıştırın</li>
+                {nonListeningContainer ? (
+                  <>
+                    <li>Container ayakta ancak hiçbir port dinlemiyor.</li>
+                    <li>FastAPI için <code>CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "{port}"]</code> veya <code>if __name__ == "__main__": uvicorn.run(...)</code> kullanın.</li>
+                    <li><code>requirements.txt</code> içine <code>uvicorn</code> paketini eklediğinizden emin olun.</li>
+                  </>
+                ) : (
+                  <>
+                    <li>Terminalde <code>docker build .</code> çalıştırın</li>
+                    <li>Ardından <code>docker run -p {port}:{port} app</code> çalıştırın</li>
+                  </>
+                )}
               </ul>
             </div>
           </div>

@@ -241,18 +241,31 @@ export function verifyMission(missionId, vfs, runningContainers = []) {
 
   const requiredPort = mission.expectedCriteria?.exposedPort || mission.requiredPort || 8080;
 
-  // Running container kontrolü
+  // Running container kontrolü (Katman 2.5: isListening kontrolü)
   const activeContainer = runningContainers.find((c) => {
     if (c.status !== 'running') return false;
     const portStr = String(c.port || c.ports || '');
-    return portStr.includes(String(requiredPort));
+    return portStr.includes(String(requiredPort)) && c.isListening !== false;
+  });
+
+  const nonListeningContainer = runningContainers.find((c) => {
+    if (c.status !== 'running') return false;
+    const portStr = String(c.port || c.ports || '');
+    return portStr.includes(String(requiredPort)) && c.isListening === false;
   });
 
   if (!activeContainer) {
+    if (nonListeningContainer) {
+      return {
+        passed: false,
+        requiredPort,
+        message: `HATA: Port ${requiredPort} üzerinde container ayakta ancak hiçbir web sunucusu dinlemiyor (ASGI/WSGI başlatma bloğu eksik veya CMD ["uvicorn", ...] çağrılmadı).`,
+      };
+    }
     return {
       passed: false,
       requiredPort,
-      message: `HATA: Port ${requiredPort} üzerinde 'running' statüsünde çalışan bir container bulunamadı.`,
+      message: `HATA: Port ${requiredPort} üzerinde 'running' statüsünde çalışan ve dinleyen bir container bulunamadı.`,
     };
   }
 
@@ -260,7 +273,7 @@ export function verifyMission(missionId, vfs, runningContainers = []) {
     passed: true,
     requiredPort,
     containerName: activeContainer.name || activeContainer.id,
-    message: `Port ${requiredPort} üzerinde '${activeContainer.name || activeContainer.id}' container'ı aktif ve çalışıyor.`,
+    message: `Port ${requiredPort} üzerinde '${activeContainer.name || activeContainer.id}' container'ı aktif ve dinliyor.`,
   };
 }
 
