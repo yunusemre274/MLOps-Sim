@@ -8,6 +8,7 @@
 import missions from '../data/missions.json';
 import companies from '../data/companies.json';
 import { parseDockerfile } from './DockerfileParser.js';
+import { calculateSimulatedImageSize } from './DockerSimulator.js';
 import useGameStore from '../store/useGameStore.js';
 
 /**
@@ -169,6 +170,40 @@ export function checkMission(dockerfileContent, criteria) {
     );
     if (pass) score += 15;
     checks.push({ name: 'Non-root USER tanımlanmış', passed: pass, points: 15 });
+  }
+
+  // İmaj Boyutu (Image Size) Doğrulaması (Round 11 / Katman 3)
+  if (criteria.maxImageSizeMB) {
+    maxScore += 20;
+    const sizeInfo = calculateSimulatedImageSize(ast);
+    const isSizeOk = sizeInfo.totalSizeMB <= criteria.maxImageSizeMB;
+
+    if (isSizeOk) {
+      score += 20;
+      checks.push({
+        name: `İmaj boyutu ≤ ${criteria.maxImageSizeMB}MB (Hesaplanan: ${sizeInfo.formattedSize})`,
+        passed: true,
+        points: 20,
+      });
+    } else {
+      let feedbackReason = `İmaj boyutu ${sizeInfo.formattedSize} oldu, belirlenen limit (${criteria.maxImageSizeMB}MB) aşıldı.`;
+      if (!sizeInfo.isMultiStage && (dockerfileContent.includes('gcc') || dockerfileContent.includes('build-essential') || dockerfileContent.includes('go build') || dockerfileContent.includes('npm'))) {
+        feedbackReason += ' Multi-stage build kullanılmadığı için derleyici araçları final image\'da kalmış, bu ~300MB gereksiz yer kaplıyor.';
+      }
+      if (sizeInfo.baseImage && !sizeInfo.baseImage.includes('slim') && !sizeInfo.baseImage.includes('alpine') && (sizeInfo.baseImage.includes('python') || sizeInfo.baseImage.includes('node') || sizeInfo.baseImage.includes('golang'))) {
+        feedbackReason += ` ${sizeInfo.baseImage} yerine ${sizeInfo.baseImage}-slim veya alpine kullanılsaydı ~800MB tasarruf sağlanırdı.`;
+      }
+      if (/COPY\s+\.\s+/i.test(dockerfileContent)) {
+        feedbackReason += ' .dockerignore kullanılmadığı veya seçici COPY yapılmadığı için gereksiz dosyalar image\'a dahil olmuş.';
+      }
+
+      checks.push({
+        name: `İmaj boyutu ≤ ${criteria.maxImageSizeMB}MB (Hesaplanan: ${sizeInfo.formattedSize})`,
+        passed: false,
+        points: 20,
+        feedback: feedbackReason,
+      });
+    }
   }
 
   const passed = score >= maxScore * 0.7; // %70 geçme eşiği

@@ -179,8 +179,164 @@ export function getBaseImageCapabilities(baseImage, tag = 'latest') {
   };
 }
 
+// === GÖREV 1: SAHTE İMAJ BOYUTU HESAPLAMA MOTORU (Round 11) ===
+export const BASE_IMAGE_SIZES = {
+  'python:3.11': 950,
+  'python:3.11-slim': 150,
+  'python:3.11-alpine': 55,
+  'python:3.10': 940,
+  'python:3.10-slim': 145,
+  'python:3.10-alpine': 55,
+  'python:latest': 950,
+  'python:alpine': 55,
+  'python': 950,
+  'node:20': 1100,
+  'node:20-slim': 200,
+  'node:20-alpine': 180,
+  'node:18': 1050,
+  'node:18-slim': 190,
+  'node:18-alpine': 175,
+  'node:latest': 1100,
+  'node:alpine': 180,
+  'node': 1100,
+  'golang:1.22': 850,
+  'golang:1.21': 840,
+  'golang:latest': 850,
+  'golang:alpine': 300,
+  'golang': 850,
+  'nginx:alpine': 40,
+  'nginx:latest': 190,
+  'nginx': 190,
+  'ubuntu:latest': 78,
+  'ubuntu:22.04': 78,
+  'ubuntu:20.04': 73,
+  'ubuntu': 78,
+  'debian:bookworm': 110,
+  'debian:bookworm-slim': 80,
+  'debian:latest': 110,
+  'debian': 110,
+  'alpine:latest': 7.5,
+  'alpine:3.19': 7.5,
+  'alpine:3.18': 7.3,
+  'alpine': 7.5,
+  'redis:alpine': 35,
+  'redis:latest': 140,
+  'redis': 140,
+  'postgres:alpine': 90,
+  'postgres:latest': 450,
+  'postgres:15': 450,
+  'postgres': 450,
+  'busybox:latest': 4.5,
+  'busybox': 4.5,
+};
+
+export function formatImageSize(sizeMB) {
+  if (sizeMB >= 1000) {
+    return `${(sizeMB / 1024).toFixed(2)}GB`;
+  }
+  return `${Math.round(sizeMB)}MB`;
+}
+
+export function calculateSimulatedImageSize(ast, vfs = null, contextDir = '/home/user') {
+  if (!ast || !ast.stages || ast.stages.length === 0) {
+    return { totalSizeMB: 150, formattedSize: '150MB', breakdown: [], isMultiStage: false, baseImage: 'python:3.11-slim' };
+  }
+
+  // Multi-stage build kuralı: Sadece SON (final) stage nihai imaj boyutunu belirler!
+  const finalStage = ast.stages[ast.stages.length - 1];
+  const rawBase = finalStage.baseImage || 'alpine:latest';
+  const tag = finalStage.tag || 'latest';
+  const fullBaseTag = `${rawBase}:${tag}`.toLowerCase();
+  const baseImg = rawBase.toLowerCase();
+
+  // Base image boyutu
+  let baseSizeMB = BASE_IMAGE_SIZES[fullBaseTag] || BASE_IMAGE_SIZES[baseImg];
+  if (!baseSizeMB) {
+    if (fullBaseTag.includes('alpine')) baseSizeMB = 45;
+    else if (fullBaseTag.includes('slim')) baseSizeMB = 150;
+    else if (fullBaseTag.includes('python') || fullBaseTag.includes('node') || fullBaseTag.includes('golang')) baseSizeMB = 950;
+    else baseSizeMB = 120;
+  }
+
+  let layerSizeMB = 0;
+  const breakdown = [{ item: `Base image (${rawBase}:${tag})`, sizeMB: baseSizeMB }];
+
+  // Final stage içerisindeki direktifleri tara
+  for (const instr of finalStage.instructions || []) {
+    const dir = instr.directive;
+    const raw = instr.raw || instr.args || '';
+
+    if (dir === 'RUN') {
+      let runAddedMB = 0;
+      if (/apt-get\s+install|apt\s+install/i.test(raw)) {
+        if (/gcc|build-essential|g\+\+|make|python3-dev/i.test(raw)) {
+          runAddedMB += 280;
+        } else if (/git|curl|wget|vim/i.test(raw)) {
+          runAddedMB += 35;
+        } else {
+          runAddedMB += 45;
+        }
+      }
+      if (/pip\s+install/i.test(raw)) {
+        if (/torch|tensorflow/i.test(raw)) {
+          runAddedMB += 750;
+        } else if (/numpy|scipy|pandas|scikit-learn|matplotlib/i.test(raw)) {
+          runAddedMB += 220;
+        } else if (/fastapi|uvicorn|flask|gunicorn|requests|pydantic/i.test(raw)) {
+          runAddedMB += 35;
+        } else if (/-r\s+requirements\.txt/i.test(raw)) {
+          let reqContent = '';
+          if (vfs) {
+            const reqRes = vfs.cat(`${contextDir}/requirements.txt`.replace(/\/+/g, '/'));
+            if (reqRes.success) reqContent = reqRes.content.toLowerCase();
+          }
+          if (reqContent.includes('torch') || reqContent.includes('tensorflow')) {
+            runAddedMB += 750;
+          } else if (reqContent.includes('numpy') || reqContent.includes('pandas') || reqContent.includes('scikit-learn')) {
+            runAddedMB += 240;
+          } else {
+            runAddedMB += 45;
+          }
+        } else {
+          runAddedMB += 30;
+        }
+      }
+      if (/npm\s+install|npm\s+ci/i.test(raw)) {
+        runAddedMB += 85;
+      }
+      if (/go\s+build/i.test(raw)) {
+        runAddedMB += 25;
+      }
+
+      if (runAddedMB > 0) {
+        layerSizeMB += runAddedMB;
+        breakdown.push({ item: `RUN ${raw}`, sizeMB: runAddedMB });
+      }
+    } else if (dir === 'COPY' || dir === 'ADD') {
+      let copyAddedMB = 2;
+      // COPY . . veya COPY . /app veya COPY ./ .
+      const argsStr = instr.args || raw.replace(/^(?:COPY|ADD)\s+/i, '');
+      if (/^\s*(?:\.\/|\.)\s+/i.test(argsStr)) {
+        const hasDockerignore = vfs ? vfs.ls(`${contextDir}/.dockerignore`.replace(/\/+/g, '/')).success : false;
+        copyAddedMB = hasDockerignore ? 45 : 110;
+      }
+      layerSizeMB += copyAddedMB;
+      breakdown.push({ item: `COPY ${raw}`, sizeMB: copyAddedMB });
+    }
+  }
+
+  const totalSizeMB = Math.round((baseSizeMB + layerSizeMB) * 10) / 10;
+  return {
+    totalSizeMB,
+    formattedSize: formatImageSize(totalSizeMB),
+    breakdown,
+    isMultiStage: ast.stages.length > 1,
+    baseImage: fullBaseTag,
+  };
+}
+
 /**
- * Dockerfile AST'sinden gerçekçi build log satırları üretir.
+ * Dockerfile AST'inden gerçekçi build log satırları üretir.
  *
  * 4 Katmanlı Doğrulama + Round 8 Base Image Yetenek ve Komut Doğrulaması:
  * Katman 1: Sözdizimi hataları (ast.errors)
@@ -323,13 +479,15 @@ export function generateBuildLogs(ast, vfs = null, contextDir = '/home/user', ta
   logs.push(`Successfully built ${imageId}`);
   logs.push(`Successfully tagged ${targetTag}`);
 
-  // Bildirilen image'ı yerel image listesine ekle
+  // Bildirilen image'ı yerel image listesine ekle (hesaplanan sahte boyut ile)
+  const sizeCalc = calculateSimulatedImageSize(ast, vfs, contextDir);
   const [repo, tag] = targetTag.includes(':') ? targetTag.split(':') : [targetTag, 'latest'];
   images[targetTag] = {
     id: imageId,
     repository: repo,
     tag: tag || 'latest',
-    size: '125MB',
+    sizeMB: sizeCalc.totalSizeMB,
+    size: sizeCalc.formattedSize,
     created: 'Just now',
     ast,
     capabilities: currentCaps,

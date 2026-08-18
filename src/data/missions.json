@@ -38,6 +38,7 @@
     "stage": 2,
     "reward": { "money": 250, "careerPoints": 100, "monthlyMaintenance": 35 },
     "timeLimit": 180,
+    "unoptimizedSizeMB": 20000,
     "repoFiles": {
       "app.py": "from fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass Item(BaseModel):\n    name: str\n    price: float\n\n@app.post('/items')\ndef create_item(item: Item):\n    return {'item': item.dict(), 'status': 'created'}\n",
       "requirements.txt": "fastapi==0.104.1\nuvicorn==0.24.0\npydantic==2.5.0\n"
@@ -47,7 +48,8 @@
       "multiStage": true,
       "stageCount": 2,
       "baseImage": "python",
-      "hasCmd": true
+      "hasCmd": true,
+      "maxImageSizeMB": 800
     },
     "hints": [
       "İlk stage: FROM python:3.11 AS builder",

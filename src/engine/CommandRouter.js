@@ -523,9 +523,19 @@ function handleGit(args, vfs, _legacyGitState = null) {
         }
 
         // Görev Tanımı README.md Oluştur (Her aşama için zorunlu)
+        const unoptMB = targetMission.unoptimizedSizeMB || 20000;
+        const unoptStr = unoptMB >= 1000 ? `${(unoptMB / 1000).toFixed(0)}GB` : `${unoptMB}MB`;
+        const maxMB = targetMission.expectedCriteria?.maxImageSizeMB || 1536;
+        const maxStr = maxMB >= 1000 ? `${(maxMB / 1000).toFixed(1)}GB` : `${maxMB}MB`;
+
+        let sizeNotice = '';
+        if (targetMission.expectedCriteria?.maxImageSizeMB || (targetMission.stage || 1) >= 2) {
+          sizeNotice = `\n- 📦 **İmaj Boyutu Kısıtlaması:** Bu projenin optimize edilmemiş hali ${unoptStr} büyüklüğünde. Doğru base image seçimi, multi-stage yapı ve gereksiz dosyaların temizlenmesiyle nihai imaj boyutunu ${maxStr} altına indirin.`;
+        }
+
         const hintsText = targetMission.hints && targetMission.hints.length > 0
-          ? targetMission.hints.map((h) => `- ${h}`).join('\n')
-          : '- Projenin Dockerfile / Compose yapılandırmasını eksiksiz tamamlayın.';
+          ? targetMission.hints.map((h) => `- ${h}`).join('\n') + sizeNotice
+          : '- Projenin Dockerfile / Compose yapılandırmasını eksiksiz tamamlayın.' + sizeNotice;
 
         const readmeContent = `# ${targetMission.title}
 
