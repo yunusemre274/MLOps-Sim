@@ -1,0 +1,258 @@
+/**
+ * StoreScene.css — Mağaza Sahnesi Stilleri (Faz 13)
+ */
+
+.scene--store {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
+  background: var(--color-base, #1e1e2e);
+  color: var(--color-text, #cdd6f4);
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.store-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-surface0, #313244);
+}
+
+.store-back {
+  background: var(--color-surface0, #313244);
+  color: var(--color-text, #cdd6f4);
+  border: 1px solid var(--color-surface1, #45475a);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.store-back:hover {
+  background: var(--color-surface1, #45475a);
+  color: #fff;
+}
+
+.store-title-wrap {
+  flex: 1;
+}
+
+.store-title-wrap h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text, #cdd6f4);
+}
+
+.store-subtitle {
+  font-size: 0.82rem;
+  color: var(--color-subtext0, #a6adc8);
+}
+
+.store-stats {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.store-stat-chip {
+  background: var(--color-surface0, #313244);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: 1px solid var(--color-surface1, #45475a);
+}
+
+.store-stat-chip--lifestyle {
+  background: rgba(203, 166, 247, 0.15);
+  border-color: #cba6f7;
+  color: #cba6f7;
+}
+
+.store-alert {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.store-alert--success {
+  background: rgba(166, 227, 161, 0.2);
+  border: 1px solid #a6e3a1;
+  color: #a6e3a1;
+}
+
+.store-alert--error {
+  background: rgba(243, 139, 168, 0.2);
+  border: 1px solid #f38ba8;
+  color: #f38ba8;
+}
+
+/* Kategori Butonları */
+.store-categories {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.store-cat-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-surface0, #313244);
+  color: var(--color-subtext0, #a6adc8);
+  border: 1px solid var(--color-surface1, #45475a);
+  border-radius: 10px;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.store-cat-btn:hover {
+  background: var(--color-surface1, #45475a);
+  color: #fff;
+}
+
+.store-cat-btn--active {
+  background: #cba6f7;
+  color: #11111b;
+  border-color: #cba6f7;
+}
+
+.store-cat-btn--active:hover {
+  background: #b48ead;
+  color: #11111b;
+}
+
+/* Kart Grid */
+.store-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.store-card {
+  background: var(--color-surface0, #313244);
+  border: 1px solid var(--color-surface1, #45475a);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.store-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  border-color: #cba6f7;
+}
+
+.store-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.store-card__icon {
+  font-size: 2rem;
+  background: var(--color-surface1, #45475a);
+  padding: 0.5rem;
+  border-radius: 10px;
+}
+
+.store-card__title-wrap {
+  flex: 1;
+}
+
+.store-card__title {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text, #cdd6f4);
+}
+
+.store-card__badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  background: rgba(203, 166, 247, 0.2);
+  color: #cba6f7;
+  border: 1px solid rgba(203, 166, 247, 0.4);
+}
+
+.store-card__desc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-subtext0, #a6adc8);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.store-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-surface1, #45475a);
+  gap: 0.5rem;
+}
+
+.store-card__price-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.store-card__price {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #a6e3a1;
+}
+
+.store-card__owned-tag {
+  font-size: 0.72rem;
+  color: var(--color-subtext0, #a6adc8);
+}
+
+.store-card__buy-btn {
+  background: #a6e3a1;
+  color: #11111b;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.store-card__buy-btn:hover:not(:disabled) {
+  background: #94e2d5;
+  transform: scale(1.03);
+}
+
+.store-card__buy-btn--disabled {
+  background: var(--color-surface1, #45475a);
+  color: var(--color-subtext0, #a6adc8);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

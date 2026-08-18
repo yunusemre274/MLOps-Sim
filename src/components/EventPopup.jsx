@@ -28,11 +28,16 @@ export default function EventPopup({ npc, onClose }) {
     setChosen(option.id);
     const state = useGameStore.getState();
 
-    // İlişki güncelle
-    const oldLevel = rel.level;
-    const newLevel = Math.max(0, Math.min(100, oldLevel + (option.effect.relationship || 0)));
+    // İlişki güncelle (Faz 13: Yaşam tarzı çarpanı)
+    const lifestyle = state.bars.lifestyle?.current ?? 50;
+    const lifestyleMultiplier = lifestyle >= 70 ? 1.20 : lifestyle <= 30 ? 0.85 : 1.0;
+    const rawDelta = option.effect.relationship || 0;
+    const finalDelta = rawDelta > 0 ? Math.round(rawDelta * lifestyleMultiplier) : rawDelta;
 
-    useGameStore.getState().updateRelationship(npc.id, option.effect.relationship || 0);
+    const oldLevel = rel.level;
+    const newLevel = Math.max(0, Math.min(100, oldLevel + finalDelta));
+
+    useGameStore.getState().updateRelationship(npc.id, finalDelta);
 
     // İlişki durumu güncellemesini kaydet (lastInteraction)
     useGameStore.setState((s) => ({

@@ -41,10 +41,11 @@ export const TIME = {
 export const BARS = {
   // Dakika başına azalma oranları (5x zaman çarpanı ile uygulanır)
   DECAY_RATES: {
-    sleep:   0.0333, // Saat başına 2.0 puan (16 uyanık saat = 32 puan azalma)
-    hunger:  0.10,   // Saat başına 6.0 puan (8 saat = 48 puan azalma -> kritik seviye)
-    health:  0.0033, // Saat başına 0.2 puan
-    stress:  -0.0083, // Saat başına 0.5 puan doğal rahatlama (negatif = azalma)
+    sleep:     0.0333, // Saat başına 2.0 puan (16 uyanık saat = 32 puan azalma)
+    hunger:    0.10,   // Saat başına 6.0 puan (8 saat = 48 puan azalma -> kritik seviye)
+    health:    0.0033, // Saat başına 0.2 puan
+    stress:    -0.0083, // Saat başına 0.5 puan doğal rahatlama (negatif = azalma)
+    lifestyle: 0.01,   // Saat başına 0.6 puan doğal eskime/azalma
   },
 
   // Eşik değerleri — kritik seviyeler
@@ -180,6 +181,46 @@ export const RELATIONSHIPS = {
 
   // Partner ilişkisi eşiği
   PARTNER_MIN_LEVEL: 60,
+
+  // Yaşam tarzı barının ilişki gelişimine ve tanışma olasılığına etkisi (±%15-20)
+  LIFESTYLE_EFFECT: {
+    highThreshold: 70,
+    highMultiplier: 1.20, // +%20 ilişki kazanım ve tanışma hızı bonusu
+    lowThreshold: 30,
+    lowMultiplier: 0.85,  // -%15 yavaşlama (tamamen engellemez)
+  },
+};
+
+// === MAĞAZA SİSTEMİ (Faz 13) ===
+export const STORE = {
+  CATEGORIES: [
+    { id: 'clothing', name: 'Giyim', icon: '👔' },
+    { id: 'cosmetics', name: 'Kozmetik', icon: '🧴' },
+    { id: 'home', name: 'Eşya', icon: '🛋️' },
+    { id: 'art', name: 'Sanat', icon: '🖼️' },
+  ],
+  ITEMS: {
+    clothing: [
+      { id: 'hoodie_tech', name: 'MLOps Tech Hoodie', category: 'clothing', price: 150, lifestyleBonus: 8, icon: '🧥', description: 'Rahat ve şık yazılımcı kapüşonlusu. Dolaba eklenir.' },
+      { id: 'smart_casual_suit', name: 'Smart Casual Takım', category: 'clothing', price: 400, lifestyleBonus: 18, icon: '👔', description: 'Müşteri ve yatırımcı toplantıları için ideal şık kıyafet.' },
+      { id: 'leather_jacket', name: 'Premium Deri Ceket', category: 'clothing', price: 650, lifestyleBonus: 25, icon: '🧥', description: 'Özgüven tazeleyen kaliteli deri ceket.' },
+    ],
+    cosmetics: [
+      { id: 'skincare_set', name: 'Organik Cilt Bakım Seti', category: 'cosmetics', price: 120, lifestyleBonus: 10, icon: '🧴', description: 'Ekran yorgunluğunu silen ferahlatıcı cilt bakım seti.' },
+      { id: 'niche_perfume', name: 'Niş Odunsu Parfüm', category: 'cosmetics', price: 280, lifestyleBonus: 15, icon: '✨', description: 'Akılda kalıcı, karizmatik ve kalıcı bir koku.' },
+      { id: 'grooming_kit', name: 'Kişisel Bakım Kiti', category: 'cosmetics', price: 190, lifestyleBonus: 12, icon: '🪒', description: 'Saç, sakal ve stil için profesyonel bakım seti.' },
+    ],
+    home: [
+      { id: 'ergonomic_chair', name: 'Ergonomik Yönetici Koltuğu', category: 'home', price: 850, lifestyleBonus: 30, icon: '🪑', description: 'Omurga dostu, saatlerce kod yazarken tam konfor sağlar.' },
+      { id: 'espresso_machine', name: 'İtalyan Espresso Makinesi', category: 'home', price: 550, lifestyleBonus: 22, icon: '☕', description: 'Taze çekirdek kahve kokusuyla güne dinamik başlama lüksü.' },
+      { id: 'bonsai_tree', name: 'Masaüstü Bonsai Ağacı', category: 'home', price: 90, lifestyleBonus: 6, icon: '🪴', description: 'Çalışma masasına huzur ve estetik katan yaşayan dekorasyon.' },
+    ],
+    art: [
+      { id: 'cyberpunk_art', name: 'Orijinal Yağlı Boya Tablo', category: 'art', price: 750, lifestyleBonus: 28, icon: '🖼️', description: 'Odanın duvarını modern bir sanat galerisine dönüştürür.' },
+      { id: 'abstract_sculpture', name: 'Minimalist Heykelcik', category: 'art', price: 380, lifestyleBonus: 16, icon: '🗿', description: 'Kitaplık ve çalışma masası için zarif tasarım objesi.' },
+      { id: 'vintage_vinyls', name: 'Vintage Plak Koleksiyonu', category: 'art', price: 320, lifestyleBonus: 14, icon: '📻', description: 'Klasik caz ve retro elektronik müzik albümleri.' },
+    ],
+  },
 };
 
 // === KARİYER SİSTEMİ ===
@@ -202,5 +243,6 @@ export default {
   LOCATIONS,
   SUBSTANCES,
   RELATIONSHIPS,
+  STORE,
   CAREER,
 };

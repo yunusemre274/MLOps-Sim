@@ -31,10 +31,11 @@ const initialState = {
 
   // Bar sistemi — decay rate'ler gameBalance.config.js'te tanımlanacak
   bars: {
-    sleep:   { current: 100, max: 100 },
-    hunger:  { current: 100, max: 100 },
-    health:  { current: 100, max: 100 },
-    stress:  { current: 0,   max: 100 },
+    sleep:     { current: 100, max: 100 },
+    hunger:    { current: 100, max: 100 },
+    health:    { current: 100, max: 100 },
+    stress:    { current: 0,   max: 100 },
+    lifestyle: { current: 50,  max: 100 },
   },
 
   // Finansal durum
@@ -68,10 +69,11 @@ const initialState = {
     employees: [],
   },
 
-  // Envanter (buzdolabı stoku)
+  // Envanter (buzdolabı stoku, gardırop, eşyalar)
   inventory: {
     fridge: [],
     wardrobe: ['casual_outfit_1'],
+    items: [],
   },
 
   // Konut bilgileri
@@ -329,6 +331,45 @@ const useGameStore = create((set, get) => ({
         fridge: state.inventory.fridge.filter((_, i) => i !== index),
       },
     })),
+
+  // === Mağaza Satın Alma (Faz 13) ===
+  buyStoreItem: (item) => {
+    const state = useGameStore.getState();
+    if (state.finance.balance < item.price) {
+      return { success: false, message: `Yetersiz bakiye! ₺${item.price} gerekli, mevcut: ₺${state.finance.balance}` };
+    }
+
+    const currentLifestyle = state.bars.lifestyle ? state.bars.lifestyle.current : 50;
+    const maxLifestyle = state.bars.lifestyle ? state.bars.lifestyle.max : 100;
+    const newLifestyle = Math.min(maxLifestyle, Math.round((currentLifestyle + (item.lifestyleBonus || 5)) * 10) / 10);
+
+    const newItems = [...(state.inventory.items || []), item.id];
+    const newWardrobe = item.category === 'clothing' && !state.inventory.wardrobe.includes(item.id)
+      ? [...state.inventory.wardrobe, item.id]
+      : state.inventory.wardrobe;
+
+    useGameStore.setState((s) => ({
+      finance: {
+        ...s.finance,
+        balance: s.finance.balance - item.price,
+      },
+      bars: {
+        ...s.bars,
+        lifestyle: {
+          ...(s.bars.lifestyle || { max: 100 }),
+          current: newLifestyle,
+        },
+      },
+      inventory: {
+        ...s.inventory,
+        items: newItems,
+        wardrobe: newWardrobe,
+      },
+    }));
+
+    state.addEvent(`Mağazadan satın alındı: ${item.name} (-₺${item.price}, +${item.lifestyleBonus} Yaşam Tarzı)`);
+    return { success: true, message: `${item.name} başarıyla satın alındı!` };
+  },
 
   // === Olay takibi ===
   addEvent: (event) =>

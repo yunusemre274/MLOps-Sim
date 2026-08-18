@@ -47,10 +47,11 @@
 }
 
 /* Bar renkleri */
-.status-bar__fill--sleep  { background: var(--color-bar-sleep); }
-.status-bar__fill--hunger { background: var(--color-bar-hunger); }
-.status-bar__fill--health { background: var(--color-bar-health); }
-.status-bar__fill--stress { background: var(--color-bar-stress); }
+.status-bar__fill--sleep     { background: var(--color-bar-sleep); }
+.status-bar__fill--hunger    { background: var(--color-bar-hunger); }
+.status-bar__fill--health    { background: var(--color-bar-health); }
+.status-bar__fill--stress    { background: var(--color-bar-stress); }
+.status-bar__fill--lifestyle { background: linear-gradient(90deg, #cba6f7, #f5c2e7); }
 
 /* Durum bazlı efektler */
 .status-bar--critical .status-bar__value {

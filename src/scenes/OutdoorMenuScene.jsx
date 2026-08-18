@@ -23,6 +23,7 @@ export default function OutdoorMenuScene() {
 
   const LOCATIONS = [
     { id: 'market',  icon: '🏪', label: 'Market',   targetScene: 'market',  locked: false },
+    { id: 'store',   icon: '🛍️', label: 'Mağaza',   targetScene: 'store',   locked: false },
     { id: 'park',    icon: '🌳', label: 'Park',     targetScene: 'park',    locked: false },
     { id: 'pub',     icon: '🍺', label: 'Pub',      targetScene: 'pub',     locked: false },
     { id: 'cinema',  icon: '🎬', label: 'Sinema',   targetScene: 'cinema',  locked: false },

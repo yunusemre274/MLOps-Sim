@@ -59,9 +59,10 @@ export function getNPCsForLocation(locationId) {
  * @param {Object} npc - NPC verisi
  * @param {Object} relationship - Oyuncunun bu NPC ile ilişkisi
  * @param {number} currentDay - Mevcut gün sayısı
+ * @param {number} lifestyle - Oyuncunun yaşam tarzı seviyesi (0-100)
  * @returns {number} 0-1 arası olasılık
  */
-export function calculateEncounterChance(npc, relationship, currentDay) {
+export function calculateEncounterChance(npc, relationship, currentDay, lifestyle = 50) {
   // Temel olasılık
   let chance = 0.3;
 
@@ -88,6 +89,13 @@ export function calculateEncounterChance(npc, relationship, currentDay) {
     }
   }
 
+  // Yaşam tarzı (Lifestyle) etkisi (Faz 13: ±%15-20)
+  if (lifestyle >= (RELATIONSHIPS.LIFESTYLE_EFFECT?.highThreshold || 70)) {
+    chance *= (RELATIONSHIPS.LIFESTYLE_EFFECT?.highMultiplier || 1.20);
+  } else if (lifestyle <= (RELATIONSHIPS.LIFESTYLE_EFFECT?.lowThreshold || 30)) {
+    chance *= (RELATIONSHIPS.LIFESTYLE_EFFECT?.lowMultiplier || 0.85);
+  }
+
   return Math.max(0, Math.min(1, chance));
 }
 
@@ -96,14 +104,15 @@ export function calculateEncounterChance(npc, relationship, currentDay) {
  * @param {string} locationId - Mekan ID
  * @param {Object} relationships - Tüm NPC ilişkileri (state'ten)
  * @param {number} currentDay - Mevcut gün
+ * @param {number} lifestyle - Yaşam tarzı seviyesi
  * @returns {Object|null} Karşılaşılan NPC veya null
  */
-export function rollEncounter(locationId, relationships, currentDay) {
+export function rollEncounter(locationId, relationships, currentDay, lifestyle = 50) {
   const locationNPCs = getNPCsForLocation(locationId);
 
   for (const npc of locationNPCs) {
     const rel = relationships[npc.id] || { level: 0, lastInteraction: null };
-    const chance = calculateEncounterChance(npc, rel, currentDay);
+    const chance = calculateEncounterChance(npc, rel, currentDay, lifestyle);
 
     if (Math.random() < chance) {
       return npc;

@@ -58,13 +58,28 @@ export function calculateBarDecay(bars, elapsedMinutes) {
   }
   const stressDelta = stressRate * elapsedMinutes * globalMultiplier;
 
+  // Yaşam tarzı azalması (doğal eskime/kullanım ihtiyacı)
+  const lifestyleCurrent = bars.lifestyle ? bars.lifestyle.current : 50;
+  const lifestyleMax = bars.lifestyle ? bars.lifestyle.max : 100;
+  const lifestyleRate = DECAY_RATES.lifestyle || 0.01;
+  const lifestyleDelta = -lifestyleRate * elapsedMinutes;
+
   // --- Yeni değerleri hesapla (0-max arasında clamp) ---
-  return {
+  const result = {
     sleep:  { ...bars.sleep,  current: clamp(sleep  + sleepDelta,  0, bars.sleep.max) },
     hunger: { ...bars.hunger, current: clamp(hunger + hungerDelta, 0, bars.hunger.max) },
     health: { ...bars.health, current: clamp(health + healthDelta, 0, bars.health.max) },
     stress: { ...bars.stress, current: clamp(stress + stressDelta, 0, bars.stress.max) },
   };
+
+  if (bars.lifestyle) {
+    result.lifestyle = {
+      ...bars.lifestyle,
+      current: clamp(lifestyleCurrent + lifestyleDelta, 0, lifestyleMax),
+    };
+  }
+
+  return result;
 }
 
 /**

@@ -36,9 +36,10 @@ export default function LocationScene({
     if (result.success) {
       setVisited(true);
 
-      // NPC karşılaşma kontrolü
+      // NPC karşılaşma kontrolü (Faz 13: Yaşam tarzı etkisi)
       const state = useGameStore.getState();
-      const npc = rollEncounter(locationId, state.relationships, state.dayCount);
+      const lifestyle = state.bars.lifestyle?.current ?? 50;
+      const npc = rollEncounter(locationId, state.relationships, state.dayCount, lifestyle);
       if (npc) {
         setEncounterNPC(npc);
       }

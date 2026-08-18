@@ -9,17 +9,19 @@ import { getBarStatus } from '../engine/BarEngine';
 import './StatusBar.css';
 
 const BAR_ICONS = {
-  sleep:  '😴',
-  hunger: '🍔',
-  health: '❤️',
-  stress: '😰',
+  sleep:     '😴',
+  hunger:    '🍔',
+  health:    '❤️',
+  stress:    '😰',
+  lifestyle: '✨',
 };
 
 const BAR_LABELS = {
-  sleep:  'Uyku',
-  hunger: 'Açlık',
-  health: 'Sağlık',
-  stress: 'Stres',
+  sleep:     'Uyku',
+  hunger:    'Açlık',
+  health:    'Sağlık',
+  stress:    'Stres',
+  lifestyle: 'Yaşam Tarzı',
 };
 
 export default function StatusBar({ barName, current, max }) {

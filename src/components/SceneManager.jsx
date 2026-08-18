@@ -21,6 +21,7 @@ import GalleryScene from '../scenes/GalleryScene';
 import RealtorScene from '../scenes/RealtorScene';
 import JobPlatformScene from '../scenes/JobPlatformScene';
 import PlazaScene from '../scenes/PlazaScene';
+import StoreScene from '../scenes/StoreScene';
 
 // Sahne adı → bileşen eşlemesi
 // Yeni sahneler eklendikçe buraya import + kayıt yapılır
@@ -30,6 +31,7 @@ const SCENE_MAP = {
   phone: PhoneScene,
   outdoor: OutdoorMenuScene,
   market: MarketScene,
+  store: StoreScene,
   park: ParkScene,
   pub: PubScene,
   cinema: CinemaScene,
