@@ -1,0 +1,313 @@
+/**
+ * PhoneLinkedInApp.css — LinkedIn Mobil Uygulama Stilleri
+ */
+
+.phone-linkedin-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #0d1117;
+  color: #e6edf3;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+}
+
+.pli-topbar {
+  background: rgba(22, 27, 34, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 14px 6px;
+  flex-shrink: 0;
+}
+
+.pli-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #58a6ff;
+  margin-bottom: 8px;
+}
+
+.pli-logo {
+  background: #0a66c2;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.pli-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.pli-tab {
+  flex: 1;
+  padding: 6px 4px;
+  background: transparent;
+  border: none;
+  color: #8b949e;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pli-tab--active {
+  color: #58a6ff;
+  background: rgba(56, 139, 253, 0.15);
+}
+
+.pli-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pli-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pli-post-card {
+  background: rgba(22, 27, 34, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pli-post-header {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.pli-avatar {
+  font-size: 26px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pli-post-header h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f0f6fc;
+  margin: 0;
+}
+
+.pli-author-title {
+  font-size: 11px;
+  color: #8b949e;
+  margin: 2px 0 0;
+}
+
+.pli-time {
+  font-size: 10px;
+  color: #6e7681;
+}
+
+.pli-post-body p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #c9d1d9;
+  margin: 0;
+}
+
+.pli-tag {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 11px;
+  color: #58a6ff;
+  font-weight: 500;
+}
+
+.pli-post-actions {
+  display: flex;
+  gap: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 8px;
+}
+
+.pli-action-btn {
+  flex: 1;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  color: #8b949e;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pli-action-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #c9d1d9;
+}
+
+.pli-action-btn--liked {
+  color: #58a6ff;
+  background: rgba(56, 139, 253, 0.15);
+  border-color: rgba(56, 139, 253, 0.3);
+}
+
+/* Profil Sekmesi */
+.pli-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pli-profile-card {
+  background: rgba(22, 27, 34, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 0 16px 16px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.pli-profile-banner {
+  height: 48px;
+  margin: 0 -16px 0;
+  background: linear-gradient(135deg, #0a66c2, #58a6ff);
+}
+
+.pli-profile-avatar {
+  font-size: 40px;
+  margin-top: -24px;
+  display: inline-block;
+  background: #161b22;
+  border-radius: 50%;
+  padding: 6px;
+  border: 2px solid #58a6ff;
+}
+
+.pli-profile-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 8px 0 2px;
+}
+
+.pli-profile-headline {
+  font-size: 12px;
+  color: #58a6ff;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.pli-profile-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pli-badge {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  color: #c9d1d9;
+}
+
+.pli-skills-card {
+  background: rgba(22, 27, 34, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.pli-skills-card h4 {
+  font-size: 13px;
+  margin: 0 0 10px;
+  color: #f0f6fc;
+}
+
+.pli-skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pli-skill-tags span {
+  background: rgba(56, 139, 253, 0.15);
+  color: #58a6ff;
+  border: 1px solid rgba(56, 139, 253, 0.25);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Ağım Sekmesi */
+.pli-network {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pli-network h4 {
+  font-size: 13px;
+  margin: 0;
+}
+
+.pli-network-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pli-network-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(22, 27, 34, 0.7);
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pli-network-item strong {
+  font-size: 12px;
+  color: #f0f6fc;
+}
+
+.pli-network-item p {
+  font-size: 10px;
+  color: #8b949e;
+  margin: 2px 0 0;
+}
+
+.pli-connect-btn {
+  margin-left: auto;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #8b949e;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.pli-connect-btn--add {
+  background: #0a66c2;
+  color: #fff;
+  border-color: #0a66c2;
+  cursor: pointer;
+}

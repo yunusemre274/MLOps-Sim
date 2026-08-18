@@ -1,0 +1,228 @@
+/**
+ * PhoneGmailApp.css — Gmail E-Posta İstemci Stilleri
+ */
+
+.phone-gmail-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #1f1f1f;
+  color: #e3e3e3;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Roboto, sans-serif;
+  overflow: hidden;
+}
+
+.pga-header {
+  background: rgba(36, 36, 36, 0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 14px;
+  flex-shrink: 0;
+}
+
+.pga-inbox-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pga-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pga-logo {
+  font-size: 20px;
+}
+
+.pga-brand h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ea4335;
+  margin: 0;
+}
+
+.pga-badge {
+  background: rgba(234, 67, 53, 0.2);
+  color: #ea4335;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pga-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pga-back-btn {
+  background: transparent;
+  border: none;
+  color: #ea4335;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pga-detail-actions button {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.pga-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Email List */
+.pga-email-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.pga-email-item {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pga-email-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.pga-email-item--unread {
+  background: rgba(234, 67, 53, 0.04);
+}
+
+.pga-email-item--unread .pga-item-sender,
+.pga-email-item--unread .pga-item-subject {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.pga-star {
+  font-size: 14px;
+  color: #fbbc04;
+  cursor: pointer;
+}
+
+.pga-item-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.pga-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2px;
+}
+
+.pga-item-sender {
+  font-size: 13px;
+  color: #e3e3e3;
+}
+
+.pga-item-time {
+  font-size: 10px;
+  color: #9aa0a6;
+}
+
+.pga-item-subject {
+  font-size: 12px;
+  color: #bdc1c6;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pga-item-preview {
+  font-size: 11px;
+  color: #80868b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Email Detail View */
+.pga-email-detail {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pga-email-detail h3 {
+  font-size: 16px;
+  margin: 0;
+  color: #ffffff;
+  line-height: 1.35;
+}
+
+.pga-sender-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.pga-sender-avatar {
+  font-size: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 6px;
+  border-radius: 50%;
+}
+
+.pga-sender-card strong {
+  display: block;
+  font-size: 12px;
+  color: #ffffff;
+}
+
+.pga-email-date {
+  font-size: 10px;
+  color: #9aa0a6;
+}
+
+.pga-email-content {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pga-email-content p {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #e3e3e3;
+  margin: 0 0 8px;
+}
+
+.pga-reply-box {
+  display: flex;
+  gap: 10px;
+}
+
+.pga-reply-btn,
+.pga-forward-btn {
+  flex: 1;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
