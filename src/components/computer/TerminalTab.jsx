@@ -12,7 +12,6 @@ import './TerminalTab.css';
 
 export default function TerminalTab() {
   const vfs = globalVFS;
-  const gitStateRef = useRef({ initialized: false, staged: [], commits: [], branch: 'main' });
   const inputRef = useRef(null);
   const outputRef = useRef(null);
 
@@ -50,8 +49,8 @@ export default function TerminalTab() {
     const prompt = `\x1b[32m${vfs.pwd()}\x1b[0m $ ${trimmed}`;
     const newLines = [{ type: 'input', text: prompt }];
 
-    // Komutu çalıştır
-    const output = executeCommand(trimmed, vfs, gitStateRef.current);
+    // Komutu çalıştır (VFS-tabanlı merkezi senkronizasyon)
+    const output = executeCommand(trimmed, vfs);
 
     // Clear özel komutu
     if (output.length === 1 && output[0] === '__CLEAR__') {

@@ -309,6 +309,56 @@ export function executeCommand(input, vfs, gitState = { initialized: false, stag
       return lines.length > 0 ? lines : ['(boş dizin)'];
     }
 
+    case 'curl': {
+      const urlArg = args.find((a) => !a.startsWith('-')) || 'http://localhost:8080';
+      const isHead = args.includes('-I') || args.includes('--head');
+      const portMatch = urlArg.match(/:(\d+)/);
+      const port = portMatch ? parseInt(portMatch[1]) : 8080;
+      const running = dockerPs();
+      const container = running.find((c) => c.port === port);
+
+      if (!container || container.isListening === false) {
+        return [`curl: (7) Failed to connect to localhost port ${port}: Connection refused`];
+      }
+
+      if (isHead) {
+        return [
+          'HTTP/1.1 200 OK',
+          'date: ' + new Date().toUTCString(),
+          'server: uvicorn',
+          'content-type: application/json',
+          'content-length: 42',
+        ];
+      }
+
+      return [
+        '{"status": "healthy", "service": "mlops-app", "framework": "' + (container.image || 'python') + '"}',
+      ];
+    }
+
+    case 'wget': {
+      const urlArg = args.find((a) => !a.startsWith('-')) || 'http://localhost:8080';
+      const portMatch = urlArg.match(/:(\d+)/);
+      const port = portMatch ? parseInt(portMatch[1]) : 8080;
+      const running = dockerPs();
+      const container = running.find((c) => c.port === port);
+
+      if (!container || container.isListening === false) {
+        return [
+          `Connecting to localhost:${port}... failed: Connection refused.`,
+        ];
+      }
+
+      return [
+        `Connecting to localhost:${port}... connected.`,
+        'HTTP request sent, awaiting response... 200 OK',
+        'Length: 42 [application/json]',
+        `Saving to: 'index.html'`,
+        '',
+        `2026-08-18 12:00:00 (1.45 MB/s) - 'index.html' saved [42/42]`,
+      ];
+    }
+
     // Git Simülasyonu
     case 'git':
       return handleGit(args, vfs, gitState);
@@ -350,14 +400,78 @@ export function executeCommand(input, vfs, gitState = { initialized: false, stag
   }
 }
 
+// === VFS-TABANLI GİT YARDIMCI FONKSİYONLARI (GÖREV GRUBU 3) ===
+
+export function findGitRepoRoot(vfs, startPath = null) {
+  let current = startPath || vfs.pwd();
+  while (current) {
+    const gitPath = `${current}/.git`.replace(/\/+/g, '/');
+    const lsRes = vfs.ls(gitPath);
+    if (lsRes.success) {
+      return current;
+    }
+    if (current === '/' || current === '') break;
+    const lastSlash = current.lastIndexOf('/');
+    if (lastSlash === -1 || lastSlash === 0) {
+      if (current !== '/') {
+        if (vfs.ls('/.git').success) return '/';
+      }
+      break;
+    }
+    current = current.substring(0, lastSlash);
+  }
+  return null;
+}
+
+export function getVfsGitState(vfs, repoRoot) {
+  if (!repoRoot) return { initialized: false, staged: [], commits: [], branch: 'main' };
+  const stateFile = `${repoRoot}/.git/gitstate.json`.replace(/\/+/g, '/');
+  const res = vfs.cat(stateFile);
+  if (res.success) {
+    try {
+      const parsed = JSON.parse(res.content);
+      return { initialized: true, ...parsed };
+    } catch {
+      // JSON parse fallback
+    }
+  }
+  return {
+    initialized: true,
+    repoPath: repoRoot,
+    staged: [],
+    commits: [{ hash: 'a1b2c3d', message: 'Initial commit', author: 'origin' }],
+    branch: 'main',
+  };
+}
+
+export function saveVfsGitState(vfs, repoRoot, state) {
+  if (!repoRoot) return;
+  vfs.mkdir(`${repoRoot}/.git`, true);
+  const stateFile = `${repoRoot}/.git/gitstate.json`.replace(/\/+/g, '/');
+  vfs.writeFile(stateFile, JSON.stringify(state, null, 2));
+}
+
 // === GIT DISPATCHER ===
-function handleGit(args, vfs, gitState) {
+function handleGit(args, vfs, _legacyGitState = null) {
   const subcommand = args[0];
+  const pwd = vfs.pwd();
+  const repoRoot = findGitRepoRoot(vfs, pwd);
+  const gitState = repoRoot ? getVfsGitState(vfs, repoRoot) : { initialized: false, staged: [], commits: [], branch: 'main' };
+
   switch (subcommand) {
-    case 'init':
-      gitState.initialized = true;
-      vfs.mkdir('.git', true);
-      return ['Initialized empty Git repository in ' + vfs.pwd() + '/.git/'];
+    case 'init': {
+      const targetRepo = pwd;
+      vfs.mkdir(`${targetRepo}/.git`, true);
+      const newState = {
+        initialized: true,
+        repoPath: targetRepo,
+        staged: [],
+        commits: [],
+        branch: 'main',
+      };
+      saveVfsGitState(vfs, targetRepo, newState);
+      return ['Initialized empty Git repository in ' + targetRepo + '/.git/'];
+    }
 
     case 'clone': {
       const rawUrl = args[1] || '';
@@ -369,23 +483,20 @@ function handleGit(args, vfs, gitState) {
       const activeMissionIds = storeState.career.activeMissions || [];
       const completedMissionIds = storeState.career.completedMissions || [];
 
-      // URL'den repo adını veya görev ID'sini ayıkla
-      const urlRepoName = rawUrl.split('/').pop().replace('.git', '') || 'mlops-project';
+      // URL'den repo adını çıkar (.git uzantısı ve son path segmenti)
+      const urlSegments = rawUrl.split('/').filter(Boolean);
+      const lastSegment = urlSegments[urlSegments.length - 1] || 'repository';
+      const urlRepoName = lastSegment.replace(/\.git$/, '');
 
-      // Store'daki aktif görevlerden veya tüm görevlerden eşleşeni bul
+      // Store ve missions.json içindeki görevlerle eşle (GÖREV GRUBU 2)
       let targetMission = missions.find(
         (m) => m.id === urlRepoName ||
-               rawUrl.includes(m.id) ||
-               (m.companyId && rawUrl.includes(m.companyId)) ||
-               activeMissionIds.includes(m.id)
+               m.repoName === urlRepoName ||
+               (m.repoUrl && (m.repoUrl === rawUrl || m.repoUrl.endsWith(urlRepoName + '.git') || m.repoUrl.endsWith(urlRepoName)))
       );
 
-      if (!targetMission && activeMissionIds.length > 0) {
-        targetMission = missions.find((m) => activeMissionIds.includes(m.id));
-      }
-
-      const repoDirName = targetMission ? targetMission.id : urlRepoName;
-      const targetPath = `${vfs.pwd()}/${repoDirName}`.replace(/\/+/g, '/');
+      const repoDirName = urlRepoName;
+      const targetPath = `${pwd}/${repoDirName}`.replace(/\/+/g, '/');
 
       // VFS üzerinde klasörleri oluştur ve dosyaları yaz
       vfs.mkdir(repoDirName, true);
@@ -448,11 +559,15 @@ git push origin main
         vfs.writeFile(`${repoDirName}/README.md`, `# ${repoDirName}\nMLOps repository cloned successfully.\n`);
       }
 
-      // Git state güncelle
-      gitState.initialized = true;
-      gitState.repoPath = targetPath;
-      gitState.staged = [];
-      gitState.commits = [{ hash: 'a1b2c3d', message: 'Initial commit', author: 'origin' }];
+      // VFS Git state kaydet
+      const initialGitState = {
+        initialized: true,
+        repoPath: targetPath,
+        staged: [],
+        commits: [{ hash: 'a1b2c3d', message: 'Initial commit', author: 'origin' }],
+        branch: 'main',
+      };
+      saveVfsGitState(vfs, targetPath, initialGitState);
 
       // Store'da activeMissions içinde değilse ekle
       if (targetMission && !activeMissionIds.includes(targetMission.id) && !completedMissionIds.includes(targetMission.id)) {
@@ -470,7 +585,7 @@ git push origin main
     }
 
     case 'status':
-      if (!gitState.initialized) return ['fatal: not a git repository'];
+      if (!repoRoot || !gitState.initialized) return ['fatal: not a git repository (or any of the parent directories): .git'];
       return [
         `On branch ${gitState.branch}`,
         gitState.staged.length > 0
@@ -479,39 +594,42 @@ git push origin main
       ];
 
     case 'add': {
-      if (!gitState.initialized) return ['fatal: not a git repository'];
+      if (!repoRoot || !gitState.initialized) return ['fatal: not a git repository (or any of the parent directories): .git'];
       const file = args[1];
       if (!file) return ['Nothing specified, nothing added.'];
       if (file === '.' || file === '-A') {
         const ls = vfs.ls();
-        if (ls.success) gitState.staged = ls.entries.map((e) => e.name);
+        if (ls.success) {
+          gitState.staged = ls.entries.filter((e) => e.name !== '.git').map((e) => e.name);
+        }
       } else {
         if (!gitState.staged.includes(file)) gitState.staged.push(file);
       }
+      saveVfsGitState(vfs, repoRoot, gitState);
       return [];
     }
 
     case 'commit': {
-      if (!gitState.initialized) return ['fatal: not a git repository'];
-      if (gitState.staged.length === 0) return ['nothing to commit'];
+      if (!repoRoot || !gitState.initialized) return ['fatal: not a git repository (or any of the parent directories): .git'];
+      if (gitState.staged.length === 0) return ['nothing to commit, working tree clean'];
       const msgIdx = args.indexOf('-m');
       const message = msgIdx !== -1 ? args.slice(msgIdx + 1).join(' ').replace(/"/g, '') : 'No message';
       const hash = Math.random().toString(16).slice(2, 9);
       gitState.commits.push({ hash, message, author: 'you' });
       const count = gitState.staged.length;
       gitState.staged = [];
+      saveVfsGitState(vfs, repoRoot, gitState);
       return [`[${gitState.branch} ${hash}] ${message}`, ` ${count} file(s) changed`];
     }
 
     case 'push': {
-      if (!gitState.initialized) return ['fatal: not a git repository'];
+      if (!repoRoot || !gitState.initialized) return ['fatal: not a git repository (or any of the parent directories): .git'];
 
       const storeState = useGameStore.getState();
       const activeMissionIds = storeState.career.activeMissions || [];
-      const pwd = vfs.pwd();
 
       // Bulunulan dizinden veya aktif görevlerden uygun görevi bul
-      let targetMissionId = activeMissionIds.find((id) => pwd.includes(id));
+      let targetMissionId = activeMissionIds.find((id) => pwd.includes(id) || repoRoot.includes(id));
       if (!targetMissionId && activeMissionIds.length > 0) {
         targetMissionId = activeMissionIds[0];
       }
@@ -559,20 +677,20 @@ git push origin main
     }
 
     case 'pull':
-      if (!gitState.initialized) return ['fatal: not a git repository'];
+      if (!repoRoot || !gitState.initialized) return ['fatal: not a git repository (or any of the parent directories): .git'];
       return ['Already up to date.'];
 
     case 'log':
-      if (!gitState.initialized) return ['fatal: not a git repository'];
+      if (!repoRoot || !gitState.initialized) return ['fatal: not a git repository (or any of the parent directories): .git'];
       if (gitState.commits.length === 0) return ['No commits yet'];
       return gitState.commits.slice().reverse().map((c) => `\x1b[33m${c.hash}\x1b[0m ${c.message} (${c.author})`);
 
     case 'branch':
-      if (!gitState.initialized) return ['fatal: not a git repository'];
+      if (!repoRoot || !gitState.initialized) return ['fatal: not a git repository (or any of the parent directories): .git'];
       return [`* ${gitState.branch}`];
 
     default:
-      return [`git: '${subcommand}' is not a git command.`];
+      return [`git: '${subcommand}' is not a git command. See 'git --help'.`];
   }
 }
 
@@ -677,7 +795,7 @@ function handleDocker(args, vfs) {
   // 6. CLASSIC / SHORT ALIASES (ROUTED TO SAME CORE HANDLERS)
   switch (sub) {
     case 'build': return handleDockerBuild(args.slice(1), vfs);
-    case 'run': return handleDockerRun(args.slice(1));
+    case 'run': return handleDockerRun(args.slice(1), vfs);
     case 'ps': return handleDockerPs(args.slice(1));
     case 'stop': return handleDockerStop(args.slice(1));
     case 'start': return handleDockerStart(args.slice(1));
@@ -710,7 +828,7 @@ function handleDockerBuild(subArgs, vfs) {
   return result.logs;
 }
 
-function handleDockerRun(subArgs) {
+function handleDockerRun(subArgs, vfs = null) {
   const image = subArgs.find((a) => !a.startsWith('-')) || 'app:latest';
   const portIdx = subArgs.indexOf('-p');
   let port = 8080;
@@ -721,7 +839,7 @@ function handleDockerRun(subArgs) {
   const nameIdx = subArgs.indexOf('--name');
   const name = nameIdx !== -1 ? subArgs[nameIdx + 1] : undefined;
 
-  const result = dockerRun(image, { port, name });
+  const result = dockerRun(image, { port, name, vfs });
   return [result.message];
 }
 
