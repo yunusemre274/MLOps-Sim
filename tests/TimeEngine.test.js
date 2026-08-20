@@ -14,6 +14,8 @@ import {
   getTickInterval,
   isNightTime,
   getTimePeriod,
+  getFormattedDate,
+  getFullDateTime,
 } from '../src/engine/TimeEngine.js';
 
 // ============================================================
@@ -60,6 +62,38 @@ describe('minutesToTime', () => {
 
   it('negatif dakika doğru wrap olmalı', () => {
     expect(minutesToTime(-60)).toBe('23:00');
+  });
+
+  it('ondalıklı / float dakika (örn: 486.691749999999047) 2-digit tamsayı olarak formatlanmalı', () => {
+    expect(minutesToTime(486.691749999999047)).toBe('08:06');
+    expect(minutesToTime(0.75)).toBe('00:00');
+    expect(minutesToTime(59.99)).toBe('00:59');
+  });
+});
+
+// ============================================================
+// getFormattedDate & getFullDateTime testleri
+// ============================================================
+describe('getFormattedDate & getFullDateTime', () => {
+  it('Gün 1 için başlangıç tarihi 01/01/2026 olmalı', () => {
+    const result = getFormattedDate(1);
+    expect(result.day).toBe('01');
+    expect(result.month).toBe('01');
+    expect(result.year).toBe(2026);
+    expect(result.dateStr).toBe('01/01/2026');
+  });
+
+  it('Gün 32 için tarih 01/02/2026 olmalı', () => {
+    const result = getFormattedDate(32);
+    expect(result.day).toBe('01');
+    expect(result.month).toBe('02');
+    expect(result.year).toBe(2026);
+    expect(result.dateStr).toBe('01/02/2026');
+  });
+
+  it('getFullDateTime birleşik Gün/Ay/Yıl Saat:Dakika formatı dönmeli', () => {
+    expect(getFullDateTime(1, '08:06')).toBe('01/01/2026 08:06');
+    expect(getFullDateTime(15, '14:30')).toBe('15/01/2026 14:30');
   });
 });
 

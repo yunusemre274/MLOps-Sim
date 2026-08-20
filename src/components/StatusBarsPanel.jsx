@@ -9,7 +9,7 @@
 import { useEffect, useRef } from 'react';
 import useGameStore from '../store/useGameStore';
 import { calculateBarDecay } from '../engine/BarEngine';
-import { advanceTime, getMinutesPerTick, getTickInterval, getTimePeriod } from '../engine/TimeEngine';
+import { advanceTime, getMinutesPerTick, getTickInterval, getTimePeriod, getFormattedDate } from '../engine/TimeEngine';
 import StatusBar from './StatusBar';
 import './StatusBarsPanel.css';
 
@@ -79,6 +79,7 @@ export default function StatusBarsPanel() {
   }, [isPaused]);
 
   const timePeriod = getTimePeriod(currentTime);
+  const { dateStr } = getFormattedDate(dayCount);
 
   return (
     <header className="status-panel">
@@ -99,10 +100,9 @@ export default function StatusBarsPanel() {
           <span className="status-panel__money-value">₺{Math.floor(balance).toLocaleString('tr-TR')}</span>
         </div>
 
-        <div className="status-panel__time" title={`Gün ${dayCount}`}>
+        <div className="status-panel__time" title={`Oyun Günü: ${dayCount} • ${dateStr}`}>
           <span className="status-panel__time-icon">{TIME_PERIOD_ICONS[timePeriod]}</span>
-          <span className="status-panel__time-value">{currentTime}</span>
-          <span className="status-panel__day">Gün {dayCount}</span>
+          <span className="status-panel__time-value">{dateStr} {currentTime}</span>
         </div>
       </div>
     </header>
